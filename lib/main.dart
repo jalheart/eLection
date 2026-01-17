@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:drift/drift.dart' as drift;
 import 'database.dart';
 
 void main() {
