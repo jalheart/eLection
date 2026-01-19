@@ -11,7 +11,15 @@ class Todos extends Table {
   IntColumn get category => integer().nullable()();
 }
 
-@DriftDatabase(tables: [Todos])
+class Settings extends Table {
+  TextColumn get name => text()();
+  TextColumn get slogan => text()();
+  TextColumn get theme => text()();
+  TextColumn get logo => text()();
+  BoolColumn get passRequired => boolean()();
+}
+
+@DriftDatabase(tables: [Todos, Settings])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(impl.connect());
 
