@@ -12,6 +12,7 @@ class Todos extends Table {
 }
 
 class Settings extends Table {
+  IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
   TextColumn get slogan => text()();
   TextColumn get theme => text()();
@@ -24,5 +25,17 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(impl.connect());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration {
+    return MigrationStrategy(
+      onUpgrade: (m, from, to) async {
+        if (from < 2) {
+          // Add the id column to the settings table
+          await m.addColumn(settings, settings.id);
+        }
+      },
+    );
+  }
 }

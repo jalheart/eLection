@@ -310,6 +310,19 @@ class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $SettingsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
@@ -362,6 +375,7 @@ class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
   );
   @override
   List<GeneratedColumn> get $columns => [
+    id,
     name,
     slogan,
     theme,
@@ -380,6 +394,9 @@ class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
     if (data.containsKey('name')) {
       context.handle(
         _nameMeta,
@@ -427,11 +444,15 @@ class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => const {};
+  Set<GeneratedColumn> get $primaryKey => {id};
   @override
   Setting map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Setting(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
       name: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}name'],
@@ -462,12 +483,14 @@ class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
 }
 
 class Setting extends DataClass implements Insertable<Setting> {
+  final int id;
   final String name;
   final String slogan;
   final String theme;
   final String logo;
   final bool passRequired;
   const Setting({
+    required this.id,
     required this.name,
     required this.slogan,
     required this.theme,
@@ -477,6 +500,7 @@ class Setting extends DataClass implements Insertable<Setting> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
     map['slogan'] = Variable<String>(slogan);
     map['theme'] = Variable<String>(theme);
@@ -487,6 +511,7 @@ class Setting extends DataClass implements Insertable<Setting> {
 
   SettingsCompanion toCompanion(bool nullToAbsent) {
     return SettingsCompanion(
+      id: Value(id),
       name: Value(name),
       slogan: Value(slogan),
       theme: Value(theme),
@@ -501,6 +526,7 @@ class Setting extends DataClass implements Insertable<Setting> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Setting(
+      id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       slogan: serializer.fromJson<String>(json['slogan']),
       theme: serializer.fromJson<String>(json['theme']),
@@ -512,6 +538,7 @@ class Setting extends DataClass implements Insertable<Setting> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
       'slogan': serializer.toJson<String>(slogan),
       'theme': serializer.toJson<String>(theme),
@@ -521,12 +548,14 @@ class Setting extends DataClass implements Insertable<Setting> {
   }
 
   Setting copyWith({
+    int? id,
     String? name,
     String? slogan,
     String? theme,
     String? logo,
     bool? passRequired,
   }) => Setting(
+    id: id ?? this.id,
     name: name ?? this.name,
     slogan: slogan ?? this.slogan,
     theme: theme ?? this.theme,
@@ -535,6 +564,7 @@ class Setting extends DataClass implements Insertable<Setting> {
   );
   Setting copyWithCompanion(SettingsCompanion data) {
     return Setting(
+      id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
       slogan: data.slogan.present ? data.slogan.value : this.slogan,
       theme: data.theme.present ? data.theme.value : this.theme,
@@ -548,6 +578,7 @@ class Setting extends DataClass implements Insertable<Setting> {
   @override
   String toString() {
     return (StringBuffer('Setting(')
+          ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('slogan: $slogan, ')
           ..write('theme: $theme, ')
@@ -558,11 +589,12 @@ class Setting extends DataClass implements Insertable<Setting> {
   }
 
   @override
-  int get hashCode => Object.hash(name, slogan, theme, logo, passRequired);
+  int get hashCode => Object.hash(id, name, slogan, theme, logo, passRequired);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Setting &&
+          other.id == this.id &&
           other.name == this.name &&
           other.slogan == this.slogan &&
           other.theme == this.theme &&
@@ -571,71 +603,74 @@ class Setting extends DataClass implements Insertable<Setting> {
 }
 
 class SettingsCompanion extends UpdateCompanion<Setting> {
+  final Value<int> id;
   final Value<String> name;
   final Value<String> slogan;
   final Value<String> theme;
   final Value<String> logo;
   final Value<bool> passRequired;
-  final Value<int> rowid;
   const SettingsCompanion({
+    this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.slogan = const Value.absent(),
     this.theme = const Value.absent(),
     this.logo = const Value.absent(),
     this.passRequired = const Value.absent(),
-    this.rowid = const Value.absent(),
   });
   SettingsCompanion.insert({
+    this.id = const Value.absent(),
     required String name,
     required String slogan,
     required String theme,
     required String logo,
     required bool passRequired,
-    this.rowid = const Value.absent(),
   }) : name = Value(name),
        slogan = Value(slogan),
        theme = Value(theme),
        logo = Value(logo),
        passRequired = Value(passRequired);
   static Insertable<Setting> custom({
+    Expression<int>? id,
     Expression<String>? name,
     Expression<String>? slogan,
     Expression<String>? theme,
     Expression<String>? logo,
     Expression<bool>? passRequired,
-    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
+      if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (slogan != null) 'slogan': slogan,
       if (theme != null) 'theme': theme,
       if (logo != null) 'logo': logo,
       if (passRequired != null) 'pass_required': passRequired,
-      if (rowid != null) 'rowid': rowid,
     });
   }
 
   SettingsCompanion copyWith({
+    Value<int>? id,
     Value<String>? name,
     Value<String>? slogan,
     Value<String>? theme,
     Value<String>? logo,
     Value<bool>? passRequired,
-    Value<int>? rowid,
   }) {
     return SettingsCompanion(
+      id: id ?? this.id,
       name: name ?? this.name,
       slogan: slogan ?? this.slogan,
       theme: theme ?? this.theme,
       logo: logo ?? this.logo,
       passRequired: passRequired ?? this.passRequired,
-      rowid: rowid ?? this.rowid,
     );
   }
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
@@ -651,21 +686,18 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
     if (passRequired.present) {
       map['pass_required'] = Variable<bool>(passRequired.value);
     }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
     return map;
   }
 
   @override
   String toString() {
     return (StringBuffer('SettingsCompanion(')
+          ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('slogan: $slogan, ')
           ..write('theme: $theme, ')
           ..write('logo: $logo, ')
-          ..write('passRequired: $passRequired, ')
-          ..write('rowid: $rowid')
+          ..write('passRequired: $passRequired')
           ..write(')'))
         .toString();
   }
@@ -853,21 +885,21 @@ typedef $$TodosTableProcessedTableManager =
     >;
 typedef $$SettingsTableCreateCompanionBuilder =
     SettingsCompanion Function({
+      Value<int> id,
       required String name,
       required String slogan,
       required String theme,
       required String logo,
       required bool passRequired,
-      Value<int> rowid,
     });
 typedef $$SettingsTableUpdateCompanionBuilder =
     SettingsCompanion Function({
+      Value<int> id,
       Value<String> name,
       Value<String> slogan,
       Value<String> theme,
       Value<String> logo,
       Value<bool> passRequired,
-      Value<int> rowid,
     });
 
 class $$SettingsTableFilterComposer
@@ -879,6 +911,11 @@ class $$SettingsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get name => $composableBuilder(
     column: $table.name,
     builder: (column) => ColumnFilters(column),
@@ -914,6 +951,11 @@ class $$SettingsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get name => $composableBuilder(
     column: $table.name,
     builder: (column) => ColumnOrderings(column),
@@ -949,6 +991,9 @@ class $$SettingsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
 
@@ -995,35 +1040,35 @@ class $$SettingsTableTableManager
               $$SettingsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
+                Value<int> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String> slogan = const Value.absent(),
                 Value<String> theme = const Value.absent(),
                 Value<String> logo = const Value.absent(),
                 Value<bool> passRequired = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
               }) => SettingsCompanion(
+                id: id,
                 name: name,
                 slogan: slogan,
                 theme: theme,
                 logo: logo,
                 passRequired: passRequired,
-                rowid: rowid,
               ),
           createCompanionCallback:
               ({
+                Value<int> id = const Value.absent(),
                 required String name,
                 required String slogan,
                 required String theme,
                 required String logo,
                 required bool passRequired,
-                Value<int> rowid = const Value.absent(),
               }) => SettingsCompanion.insert(
+                id: id,
                 name: name,
                 slogan: slogan,
                 theme: theme,
                 logo: logo,
                 passRequired: passRequired,
-                rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
