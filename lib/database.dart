@@ -20,12 +20,20 @@ class Settings extends Table {
   BoolColumn get passRequired => boolean()();
 }
 
-@DriftDatabase(tables: [Todos, Settings])
+class Users extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get username => text()();
+  TextColumn get password => text()();
+  TextColumn get name => text()();
+  TextColumn get email => text()();
+}
+
+@DriftDatabase(tables: [Todos, Settings, Users])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(impl.connect());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration {
@@ -34,6 +42,9 @@ class AppDatabase extends _$AppDatabase {
         if (from < 2) {
           // Add the id column to the settings table
           await m.addColumn(settings, settings.id);
+        }
+        if (from < 3) {
+          await m.createTable(users);
         }
       },
       beforeOpen: (details) async {
