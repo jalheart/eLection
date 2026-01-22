@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:bcrypt/bcrypt.dart';
 import 'database.dart';
-import 'main.dart';
+import 'auth_provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -54,9 +54,7 @@ class _LoginPageState extends State<LoginPage> {
       final isValid = BCrypt.checkpw(password, _foundUser!.password);
       if (isValid) {
         if (mounted) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const HomePage()),
-          );
+          context.read<AuthProvider>().login(_foundUser!);
         }
       } else {
         setState(() => _errorMessage = 'Contraseña incorrecta');

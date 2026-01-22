@@ -2,12 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'database.dart';
 import 'login_page.dart';
+import 'auth_provider.dart';
 
 void main() {
   runApp(
-    Provider<AppDatabase>(
-      create: (context) => AppDatabase(),
-      dispose: (context, db) => db.close(),
+    MultiProvider(
+      providers: [
+        Provider<AppDatabase>(
+          create: (context) => AppDatabase(),
+          dispose: (context, db) => db.close(),
+        ),
+        ChangeNotifierProvider<AuthProvider>(
+          create: (context) => AuthProvider(),
+        ),
+      ],
       child: const MyApp(),
     ),
   );
@@ -24,7 +32,14 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: const LoginPage(),
+      home: Consumer<AuthProvider>(
+        builder: (context, auth, _) {
+          if (auth.isAuthenticated) {
+            return const HomePage();
+          }
+          return const LoginPage();
+        },
+      ),
     );
   }
 }
@@ -48,7 +63,17 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Drift Todos')),
+      appBar: AppBar(
+        title: const Text('Drift Todos'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              context.read<AuthProvider>().logout();
+            },
+          ),
+        ],
+      ),
       body: StreamBuilder<List<Todo>>(
         stream: _database.select(_database.todos).watch(),
         builder: (context, snapshot) {
