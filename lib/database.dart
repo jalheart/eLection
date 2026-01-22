@@ -36,6 +36,20 @@ class AppDatabase extends _$AppDatabase {
           await m.addColumn(settings, settings.id);
         }
       },
+      beforeOpen: (details) async {
+        final allSettings = await select(settings).get();
+        if (allSettings.isEmpty) {
+          await into(settings).insert(
+            SettingsCompanion.insert(
+              name: 'Escuela prueba',
+              slogan: 'Mi escuelita',
+              theme: 'primary',
+              logo: 'sin-logo.png',
+              passRequired: true,
+            ),
+          );
+        }
+      },
     );
   }
 }
