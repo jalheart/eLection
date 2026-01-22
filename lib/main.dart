@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'database.dart';
+import 'login_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    Provider<AppDatabase>(
+      create: (context) => AppDatabase(),
+      dispose: (context, db) => db.close(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -11,12 +19,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Drift Todo App',
+      title: 'eLection',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: const HomePage(),
+      home: const LoginPage(),
     );
   }
 }
@@ -32,15 +40,9 @@ class _HomePageState extends State<HomePage> {
   late AppDatabase _database;
 
   @override
-  void initState() {
-    super.initState();
-    _database = AppDatabase();
-  }
-
-  @override
-  void dispose() {
-    _database.close();
-    super.dispose();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _database = context.read<AppDatabase>();
   }
 
   @override
