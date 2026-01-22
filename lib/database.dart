@@ -4,14 +4,7 @@ import 'database/connection/connection.dart' as impl;
 
 part 'database.g.dart';
 
-@DataClassName('Todo')
-class Todos extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  TextColumn get title => text().withLength(min: 6, max: 32)();
-  TextColumn get content => text().named('body')();
-  IntColumn get category => integer().nullable()();
-}
-
+// Removed Todos table
 class Settings extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
@@ -29,12 +22,12 @@ class Users extends Table {
   TextColumn get email => text()();
 }
 
-@DriftDatabase(tables: [Todos, Settings, Users])
+@DriftDatabase(tables: [Settings, Users])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(impl.connect());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration {
@@ -46,6 +39,9 @@ class AppDatabase extends _$AppDatabase {
         }
         if (from < 3) {
           await m.createTable(users);
+        }
+        if (from < 4) {
+          await m.issueCustomQuery('DROP TABLE IF EXISTS todos;');
         }
       },
       beforeOpen: (details) async {
