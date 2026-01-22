@@ -38,6 +38,7 @@ dependencies:
   path_provider: ^2.1.5
   path: ^1.9.1
   sqlite3_flutter_libs: ^0.5.24
+  bcrypt: ^1.2.0
 
 dev_dependencies:
   flutter_test:

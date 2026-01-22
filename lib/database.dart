@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:bcrypt/bcrypt.dart';
 import 'database/connection/connection.dart' as impl;
 
 part 'database.g.dart';
@@ -48,6 +49,7 @@ class AppDatabase extends _$AppDatabase {
         }
       },
       beforeOpen: (details) async {
+        // Populate settings if empty
         final allSettings = await select(settings).get();
         if (allSettings.isEmpty) {
           await into(settings).insert(
@@ -57,6 +59,20 @@ class AppDatabase extends _$AppDatabase {
               theme: 'primary',
               logo: 'sin-logo.png',
               passRequired: true,
+            ),
+          );
+        }
+
+        // Populate users if empty
+        final allUsers = await select(users).get();
+        if (allUsers.isEmpty) {
+          final hashedPassword = BCrypt.hashpw('admin', BCrypt.gensalt());
+          await into(users).insert(
+            UsersCompanion.insert(
+              username: 'admin',
+              password: hashedPassword,
+              name: 'Administrador',
+              email: 'admin@mail.com',
             ),
           );
         }
