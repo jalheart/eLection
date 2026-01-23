@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'database.dart';
-import 'login_page.dart';
-import 'auth_provider.dart';
+
+import 'application/providers/auth_provider.dart';
+import 'application/use_cases/check_username_use_case.dart';
+import 'application/use_cases/login_use_case.dart';
+import 'infrastructure/database/adapters/drift_user_repository.dart';
+import 'infrastructure/database/database.dart';
+import 'infrastructure/ui/pages/login_page.dart';
 
 void main() {
   runApp(
@@ -12,8 +16,22 @@ void main() {
           create: (context) => AppDatabase(),
           dispose: (context, db) => db.close(),
         ),
-        ChangeNotifierProvider<AuthProvider>(
-          create: (context) => AuthProvider(),
+        ProxyProvider<AppDatabase, DriftUserRepository>(
+          update: (context, db, _) => DriftUserRepository(db),
+        ),
+        ProxyProvider<DriftUserRepository, LoginUseCase>(
+          update: (context, repo, _) => LoginUseCase(repo),
+        ),
+        ProxyProvider<DriftUserRepository, CheckUsernameUseCase>(
+          update: (context, repo, _) => CheckUsernameUseCase(repo),
+        ),
+        ChangeNotifierProxyProvider2<LoginUseCase, CheckUsernameUseCase, AuthProvider>(
+          create: (context) => AuthProvider(
+            context.read<LoginUseCase>(),
+            context.read<CheckUsernameUseCase>(),
+          ),
+          update: (context, loginUC, checkUC, previous) =>
+              previous ?? AuthProvider(loginUC, checkUC),
         ),
       ],
       child: const MyApp(),
@@ -48,7 +66,7 @@ class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
-  _HomePageState createState() => _HomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {

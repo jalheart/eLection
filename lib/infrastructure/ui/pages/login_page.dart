@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:bcrypt/bcrypt.dart';
-import 'database.dart';
-import 'auth_provider.dart';
+import '../../../application/providers/auth_provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -15,11 +13,10 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _showPassword = false;
-  User? _foundUser;
   String? _errorMessage;
 
   Future<void> _checkUsername() async {
-    final database = context.read<AppDatabase>();
+    final authProvider = context.read<AuthProvider>();
     final username = _usernameController.text.trim();
 
     if (username.isEmpty) {
@@ -27,13 +24,10 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    final user = await (database.select(
-      database.users,
-    )..where((u) => u.username.equals(username))).getSingleOrNull();
+    final user = await authProvider.checkUsername(username);
 
     if (user != null) {
       setState(() {
-        _foundUser = user;
         _showPassword = true;
         _errorMessage = null;
       });
@@ -43,6 +37,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _login() async {
+    final authProvider = context.read<AuthProvider>();
     final password = _passwordController.text;
 
     if (password.isEmpty) {
@@ -50,15 +45,10 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    if (_foundUser != null) {
-      final isValid = BCrypt.checkpw(password, _foundUser!.password);
-      if (isValid) {
-        if (mounted) {
-          context.read<AuthProvider>().login(_foundUser!);
-        }
-      } else {
-        setState(() => _errorMessage = 'Contraseña incorrecta');
-      }
+    final success = await authProvider.login(_usernameController.text.trim(), password);
+    
+    if (!success) {
+      setState(() => _errorMessage = 'Contraseña incorrecta');
     }
   }
 
@@ -94,7 +84,7 @@ class _LoginPageState extends State<LoginPage> {
                   decoration: const InputDecoration(
                     labelText: 'Contraseña',
                     border: OutlineInputBorder(),
-                    prefixIcon: const Icon(Icons.lock),
+                    prefixIcon: Icon(Icons.lock),
                   ),
                   obscureText: true,
                   autofocus: true,
@@ -114,7 +104,6 @@ class _LoginPageState extends State<LoginPage> {
                   onPressed: () {
                     setState(() {
                       _showPassword = false;
-                      _foundUser = null;
                       _passwordController.clear();
                     });
                   },

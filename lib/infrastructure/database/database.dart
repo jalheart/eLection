@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:bcrypt/bcrypt.dart';
-import 'database/connection/connection.dart' as impl;
+import 'connection/connection.dart' as impl;
 
 part 'database.g.dart';
 
