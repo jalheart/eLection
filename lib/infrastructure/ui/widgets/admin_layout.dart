@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../application/providers/settings_provider.dart';
+import '../../../application/providers/auth_provider.dart';
 
 class AdminLayout extends StatelessWidget {
   final Widget child;
@@ -86,18 +87,56 @@ class AdminLayout extends StatelessWidget {
             height: 24,
             color: Colors.grey[200],
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: const Row(
+            child: Row(
               children: [
-                Icon(Icons.info_outline, size: 14, color: Colors.grey),
-                SizedBox(width: 4),
-                Text(
+                const Icon(Icons.info_outline, size: 14, color: Colors.grey),
+                const SizedBox(width: 4),
+                const Text(
                   'Listo',
                   style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
-                Spacer(),
-                Text(
+                const Spacer(),
+                const Text(
                   'Software desarrollado por Antigravity',
                   style: TextStyle(fontSize: 10, color: Colors.grey),
+                ),
+                const SizedBox(width: 16),
+                Consumer<AuthProvider>(
+                  builder: (context, auth, _) {
+                    final user = auth.currentUser;
+                    return PopupMenuButton<String>(
+                      onSelected: (value) {
+                        if (value == 'logout') {
+                          auth.logout();
+                        }
+                      },
+                      itemBuilder: (BuildContext context) => [
+                        const PopupMenuItem<String>(
+                          value: 'logout',
+                          child: Row(
+                            children: [
+                              Icon(Icons.logout, size: 18, color: Colors.red),
+                              SizedBox(width: 8),
+                              Text('Cerrar sesión'),
+                            ],
+                          ),
+                        ),
+                      ],
+                      offset: const Offset(0, -50), // Show menu above the bar
+                      child: MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: Text(
+                          'Usuario: ${user?.name ?? 'Invitado'}',
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: Colors.blueGrey,
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
