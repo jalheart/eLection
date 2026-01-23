@@ -27,21 +27,35 @@ class AdminLandingPage extends StatelessWidget {
             Wrap(
               spacing: 20,
               runSpacing: 20,
+              alignment: WrapAlignment.center,
               children: [
                 _DashboardCard(
-                  icon: Icons.people,
-                  label: 'Usuarios',
-                  color: Colors.blue,
+                  image: 'assets/images/estudiante.png',
+                  label: 'Estudiantes',
                 ),
                 _DashboardCard(
-                  icon: Icons.settings,
+                  image: 'assets/images/course.png',
+                  label: 'Grados',
+                ),
+                _DashboardCard(
+                  image: 'assets/images/categories.png',
+                  label: 'Categorías',
+                ),
+                _DashboardCard(
+                  image: 'assets/images/course-categories.png',
+                  label: 'Categorías/Grados',
+                ),
+                _DashboardCard(
+                  image: 'assets/images/candidates.png',
+                  label: 'Candidatos',
+                ),
+                _DashboardCard(
+                  image: 'assets/images/settings.png',
                   label: 'Configuración',
-                  color: Colors.orange,
                 ),
                 _DashboardCard(
-                  icon: Icons.how_to_vote,
-                  label: 'Elecciones',
-                  color: Colors.green,
+                  image: 'assets/images/resultados.png',
+                  label: 'Resultados',
                 ),
               ],
             ),
@@ -53,37 +67,48 @@ class AdminLandingPage extends StatelessWidget {
 }
 
 class _DashboardCard extends StatelessWidget {
-  final IconData icon;
+  final String image;
   final String label;
-  final Color color;
 
   const _DashboardCard({
-    required this.icon,
+    required this.image,
     required this.label,
-    required this.color,
   });
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(color: Colors.grey.shade300, width: 1),
+      ),
       child: InkWell(
         onTap: () {
           // Future navigation
         },
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(8),
         child: Container(
           width: 150,
-          padding: const EdgeInsets.all(16),
+          height: 160,
+          padding: const EdgeInsets.all(12),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 40, color: color),
+              Image.asset(
+                image,
+                height: 80,
+                width: 80,
+                fit: BoxFit.contain,
+              ),
               const SizedBox(height: 12),
               Text(
                 label,
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
+                textAlign: TextAlign.center,
               ),
             ],
           ),
