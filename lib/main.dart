@@ -6,6 +6,10 @@ import 'application/providers/settings_provider.dart';
 import 'application/use_cases/check_username_use_case.dart';
 import 'application/use_cases/login_use_case.dart';
 import 'application/use_cases/get_settings_use_case.dart';
+import 'application/use_cases/get_grados_use_case.dart';
+import 'application/use_cases/save_grado_use_case.dart';
+import 'application/use_cases/delete_grado_use_case.dart';
+import 'application/providers/grados_provider.dart';
 import 'infrastructure/database/adapters/drift_user_repository.dart';
 import 'infrastructure/database/adapters/drift_settings_repository.dart';
 import 'infrastructure/database/adapters/drift_grado_repository.dart';
@@ -41,6 +45,15 @@ void main() {
         ProxyProvider<DriftSettingsRepository, GetSettingsUseCase>(
           update: (context, repo, _) => GetSettingsUseCase(repo),
         ),
+        ProxyProvider<DriftGradoRepository, GetGradosUseCase>(
+          update: (context, repo, _) => GetGradosUseCase(repo),
+        ),
+        ProxyProvider<DriftGradoRepository, SaveGradoUseCase>(
+          update: (context, repo, _) => SaveGradoUseCase(repo),
+        ),
+        ProxyProvider<DriftGradoRepository, DeleteGradoUseCase>(
+          update: (context, repo, _) => DeleteGradoUseCase(repo),
+        ),
         // Providers
         ChangeNotifierProxyProvider2<
           LoginUseCase,
@@ -59,6 +72,20 @@ void main() {
               SettingsProvider(context.read<GetSettingsUseCase>()),
           update: (context, getSettingsUC, previous) =>
               previous ?? SettingsProvider(getSettingsUC),
+        ),
+        ChangeNotifierProxyProvider3<
+          GetGradosUseCase,
+          SaveGradoUseCase,
+          DeleteGradoUseCase,
+          GradosProvider
+        >(
+          create: (context) => GradosProvider(
+            context.read<GetGradosUseCase>(),
+            context.read<SaveGradoUseCase>(),
+            context.read<DeleteGradoUseCase>(),
+          ),
+          update: (context, getUC, saveUC, deleteUC, previous) =>
+              previous ?? GradosProvider(getUC, saveUC, deleteUC),
         ),
       ],
       child: const MyApp(),

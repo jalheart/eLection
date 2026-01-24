@@ -7,11 +7,7 @@ class AdminLayout extends StatelessWidget {
   final Widget child;
   final String title;
 
-  const AdminLayout({
-    super.key,
-    required this.child,
-    this.title = '',
-  });
+  const AdminLayout({super.key, required this.child, this.title = ''});
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +28,14 @@ class AdminLayout extends StatelessWidget {
                     // Left: Logo and Institution Name
                     Row(
                       children: [
+                        if (Navigator.canPop(context))
+                          IconButton(
+                            icon: const Icon(
+                              Icons.arrow_back,
+                              color: Colors.white,
+                            ),
+                            onPressed: () => Navigator.pop(context),
+                          ),
                         if (settings?.logo != null && settings!.logo.isNotEmpty)
                           Padding(
                             padding: const EdgeInsets.only(right: 8.0),
@@ -39,13 +43,24 @@ class AdminLayout extends StatelessWidget {
                               'assets/images/${settings.logo}',
                               height: 30,
                               errorBuilder: (context, error, stackTrace) =>
-                                  const Icon(Icons.school, color: Colors.white, size: 30),
+                                  const Icon(
+                                    Icons.school,
+                                    color: Colors.white,
+                                    size: 30,
+                                  ),
                             ),
                           )
                         else
-                          const Icon(Icons.school, color: Colors.white, size: 30),
+                          const Icon(
+                            Icons.school,
+                            color: Colors.white,
+                            size: 30,
+                          ),
+                        const SizedBox(width: 8),
                         Text(
-                          settings?.name ?? 'Cargando...',
+                          title.isNotEmpty
+                              ? title
+                              : (settings?.name ?? 'Cargando...'),
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
@@ -68,10 +83,7 @@ class AdminLayout extends StatelessWidget {
                         SizedBox(width: 8),
                         Text(
                           'v1.0.0',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 12,
-                          ),
+                          style: TextStyle(color: Colors.white70, fontSize: 12),
                         ),
                       ],
                     ),
@@ -108,6 +120,9 @@ class AdminLayout extends StatelessWidget {
                       onSelected: (value) {
                         if (value == 'logout') {
                           auth.logout();
+                          Navigator.of(
+                            context,
+                          ).popUntil((route) => route.isFirst);
                         }
                       },
                       itemBuilder: (BuildContext context) => [
