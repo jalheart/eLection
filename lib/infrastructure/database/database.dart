@@ -29,12 +29,19 @@ class Grades extends Table {
   IntColumn get order => integer().withDefault(const Constant(0))();
 }
 
-@DriftDatabase(tables: [Settings, Users, Grades])
+class Categories extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text()();
+  TextColumn get shortName => text()();
+  IntColumn get order => integer().withDefault(const Constant(0))();
+}
+
+@DriftDatabase(tables: [Settings, Users, Grades, Categories])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(impl.connect());
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration {
@@ -56,6 +63,9 @@ class AppDatabase extends _$AppDatabase {
         if (from < 6) {
           // Rename table grados to grades
           await m.issueCustomQuery('ALTER TABLE grados RENAME TO grades');
+        }
+        if (from < 7) {
+          await m.createTable(categories);
         }
       },
       beforeOpen: (details) async {
@@ -108,6 +118,42 @@ class AppDatabase extends _$AppDatabase {
                 name: grado['name'] as String,
                 shortName: grado['shortName'] as String,
                 order: Value(grado['order'] as int),
+              ),
+            );
+          }
+        }
+
+        // Populate categories if empty
+        final allCategories = await select(categories).get();
+        if (allCategories.isEmpty) {
+          final defaultCategories = [
+            {'name': 'Personero', 'shortName': 'Per', 'order': 0},
+            {'name': 'Contralor', 'shortName': 'Con', 'order': 1},
+            {'name': 'Representante tercero', 'shortName': 'Rep 3', 'order': 3},
+            {'name': 'Representante cuarto', 'shortName': 'Rep 4', 'order': 4},
+            {'name': 'Representante quinto', 'shortName': 'Rep 5', 'order': 5},
+            {'name': 'Representante sexto', 'shortName': 'Rep 6', 'order': 6},
+            {'name': 'Representante séptimo', 'shortName': 'Rep 7', 'order': 7},
+            {'name': 'Representante octavo', 'shortName': 'Rep 8', 'order': 8},
+            {'name': 'Representante noveno', 'shortName': 'Rep 9', 'order': 9},
+            {
+              'name': 'Representante décimo',
+              'shortName': 'Rep 10',
+              'order': 10,
+            },
+            {
+              'name': 'Representante undécimo',
+              'shortName': 'Rep 11',
+              'order': 11,
+            },
+          ];
+
+          for (final category in defaultCategories) {
+            await into(categories).insert(
+              CategoriesCompanion.insert(
+                name: category['name'] as String,
+                shortName: category['shortName'] as String,
+                order: Value(category['order'] as int),
               ),
             );
           }

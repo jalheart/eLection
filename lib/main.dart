@@ -10,9 +10,14 @@ import 'application/use_cases/get_grados_use_case.dart';
 import 'application/use_cases/save_grado_use_case.dart';
 import 'application/use_cases/delete_grado_use_case.dart';
 import 'application/providers/grados_provider.dart';
+import 'application/providers/categories_provider.dart';
+import 'application/use_cases/get_categories_use_case.dart';
+import 'application/use_cases/save_category_use_case.dart';
+import 'application/use_cases/delete_category_use_case.dart';
 import 'infrastructure/database/adapters/drift_user_repository.dart';
 import 'infrastructure/database/adapters/drift_settings_repository.dart';
 import 'infrastructure/database/adapters/drift_grado_repository.dart';
+import 'infrastructure/database/adapters/drift_category_repository.dart';
 import 'infrastructure/database/database.dart';
 import 'infrastructure/ui/pages/login_page.dart';
 import 'infrastructure/ui/pages/admin_landing_page.dart';
@@ -35,6 +40,9 @@ void main() {
         ProxyProvider<AppDatabase, DriftGradoRepository>(
           update: (context, db, _) => DriftGradoRepository(db),
         ),
+        ProxyProvider<AppDatabase, DriftCategoryRepository>(
+          update: (context, db, _) => DriftCategoryRepository(db),
+        ),
         // Use Cases
         ProxyProvider<DriftUserRepository, LoginUseCase>(
           update: (context, repo, _) => LoginUseCase(repo),
@@ -53,6 +61,15 @@ void main() {
         ),
         ProxyProvider<DriftGradoRepository, DeleteGradoUseCase>(
           update: (context, repo, _) => DeleteGradoUseCase(repo),
+        ),
+        ProxyProvider<DriftCategoryRepository, GetCategoriesUseCase>(
+          update: (context, repo, _) => GetCategoriesUseCase(repo),
+        ),
+        ProxyProvider<DriftCategoryRepository, SaveCategoryUseCase>(
+          update: (context, repo, _) => SaveCategoryUseCase(repo),
+        ),
+        ProxyProvider<DriftCategoryRepository, DeleteCategoryUseCase>(
+          update: (context, repo, _) => DeleteCategoryUseCase(repo),
         ),
         // Providers
         ChangeNotifierProxyProvider2<
@@ -86,6 +103,20 @@ void main() {
           ),
           update: (context, getUC, saveUC, deleteUC, previous) =>
               previous ?? GradosProvider(getUC, saveUC, deleteUC),
+        ),
+        ChangeNotifierProxyProvider3<
+          GetCategoriesUseCase,
+          SaveCategoryUseCase,
+          DeleteCategoryUseCase,
+          CategoriesProvider
+        >(
+          create: (context) => CategoriesProvider(
+            context.read<GetCategoriesUseCase>(),
+            context.read<SaveCategoryUseCase>(),
+            context.read<DeleteCategoryUseCase>(),
+          ),
+          update: (context, getUC, saveUC, deleteUC, previous) =>
+              previous ?? CategoriesProvider(getUC, saveUC, deleteUC),
         ),
       ],
       child: const MyApp(),
