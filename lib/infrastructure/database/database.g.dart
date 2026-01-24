@@ -742,16 +742,306 @@ class UsersCompanion extends UpdateCompanion<User> {
   }
 }
 
+class $GradosTable extends Grados with TableInfo<$GradosTable, Grado> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $GradosTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _shortNameMeta = const VerificationMeta(
+    'shortName',
+  );
+  @override
+  late final GeneratedColumn<String> shortName = GeneratedColumn<String>(
+    'short_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _orderMeta = const VerificationMeta('order');
+  @override
+  late final GeneratedColumn<int> order = GeneratedColumn<int>(
+    'order',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, name, shortName, order];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'grados';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Grado> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('short_name')) {
+      context.handle(
+        _shortNameMeta,
+        shortName.isAcceptableOrUnknown(data['short_name']!, _shortNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_shortNameMeta);
+    }
+    if (data.containsKey('order')) {
+      context.handle(
+        _orderMeta,
+        order.isAcceptableOrUnknown(data['order']!, _orderMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Grado map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Grado(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      shortName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}short_name'],
+      )!,
+      order: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}order'],
+      )!,
+    );
+  }
+
+  @override
+  $GradosTable createAlias(String alias) {
+    return $GradosTable(attachedDatabase, alias);
+  }
+}
+
+class Grado extends DataClass implements Insertable<Grado> {
+  final int id;
+  final String name;
+  final String shortName;
+  final int order;
+  const Grado({
+    required this.id,
+    required this.name,
+    required this.shortName,
+    required this.order,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    map['short_name'] = Variable<String>(shortName);
+    map['order'] = Variable<int>(order);
+    return map;
+  }
+
+  GradosCompanion toCompanion(bool nullToAbsent) {
+    return GradosCompanion(
+      id: Value(id),
+      name: Value(name),
+      shortName: Value(shortName),
+      order: Value(order),
+    );
+  }
+
+  factory Grado.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Grado(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      shortName: serializer.fromJson<String>(json['shortName']),
+      order: serializer.fromJson<int>(json['order']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'shortName': serializer.toJson<String>(shortName),
+      'order': serializer.toJson<int>(order),
+    };
+  }
+
+  Grado copyWith({int? id, String? name, String? shortName, int? order}) =>
+      Grado(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        shortName: shortName ?? this.shortName,
+        order: order ?? this.order,
+      );
+  Grado copyWithCompanion(GradosCompanion data) {
+    return Grado(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      shortName: data.shortName.present ? data.shortName.value : this.shortName,
+      order: data.order.present ? data.order.value : this.order,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Grado(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('shortName: $shortName, ')
+          ..write('order: $order')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, shortName, order);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Grado &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.shortName == this.shortName &&
+          other.order == this.order);
+}
+
+class GradosCompanion extends UpdateCompanion<Grado> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<String> shortName;
+  final Value<int> order;
+  const GradosCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.shortName = const Value.absent(),
+    this.order = const Value.absent(),
+  });
+  GradosCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    required String shortName,
+    this.order = const Value.absent(),
+  }) : name = Value(name),
+       shortName = Value(shortName);
+  static Insertable<Grado> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<String>? shortName,
+    Expression<int>? order,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (shortName != null) 'short_name': shortName,
+      if (order != null) 'order': order,
+    });
+  }
+
+  GradosCompanion copyWith({
+    Value<int>? id,
+    Value<String>? name,
+    Value<String>? shortName,
+    Value<int>? order,
+  }) {
+    return GradosCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      shortName: shortName ?? this.shortName,
+      order: order ?? this.order,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (shortName.present) {
+      map['short_name'] = Variable<String>(shortName.value);
+    }
+    if (order.present) {
+      map['order'] = Variable<int>(order.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GradosCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('shortName: $shortName, ')
+          ..write('order: $order')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $SettingsTable settings = $SettingsTable(this);
   late final $UsersTable users = $UsersTable(this);
+  late final $GradosTable grados = $GradosTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [settings, users];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [settings, users, grados];
 }
 
 typedef $$SettingsTableCreateCompanionBuilder =
@@ -1150,6 +1440,175 @@ typedef $$UsersTableProcessedTableManager =
       User,
       PrefetchHooks Function()
     >;
+typedef $$GradosTableCreateCompanionBuilder =
+    GradosCompanion Function({
+      Value<int> id,
+      required String name,
+      required String shortName,
+      Value<int> order,
+    });
+typedef $$GradosTableUpdateCompanionBuilder =
+    GradosCompanion Function({
+      Value<int> id,
+      Value<String> name,
+      Value<String> shortName,
+      Value<int> order,
+    });
+
+class $$GradosTableFilterComposer
+    extends Composer<_$AppDatabase, $GradosTable> {
+  $$GradosTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get shortName => $composableBuilder(
+    column: $table.shortName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get order => $composableBuilder(
+    column: $table.order,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$GradosTableOrderingComposer
+    extends Composer<_$AppDatabase, $GradosTable> {
+  $$GradosTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get shortName => $composableBuilder(
+    column: $table.shortName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get order => $composableBuilder(
+    column: $table.order,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$GradosTableAnnotationComposer
+    extends Composer<_$AppDatabase, $GradosTable> {
+  $$GradosTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get shortName =>
+      $composableBuilder(column: $table.shortName, builder: (column) => column);
+
+  GeneratedColumn<int> get order =>
+      $composableBuilder(column: $table.order, builder: (column) => column);
+}
+
+class $$GradosTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $GradosTable,
+          Grado,
+          $$GradosTableFilterComposer,
+          $$GradosTableOrderingComposer,
+          $$GradosTableAnnotationComposer,
+          $$GradosTableCreateCompanionBuilder,
+          $$GradosTableUpdateCompanionBuilder,
+          (Grado, BaseReferences<_$AppDatabase, $GradosTable, Grado>),
+          Grado,
+          PrefetchHooks Function()
+        > {
+  $$GradosTableTableManager(_$AppDatabase db, $GradosTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$GradosTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$GradosTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$GradosTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> shortName = const Value.absent(),
+                Value<int> order = const Value.absent(),
+              }) => GradosCompanion(
+                id: id,
+                name: name,
+                shortName: shortName,
+                order: order,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String name,
+                required String shortName,
+                Value<int> order = const Value.absent(),
+              }) => GradosCompanion.insert(
+                id: id,
+                name: name,
+                shortName: shortName,
+                order: order,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$GradosTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $GradosTable,
+      Grado,
+      $$GradosTableFilterComposer,
+      $$GradosTableOrderingComposer,
+      $$GradosTableAnnotationComposer,
+      $$GradosTableCreateCompanionBuilder,
+      $$GradosTableUpdateCompanionBuilder,
+      (Grado, BaseReferences<_$AppDatabase, $GradosTable, Grado>),
+      Grado,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -1158,4 +1617,6 @@ class $AppDatabaseManager {
       $$SettingsTableTableManager(_db, _db.settings);
   $$UsersTableTableManager get users =>
       $$UsersTableTableManager(_db, _db.users);
+  $$GradosTableTableManager get grados =>
+      $$GradosTableTableManager(_db, _db.grados);
 }

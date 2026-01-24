@@ -8,6 +8,7 @@ import 'application/use_cases/login_use_case.dart';
 import 'application/use_cases/get_settings_use_case.dart';
 import 'infrastructure/database/adapters/drift_user_repository.dart';
 import 'infrastructure/database/adapters/drift_settings_repository.dart';
+import 'infrastructure/database/adapters/drift_grado_repository.dart';
 import 'infrastructure/database/database.dart';
 import 'infrastructure/ui/pages/login_page.dart';
 import 'infrastructure/ui/pages/admin_landing_page.dart';
@@ -27,6 +28,9 @@ void main() {
         ProxyProvider<AppDatabase, DriftSettingsRepository>(
           update: (context, db, _) => DriftSettingsRepository(db),
         ),
+        ProxyProvider<AppDatabase, DriftGradoRepository>(
+          update: (context, db, _) => DriftGradoRepository(db),
+        ),
         // Use Cases
         ProxyProvider<DriftUserRepository, LoginUseCase>(
           update: (context, repo, _) => LoginUseCase(repo),
@@ -38,7 +42,11 @@ void main() {
           update: (context, repo, _) => GetSettingsUseCase(repo),
         ),
         // Providers
-        ChangeNotifierProxyProvider2<LoginUseCase, CheckUsernameUseCase, AuthProvider>(
+        ChangeNotifierProxyProvider2<
+          LoginUseCase,
+          CheckUsernameUseCase,
+          AuthProvider
+        >(
           create: (context) => AuthProvider(
             context.read<LoginUseCase>(),
             context.read<CheckUsernameUseCase>(),
@@ -47,7 +55,8 @@ void main() {
               previous ?? AuthProvider(loginUC, checkUC),
         ),
         ChangeNotifierProxyProvider<GetSettingsUseCase, SettingsProvider>(
-          create: (context) => SettingsProvider(context.read<GetSettingsUseCase>()),
+          create: (context) =>
+              SettingsProvider(context.read<GetSettingsUseCase>()),
           update: (context, getSettingsUC, previous) =>
               previous ?? SettingsProvider(getSettingsUC),
         ),
