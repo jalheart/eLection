@@ -134,21 +134,65 @@ class MyApp extends StatelessWidget {
       context.read<SettingsProvider>().loadSettings();
     });
 
-    return MaterialApp(
-      title: 'eLection',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      home: Consumer<AuthProvider>(
-        builder: (context, auth, _) {
-          if (auth.isAuthenticated) {
-            return const AdminLandingPage();
+    return Consumer<SettingsProvider>(
+      builder: (context, settingsProvider, _) {
+        final settings = settingsProvider.settings;
+        Color seedColor = Colors.blue;
+
+        if (settings != null && settings.theme.isNotEmpty) {
+          switch (settings.theme.toLowerCase()) {
+            case 'red':
+            case 'rojo':
+              seedColor = Colors.red;
+              break;
+            case 'green':
+            case 'verde':
+              seedColor = Colors.green;
+              break;
+            case 'orange':
+            case 'naranja':
+              seedColor = Colors.orange;
+              break;
+            case 'purple':
+            case 'morado':
+              seedColor = Colors.deepPurple;
+              break;
+            case 'teal':
+              seedColor = Colors.teal;
+              break;
+            case 'blue':
+            case 'azul':
+            case 'primary':
+            default:
+              seedColor = Colors.blue;
+              break;
           }
-          return const LoginPage();
-        },
-      ),
+        }
+
+        return MaterialApp(
+          title: 'eLection',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: seedColor,
+            ).copyWith(primary: seedColor),
+            useMaterial3: true,
+            scaffoldBackgroundColor: Colors.white,
+            appBarTheme: AppBarTheme(
+              backgroundColor: seedColor,
+              foregroundColor: Colors.white,
+            ),
+          ),
+          home: Consumer<AuthProvider>(
+            builder: (context, auth, _) {
+              if (auth.isAuthenticated) {
+                return const AdminLandingPage();
+              }
+              return const LoginPage();
+            },
+          ),
+        );
+      },
     );
   }
 }
