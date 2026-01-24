@@ -742,11 +742,11 @@ class UsersCompanion extends UpdateCompanion<User> {
   }
 }
 
-class $GradosTable extends Grados with TableInfo<$GradosTable, Grado> {
+class $GradesTable extends Grades with TableInfo<$GradesTable, Grade> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $GradosTable(this.attachedDatabase, [this._alias]);
+  $GradesTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
@@ -796,10 +796,10 @@ class $GradosTable extends Grados with TableInfo<$GradosTable, Grado> {
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'grados';
+  static const String $name = 'grades';
   @override
   VerificationContext validateIntegrity(
-    Insertable<Grado> instance, {
+    Insertable<Grade> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -835,9 +835,9 @@ class $GradosTable extends Grados with TableInfo<$GradosTable, Grado> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Grado map(Map<String, dynamic> data, {String? tablePrefix}) {
+  Grade map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Grado(
+    return Grade(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id'],
@@ -858,17 +858,17 @@ class $GradosTable extends Grados with TableInfo<$GradosTable, Grado> {
   }
 
   @override
-  $GradosTable createAlias(String alias) {
-    return $GradosTable(attachedDatabase, alias);
+  $GradesTable createAlias(String alias) {
+    return $GradesTable(attachedDatabase, alias);
   }
 }
 
-class Grado extends DataClass implements Insertable<Grado> {
+class Grade extends DataClass implements Insertable<Grade> {
   final int id;
   final String name;
   final String shortName;
   final int order;
-  const Grado({
+  const Grade({
     required this.id,
     required this.name,
     required this.shortName,
@@ -884,8 +884,8 @@ class Grado extends DataClass implements Insertable<Grado> {
     return map;
   }
 
-  GradosCompanion toCompanion(bool nullToAbsent) {
-    return GradosCompanion(
+  GradesCompanion toCompanion(bool nullToAbsent) {
+    return GradesCompanion(
       id: Value(id),
       name: Value(name),
       shortName: Value(shortName),
@@ -893,12 +893,12 @@ class Grado extends DataClass implements Insertable<Grado> {
     );
   }
 
-  factory Grado.fromJson(
+  factory Grade.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Grado(
+    return Grade(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       shortName: serializer.fromJson<String>(json['shortName']),
@@ -916,15 +916,15 @@ class Grado extends DataClass implements Insertable<Grado> {
     };
   }
 
-  Grado copyWith({int? id, String? name, String? shortName, int? order}) =>
-      Grado(
+  Grade copyWith({int? id, String? name, String? shortName, int? order}) =>
+      Grade(
         id: id ?? this.id,
         name: name ?? this.name,
         shortName: shortName ?? this.shortName,
         order: order ?? this.order,
       );
-  Grado copyWithCompanion(GradosCompanion data) {
-    return Grado(
+  Grade copyWithCompanion(GradesCompanion data) {
+    return Grade(
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
       shortName: data.shortName.present ? data.shortName.value : this.shortName,
@@ -934,7 +934,7 @@ class Grado extends DataClass implements Insertable<Grado> {
 
   @override
   String toString() {
-    return (StringBuffer('Grado(')
+    return (StringBuffer('Grade(')
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('shortName: $shortName, ')
@@ -948,32 +948,32 @@ class Grado extends DataClass implements Insertable<Grado> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Grado &&
+      (other is Grade &&
           other.id == this.id &&
           other.name == this.name &&
           other.shortName == this.shortName &&
           other.order == this.order);
 }
 
-class GradosCompanion extends UpdateCompanion<Grado> {
+class GradesCompanion extends UpdateCompanion<Grade> {
   final Value<int> id;
   final Value<String> name;
   final Value<String> shortName;
   final Value<int> order;
-  const GradosCompanion({
+  const GradesCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.shortName = const Value.absent(),
     this.order = const Value.absent(),
   });
-  GradosCompanion.insert({
+  GradesCompanion.insert({
     this.id = const Value.absent(),
     required String name,
     required String shortName,
     this.order = const Value.absent(),
   }) : name = Value(name),
        shortName = Value(shortName);
-  static Insertable<Grado> custom({
+  static Insertable<Grade> custom({
     Expression<int>? id,
     Expression<String>? name,
     Expression<String>? shortName,
@@ -987,13 +987,13 @@ class GradosCompanion extends UpdateCompanion<Grado> {
     });
   }
 
-  GradosCompanion copyWith({
+  GradesCompanion copyWith({
     Value<int>? id,
     Value<String>? name,
     Value<String>? shortName,
     Value<int>? order,
   }) {
-    return GradosCompanion(
+    return GradesCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       shortName: shortName ?? this.shortName,
@@ -1021,7 +1021,7 @@ class GradosCompanion extends UpdateCompanion<Grado> {
 
   @override
   String toString() {
-    return (StringBuffer('GradosCompanion(')
+    return (StringBuffer('GradesCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('shortName: $shortName, ')
@@ -1036,12 +1036,12 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $SettingsTable settings = $SettingsTable(this);
   late final $UsersTable users = $UsersTable(this);
-  late final $GradosTable grados = $GradosTable(this);
+  late final $GradesTable grades = $GradesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [settings, users, grados];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [settings, users, grades];
 }
 
 typedef $$SettingsTableCreateCompanionBuilder =
@@ -1440,24 +1440,24 @@ typedef $$UsersTableProcessedTableManager =
       User,
       PrefetchHooks Function()
     >;
-typedef $$GradosTableCreateCompanionBuilder =
-    GradosCompanion Function({
+typedef $$GradesTableCreateCompanionBuilder =
+    GradesCompanion Function({
       Value<int> id,
       required String name,
       required String shortName,
       Value<int> order,
     });
-typedef $$GradosTableUpdateCompanionBuilder =
-    GradosCompanion Function({
+typedef $$GradesTableUpdateCompanionBuilder =
+    GradesCompanion Function({
       Value<int> id,
       Value<String> name,
       Value<String> shortName,
       Value<int> order,
     });
 
-class $$GradosTableFilterComposer
-    extends Composer<_$AppDatabase, $GradosTable> {
-  $$GradosTableFilterComposer({
+class $$GradesTableFilterComposer
+    extends Composer<_$AppDatabase, $GradesTable> {
+  $$GradesTableFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -1485,9 +1485,9 @@ class $$GradosTableFilterComposer
   );
 }
 
-class $$GradosTableOrderingComposer
-    extends Composer<_$AppDatabase, $GradosTable> {
-  $$GradosTableOrderingComposer({
+class $$GradesTableOrderingComposer
+    extends Composer<_$AppDatabase, $GradesTable> {
+  $$GradesTableOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -1515,9 +1515,9 @@ class $$GradosTableOrderingComposer
   );
 }
 
-class $$GradosTableAnnotationComposer
-    extends Composer<_$AppDatabase, $GradosTable> {
-  $$GradosTableAnnotationComposer({
+class $$GradesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $GradesTable> {
+  $$GradesTableAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -1537,39 +1537,39 @@ class $$GradosTableAnnotationComposer
       $composableBuilder(column: $table.order, builder: (column) => column);
 }
 
-class $$GradosTableTableManager
+class $$GradesTableTableManager
     extends
         RootTableManager<
           _$AppDatabase,
-          $GradosTable,
-          Grado,
-          $$GradosTableFilterComposer,
-          $$GradosTableOrderingComposer,
-          $$GradosTableAnnotationComposer,
-          $$GradosTableCreateCompanionBuilder,
-          $$GradosTableUpdateCompanionBuilder,
-          (Grado, BaseReferences<_$AppDatabase, $GradosTable, Grado>),
-          Grado,
+          $GradesTable,
+          Grade,
+          $$GradesTableFilterComposer,
+          $$GradesTableOrderingComposer,
+          $$GradesTableAnnotationComposer,
+          $$GradesTableCreateCompanionBuilder,
+          $$GradesTableUpdateCompanionBuilder,
+          (Grade, BaseReferences<_$AppDatabase, $GradesTable, Grade>),
+          Grade,
           PrefetchHooks Function()
         > {
-  $$GradosTableTableManager(_$AppDatabase db, $GradosTable table)
+  $$GradesTableTableManager(_$AppDatabase db, $GradesTable table)
     : super(
         TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $$GradosTableFilterComposer($db: db, $table: table),
+              $$GradesTableFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              $$GradosTableOrderingComposer($db: db, $table: table),
+              $$GradesTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $$GradosTableAnnotationComposer($db: db, $table: table),
+              $$GradesTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String> shortName = const Value.absent(),
                 Value<int> order = const Value.absent(),
-              }) => GradosCompanion(
+              }) => GradesCompanion(
                 id: id,
                 name: name,
                 shortName: shortName,
@@ -1581,7 +1581,7 @@ class $$GradosTableTableManager
                 required String name,
                 required String shortName,
                 Value<int> order = const Value.absent(),
-              }) => GradosCompanion.insert(
+              }) => GradesCompanion.insert(
                 id: id,
                 name: name,
                 shortName: shortName,
@@ -1595,18 +1595,18 @@ class $$GradosTableTableManager
       );
 }
 
-typedef $$GradosTableProcessedTableManager =
+typedef $$GradesTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
-      $GradosTable,
-      Grado,
-      $$GradosTableFilterComposer,
-      $$GradosTableOrderingComposer,
-      $$GradosTableAnnotationComposer,
-      $$GradosTableCreateCompanionBuilder,
-      $$GradosTableUpdateCompanionBuilder,
-      (Grado, BaseReferences<_$AppDatabase, $GradosTable, Grado>),
-      Grado,
+      $GradesTable,
+      Grade,
+      $$GradesTableFilterComposer,
+      $$GradesTableOrderingComposer,
+      $$GradesTableAnnotationComposer,
+      $$GradesTableCreateCompanionBuilder,
+      $$GradesTableUpdateCompanionBuilder,
+      (Grade, BaseReferences<_$AppDatabase, $GradesTable, Grade>),
+      Grade,
       PrefetchHooks Function()
     >;
 
@@ -1617,6 +1617,6 @@ class $AppDatabaseManager {
       $$SettingsTableTableManager(_db, _db.settings);
   $$UsersTableTableManager get users =>
       $$UsersTableTableManager(_db, _db.users);
-  $$GradosTableTableManager get grados =>
-      $$GradosTableTableManager(_db, _db.grados);
+  $$GradesTableTableManager get grades =>
+      $$GradesTableTableManager(_db, _db.grades);
 }

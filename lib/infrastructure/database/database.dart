@@ -22,19 +22,19 @@ class Users extends Table {
   TextColumn get email => text()();
 }
 
-class Grados extends Table {
+class Grades extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
   TextColumn get shortName => text()();
   IntColumn get order => integer().withDefault(const Constant(0))();
 }
 
-@DriftDatabase(tables: [Settings, Users, Grados])
+@DriftDatabase(tables: [Settings, Users, Grades])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(impl.connect());
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration {
@@ -51,7 +51,11 @@ class AppDatabase extends _$AppDatabase {
           await m.issueCustomQuery('DROP TABLE IF EXISTS todos;');
         }
         if (from < 5) {
-          await m.createTable(grados);
+          await m.createTable(grades);
+        }
+        if (from < 6) {
+          // Rename table grados to grades
+          await m.issueCustomQuery('ALTER TABLE grados RENAME TO grades');
         }
       },
       beforeOpen: (details) async {
@@ -83,10 +87,10 @@ class AppDatabase extends _$AppDatabase {
           );
         }
 
-        // Populate grados if empty
-        final allGrados = await select(grados).get();
-        if (allGrados.isEmpty) {
-          final defaultGrados = [
+        // Populate grades if empty
+        final allGrades = await select(grades).get();
+        if (allGrades.isEmpty) {
+          final defaultGrades = [
             {'name': 'Tercero', 'shortName': '3', 'order': 3},
             {'name': 'Cuarto', 'shortName': '4', 'order': 4},
             {'name': 'Quinto', 'shortName': '5', 'order': 5},
@@ -98,9 +102,9 @@ class AppDatabase extends _$AppDatabase {
             {'name': 'Undécimo', 'shortName': '11', 'order': 11},
           ];
 
-          for (final grado in defaultGrados) {
-            await into(grados).insert(
-              GradosCompanion.insert(
+          for (final grado in defaultGrades) {
+            await into(grades).insert(
+              GradesCompanion.insert(
                 name: grado['name'] as String,
                 shortName: grado['shortName'] as String,
                 order: Value(grado['order'] as int),

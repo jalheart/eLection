@@ -10,7 +10,7 @@ class DriftGradoRepository implements GradoRepository {
 
   @override
   Future<List<domain.Grado>> getAllGrados() async {
-    final query = db.select(db.grados)
+    final query = db.select(db.grades)
       ..orderBy([(t) => OrderingTerm(expression: t.order)]);
     final results = await query.get();
     return results.map(_mapToDomain).toList();
@@ -18,7 +18,7 @@ class DriftGradoRepository implements GradoRepository {
 
   @override
   Future<domain.Grado?> getGradoById(int id) async {
-    final query = db.select(db.grados)..where((t) => t.id.equals(id));
+    final query = db.select(db.grades)..where((t) => t.id.equals(id));
     final result = await query.getSingleOrNull();
     return result != null ? _mapToDomain(result) : null;
   }
@@ -27,17 +27,17 @@ class DriftGradoRepository implements GradoRepository {
   Future<void> saveGrado(domain.Grado grado) async {
     if (grado.id == null) {
       await db
-          .into(db.grados)
+          .into(db.grades)
           .insert(
-            GradosCompanion.insert(
+            GradesCompanion.insert(
               name: grado.name,
               shortName: grado.shortName,
               order: Value(grado.order),
             ),
           );
     } else {
-      await (db.update(db.grados)..where((t) => t.id.equals(grado.id!))).write(
-        GradosCompanion(
+      await (db.update(db.grades)..where((t) => t.id.equals(grado.id!))).write(
+        GradesCompanion(
           name: Value(grado.name),
           shortName: Value(grado.shortName),
           order: Value(grado.order),
@@ -48,10 +48,10 @@ class DriftGradoRepository implements GradoRepository {
 
   @override
   Future<void> deleteGrado(int id) async {
-    await (db.delete(db.grados)..where((t) => t.id.equals(id))).go();
+    await (db.delete(db.grades)..where((t) => t.id.equals(id))).go();
   }
 
-  domain.Grado _mapToDomain(Grado grado) {
+  domain.Grado _mapToDomain(Grade grado) {
     return domain.Grado(
       id: grado.id,
       name: grado.name,
