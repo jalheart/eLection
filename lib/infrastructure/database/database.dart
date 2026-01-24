@@ -76,7 +76,7 @@ class AppDatabase extends _$AppDatabase {
             SettingsCompanion.insert(
               name: 'Escuela prueba',
               slogan: 'Mi escuelita',
-              theme: 'primary',
+              theme: '0xFF2196F3',
               logo: 'sin-logo.png',
               passRequired: true,
             ),

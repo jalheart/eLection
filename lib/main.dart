@@ -140,32 +140,10 @@ class MyApp extends StatelessWidget {
         Color seedColor = Colors.blue;
 
         if (settings != null && settings.theme.isNotEmpty) {
-          switch (settings.theme.toLowerCase()) {
-            case 'red':
-            case 'rojo':
-              seedColor = Colors.red;
-              break;
-            case 'green':
-            case 'verde':
-              seedColor = Colors.green;
-              break;
-            case 'orange':
-            case 'naranja':
-              seedColor = Colors.orange;
-              break;
-            case 'purple':
-            case 'morado':
-              seedColor = Colors.deepPurple;
-              break;
-            case 'teal':
-              seedColor = Colors.teal;
-              break;
-            case 'blue':
-            case 'azul':
-            case 'primary':
-            default:
-              seedColor = Colors.blue;
-              break;
+          try {
+            seedColor = Color(int.parse(settings.theme));
+          } catch (_) {
+            seedColor = Colors.blue;
           }
         }
 
