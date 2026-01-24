@@ -6,6 +6,10 @@ import '../../../application/providers/grados_provider.dart';
 import '../../../domain/entities/grado.dart';
 import '../widgets/admin_layout.dart';
 
+import '../widgets/confirm_delete_dialog.dart';
+import '../widgets/custom_search_bar.dart';
+import '../widgets/grado_form_dialog.dart';
+
 class GradosPage extends StatefulWidget {
   const GradosPage({super.key});
 
@@ -35,132 +39,13 @@ class _GradosPageState extends State<GradosPage> {
   }
 
   void _showGradoForm([Grado? grado]) {
-    final nameController = TextEditingController(text: grado?.name ?? '');
-    final shortNameController = TextEditingController(
-      text: grado?.shortName ?? '',
-    );
-    final orderController = TextEditingController(
-      text: grado?.order.toString() ?? '0',
-    );
-
     showDialog(
       context: context,
-      builder: (context) => Dialog(
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Container(
-            width: 400,
-            padding: EdgeInsets.zero,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Title Bar
-                Container(
-                  height: 48,
-                  width: double.infinity,
-                  color: Theme.of(context).primaryColor,
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    grado == null ? 'NUEVO GRADO' : 'EDITAR GRADO',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    children: [
-                      TextField(
-                        controller: nameController,
-                        decoration: const InputDecoration(
-                          labelText: 'Nombre',
-                          isDense: true,
-                          border: UnderlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      TextField(
-                        controller: shortNameController,
-                        decoration: const InputDecoration(
-                          labelText: 'Nombre Corto',
-                          isDense: true,
-                          border: UnderlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      TextField(
-                        controller: orderController,
-                        decoration: const InputDecoration(
-                          labelText: 'Orden',
-                          isDense: true,
-                          border: UnderlineInputBorder(),
-                        ),
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                        ],
-                      ),
-                      const SizedBox(height: 24),
-                      // Justified Buttons
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                final newGrado = Grado(
-                                  id: grado?.id,
-                                  name: nameController.text,
-                                  shortName: shortNameController.text,
-                                  order:
-                                      int.tryParse(orderController.text) ?? 0,
-                                );
-                                context.read<GradosProvider>().saveGrado(
-                                  newGrado,
-                                );
-                                Navigator.pop(context);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Theme.of(context).primaryColor,
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                elevation: 0,
-                              ),
-                              child: const Text('GUARDAR'),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () => Navigator.pop(context),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.grey,
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                elevation: 0,
-                              ),
-                              child: const Text('CANCELAR'),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+      builder: (context) => GradoFormDialog(
+        grado: grado,
+        onSave: (newGrado) {
+          context.read<GradosProvider>().saveGrado(newGrado);
+        },
       ),
     );
   }
@@ -194,16 +79,8 @@ class _GradosPageState extends State<GradosPage> {
             ),
             const SizedBox(height: 16),
             // Search Bar
-            TextField(
+            CustomSearchBar(
               controller: _filterController,
-              decoration: InputDecoration(
-                labelText: 'Buscar',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                isDense: true,
-              ),
               onChanged: (value) {
                 setState(() {
                   _filterText = value.toLowerCase();
@@ -262,100 +139,13 @@ class _GradosPageState extends State<GradosPage> {
                     onDelete: (grado) {
                       showDialog(
                         context: context,
-                        builder: (context) => Dialog(
-                          backgroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Container(
-                              width: 350,
-                              padding: EdgeInsets.zero,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  // Title Bar
-                                  Container(
-                                    height: 48,
-                                    width: double.infinity,
-                                    color: Theme.of(context).primaryColor,
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                    ),
-                                    alignment: Alignment.centerLeft,
-                                    child: const Text(
-                                      'ELIMINAR GRADO',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                        letterSpacing: 1.2,
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(20.0),
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          '¿Está seguro de eliminar el grado ${grado.name}?',
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        const SizedBox(height: 24),
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                              child: ElevatedButton(
-                                                onPressed: () {
-                                                  provider.deleteGrado(
-                                                    grado.id!,
-                                                  );
-                                                  Navigator.pop(context);
-                                                },
-                                                style: ElevatedButton.styleFrom(
-                                                  backgroundColor:
-                                                      Colors.red.shade700,
-                                                  foregroundColor: Colors.white,
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          8,
-                                                        ),
-                                                  ),
-                                                  elevation: 0,
-                                                ),
-                                                child: const Text('ELIMINAR'),
-                                              ),
-                                            ),
-                                            const SizedBox(width: 12),
-                                            Expanded(
-                                              child: ElevatedButton(
-                                                onPressed: () =>
-                                                    Navigator.pop(context),
-                                                style: ElevatedButton.styleFrom(
-                                                  backgroundColor: Colors.grey,
-                                                  foregroundColor: Colors.white,
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          8,
-                                                        ),
-                                                  ),
-                                                  elevation: 0,
-                                                ),
-                                                child: const Text('CANCELAR'),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                        builder: (context) => ConfirmDeleteDialog(
+                          title: 'ELIMINAR GRADO',
+                          content:
+                              '¿Está seguro de eliminar el grado ${grado.name}?',
+                          onConfirm: () {
+                            provider.deleteGrado(grado.id!);
+                          },
                         ),
                       );
                     },
