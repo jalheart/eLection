@@ -58,4 +58,16 @@ class GradeCategoryProvider with ChangeNotifier {
   Future<List<Grado>> getGradesByCategory(int categoryId) async {
     return await getGradesByCategoryUC.execute(categoryId);
   }
+
+  int getCategoryCountForGrade(int gradeId) {
+    return _assignments
+        .where((a) => (a['grade'] as Grado).id == gradeId)
+        .length;
+  }
+
+  int getGradeCountForCategory(int categoryId) {
+    return _assignments
+        .where((a) => (a['category'] as Category).id == categoryId)
+        .length;
+  }
 }

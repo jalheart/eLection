@@ -38,6 +38,7 @@ class _GradosPageState extends State<GradosPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<GradosProvider>().loadGrados();
+      context.read<GradeCategoryProvider>().loadAssignments();
     });
   }
 
@@ -282,7 +283,19 @@ class GradoDataSource extends DataTableSource {
           Row(
             children: [
               IconButton(
-                icon: const Icon(Icons.category, color: Colors.orange),
+                icon: Consumer<GradeCategoryProvider>(
+                  builder: (context, gcProvider, _) {
+                    final count = gcProvider.getCategoryCountForGrade(
+                      grado.id!,
+                    );
+                    return Badge(
+                      label: Text(count.toString()),
+                      backgroundColor: Colors.orange,
+                      isLabelVisible: count > 0,
+                      child: const Icon(Icons.category, color: Colors.orange),
+                    );
+                  },
+                ),
                 tooltip: 'Gestionar Categorías',
                 onPressed: () => onManageCategories(grado),
               ),
