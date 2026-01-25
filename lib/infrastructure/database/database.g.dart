@@ -1321,6 +1321,231 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
   }
 }
 
+class $GradeCategoriesTable extends GradeCategories
+    with TableInfo<$GradeCategoriesTable, GradeCategory> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $GradeCategoriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _gradeIdMeta = const VerificationMeta(
+    'gradeId',
+  );
+  @override
+  late final GeneratedColumn<int> gradeId = GeneratedColumn<int>(
+    'grade_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES grades (id)',
+    ),
+  );
+  static const VerificationMeta _categoryIdMeta = const VerificationMeta(
+    'categoryId',
+  );
+  @override
+  late final GeneratedColumn<int> categoryId = GeneratedColumn<int>(
+    'category_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES categories (id)',
+    ),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [gradeId, categoryId];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'grade_categories';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<GradeCategory> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('grade_id')) {
+      context.handle(
+        _gradeIdMeta,
+        gradeId.isAcceptableOrUnknown(data['grade_id']!, _gradeIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_gradeIdMeta);
+    }
+    if (data.containsKey('category_id')) {
+      context.handle(
+        _categoryIdMeta,
+        categoryId.isAcceptableOrUnknown(data['category_id']!, _categoryIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_categoryIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {gradeId, categoryId};
+  @override
+  GradeCategory map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return GradeCategory(
+      gradeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}grade_id'],
+      )!,
+      categoryId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}category_id'],
+      )!,
+    );
+  }
+
+  @override
+  $GradeCategoriesTable createAlias(String alias) {
+    return $GradeCategoriesTable(attachedDatabase, alias);
+  }
+}
+
+class GradeCategory extends DataClass implements Insertable<GradeCategory> {
+  final int gradeId;
+  final int categoryId;
+  const GradeCategory({required this.gradeId, required this.categoryId});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['grade_id'] = Variable<int>(gradeId);
+    map['category_id'] = Variable<int>(categoryId);
+    return map;
+  }
+
+  GradeCategoriesCompanion toCompanion(bool nullToAbsent) {
+    return GradeCategoriesCompanion(
+      gradeId: Value(gradeId),
+      categoryId: Value(categoryId),
+    );
+  }
+
+  factory GradeCategory.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return GradeCategory(
+      gradeId: serializer.fromJson<int>(json['gradeId']),
+      categoryId: serializer.fromJson<int>(json['categoryId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'gradeId': serializer.toJson<int>(gradeId),
+      'categoryId': serializer.toJson<int>(categoryId),
+    };
+  }
+
+  GradeCategory copyWith({int? gradeId, int? categoryId}) => GradeCategory(
+    gradeId: gradeId ?? this.gradeId,
+    categoryId: categoryId ?? this.categoryId,
+  );
+  GradeCategory copyWithCompanion(GradeCategoriesCompanion data) {
+    return GradeCategory(
+      gradeId: data.gradeId.present ? data.gradeId.value : this.gradeId,
+      categoryId: data.categoryId.present
+          ? data.categoryId.value
+          : this.categoryId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GradeCategory(')
+          ..write('gradeId: $gradeId, ')
+          ..write('categoryId: $categoryId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(gradeId, categoryId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is GradeCategory &&
+          other.gradeId == this.gradeId &&
+          other.categoryId == this.categoryId);
+}
+
+class GradeCategoriesCompanion extends UpdateCompanion<GradeCategory> {
+  final Value<int> gradeId;
+  final Value<int> categoryId;
+  final Value<int> rowid;
+  const GradeCategoriesCompanion({
+    this.gradeId = const Value.absent(),
+    this.categoryId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  GradeCategoriesCompanion.insert({
+    required int gradeId,
+    required int categoryId,
+    this.rowid = const Value.absent(),
+  }) : gradeId = Value(gradeId),
+       categoryId = Value(categoryId);
+  static Insertable<GradeCategory> custom({
+    Expression<int>? gradeId,
+    Expression<int>? categoryId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (gradeId != null) 'grade_id': gradeId,
+      if (categoryId != null) 'category_id': categoryId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  GradeCategoriesCompanion copyWith({
+    Value<int>? gradeId,
+    Value<int>? categoryId,
+    Value<int>? rowid,
+  }) {
+    return GradeCategoriesCompanion(
+      gradeId: gradeId ?? this.gradeId,
+      categoryId: categoryId ?? this.categoryId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (gradeId.present) {
+      map['grade_id'] = Variable<int>(gradeId.value);
+    }
+    if (categoryId.present) {
+      map['category_id'] = Variable<int>(categoryId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GradeCategoriesCompanion(')
+          ..write('gradeId: $gradeId, ')
+          ..write('categoryId: $categoryId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1328,6 +1553,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $UsersTable users = $UsersTable(this);
   late final $GradesTable grades = $GradesTable(this);
   late final $CategoriesTable categories = $CategoriesTable(this);
+  late final $GradeCategoriesTable gradeCategories = $GradeCategoriesTable(
+    this,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1337,6 +1565,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     users,
     grades,
     categories,
+    gradeCategories,
   ];
 }
 
@@ -1751,6 +1980,31 @@ typedef $$GradesTableUpdateCompanionBuilder =
       Value<int> order,
     });
 
+final class $$GradesTableReferences
+    extends BaseReferences<_$AppDatabase, $GradesTable, Grade> {
+  $$GradesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$GradeCategoriesTable, List<GradeCategory>>
+  _gradeCategoriesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.gradeCategories,
+    aliasName: $_aliasNameGenerator(db.grades.id, db.gradeCategories.gradeId),
+  );
+
+  $$GradeCategoriesTableProcessedTableManager get gradeCategoriesRefs {
+    final manager = $$GradeCategoriesTableTableManager(
+      $_db,
+      $_db.gradeCategories,
+    ).filter((f) => f.gradeId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _gradeCategoriesRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
 class $$GradesTableFilterComposer
     extends Composer<_$AppDatabase, $GradesTable> {
   $$GradesTableFilterComposer({
@@ -1779,6 +2033,31 @@ class $$GradesTableFilterComposer
     column: $table.order,
     builder: (column) => ColumnFilters(column),
   );
+
+  Expression<bool> gradeCategoriesRefs(
+    Expression<bool> Function($$GradeCategoriesTableFilterComposer f) f,
+  ) {
+    final $$GradeCategoriesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.gradeCategories,
+      getReferencedColumn: (t) => t.gradeId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GradeCategoriesTableFilterComposer(
+            $db: $db,
+            $table: $db.gradeCategories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$GradesTableOrderingComposer
@@ -1831,6 +2110,31 @@ class $$GradesTableAnnotationComposer
 
   GeneratedColumn<int> get order =>
       $composableBuilder(column: $table.order, builder: (column) => column);
+
+  Expression<T> gradeCategoriesRefs<T extends Object>(
+    Expression<T> Function($$GradeCategoriesTableAnnotationComposer a) f,
+  ) {
+    final $$GradeCategoriesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.gradeCategories,
+      getReferencedColumn: (t) => t.gradeId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GradeCategoriesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.gradeCategories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$GradesTableTableManager
@@ -1844,9 +2148,9 @@ class $$GradesTableTableManager
           $$GradesTableAnnotationComposer,
           $$GradesTableCreateCompanionBuilder,
           $$GradesTableUpdateCompanionBuilder,
-          (Grade, BaseReferences<_$AppDatabase, $GradesTable, Grade>),
+          (Grade, $$GradesTableReferences),
           Grade,
-          PrefetchHooks Function()
+          PrefetchHooks Function({bool gradeCategoriesRefs})
         > {
   $$GradesTableTableManager(_$AppDatabase db, $GradesTable table)
     : super(
@@ -1884,9 +2188,42 @@ class $$GradesTableTableManager
                 order: order,
               ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map(
+                (e) =>
+                    (e.readTable(table), $$GradesTableReferences(db, table, e)),
+              )
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({gradeCategoriesRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (gradeCategoriesRefs) db.gradeCategories,
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (gradeCategoriesRefs)
+                    await $_getPrefetchedData<
+                      Grade,
+                      $GradesTable,
+                      GradeCategory
+                    >(
+                      currentTable: table,
+                      referencedTable: $$GradesTableReferences
+                          ._gradeCategoriesRefsTable(db),
+                      managerFromTypedResult: (p0) => $$GradesTableReferences(
+                        db,
+                        table,
+                        p0,
+                      ).gradeCategoriesRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where((e) => e.gradeId == item.id),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
         ),
       );
 }
@@ -1901,9 +2238,9 @@ typedef $$GradesTableProcessedTableManager =
       $$GradesTableAnnotationComposer,
       $$GradesTableCreateCompanionBuilder,
       $$GradesTableUpdateCompanionBuilder,
-      (Grade, BaseReferences<_$AppDatabase, $GradesTable, Grade>),
+      (Grade, $$GradesTableReferences),
       Grade,
-      PrefetchHooks Function()
+      PrefetchHooks Function({bool gradeCategoriesRefs})
     >;
 typedef $$CategoriesTableCreateCompanionBuilder =
     CategoriesCompanion Function({
@@ -1919,6 +2256,34 @@ typedef $$CategoriesTableUpdateCompanionBuilder =
       Value<String> shortName,
       Value<int> order,
     });
+
+final class $$CategoriesTableReferences
+    extends BaseReferences<_$AppDatabase, $CategoriesTable, Category> {
+  $$CategoriesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$GradeCategoriesTable, List<GradeCategory>>
+  _gradeCategoriesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.gradeCategories,
+    aliasName: $_aliasNameGenerator(
+      db.categories.id,
+      db.gradeCategories.categoryId,
+    ),
+  );
+
+  $$GradeCategoriesTableProcessedTableManager get gradeCategoriesRefs {
+    final manager = $$GradeCategoriesTableTableManager(
+      $_db,
+      $_db.gradeCategories,
+    ).filter((f) => f.categoryId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _gradeCategoriesRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
 
 class $$CategoriesTableFilterComposer
     extends Composer<_$AppDatabase, $CategoriesTable> {
@@ -1948,6 +2313,31 @@ class $$CategoriesTableFilterComposer
     column: $table.order,
     builder: (column) => ColumnFilters(column),
   );
+
+  Expression<bool> gradeCategoriesRefs(
+    Expression<bool> Function($$GradeCategoriesTableFilterComposer f) f,
+  ) {
+    final $$GradeCategoriesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.gradeCategories,
+      getReferencedColumn: (t) => t.categoryId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GradeCategoriesTableFilterComposer(
+            $db: $db,
+            $table: $db.gradeCategories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$CategoriesTableOrderingComposer
@@ -2000,6 +2390,31 @@ class $$CategoriesTableAnnotationComposer
 
   GeneratedColumn<int> get order =>
       $composableBuilder(column: $table.order, builder: (column) => column);
+
+  Expression<T> gradeCategoriesRefs<T extends Object>(
+    Expression<T> Function($$GradeCategoriesTableAnnotationComposer a) f,
+  ) {
+    final $$GradeCategoriesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.gradeCategories,
+      getReferencedColumn: (t) => t.categoryId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GradeCategoriesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.gradeCategories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$CategoriesTableTableManager
@@ -2013,9 +2428,9 @@ class $$CategoriesTableTableManager
           $$CategoriesTableAnnotationComposer,
           $$CategoriesTableCreateCompanionBuilder,
           $$CategoriesTableUpdateCompanionBuilder,
-          (Category, BaseReferences<_$AppDatabase, $CategoriesTable, Category>),
+          (Category, $$CategoriesTableReferences),
           Category,
-          PrefetchHooks Function()
+          PrefetchHooks Function({bool gradeCategoriesRefs})
         > {
   $$CategoriesTableTableManager(_$AppDatabase db, $CategoriesTable table)
     : super(
@@ -2053,9 +2468,45 @@ class $$CategoriesTableTableManager
                 order: order,
               ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$CategoriesTableReferences(db, table, e),
+                ),
+              )
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({gradeCategoriesRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (gradeCategoriesRefs) db.gradeCategories,
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (gradeCategoriesRefs)
+                    await $_getPrefetchedData<
+                      Category,
+                      $CategoriesTable,
+                      GradeCategory
+                    >(
+                      currentTable: table,
+                      referencedTable: $$CategoriesTableReferences
+                          ._gradeCategoriesRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$CategoriesTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).gradeCategoriesRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where((e) => e.categoryId == item.id),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
         ),
       );
 }
@@ -2070,9 +2521,369 @@ typedef $$CategoriesTableProcessedTableManager =
       $$CategoriesTableAnnotationComposer,
       $$CategoriesTableCreateCompanionBuilder,
       $$CategoriesTableUpdateCompanionBuilder,
-      (Category, BaseReferences<_$AppDatabase, $CategoriesTable, Category>),
+      (Category, $$CategoriesTableReferences),
       Category,
-      PrefetchHooks Function()
+      PrefetchHooks Function({bool gradeCategoriesRefs})
+    >;
+typedef $$GradeCategoriesTableCreateCompanionBuilder =
+    GradeCategoriesCompanion Function({
+      required int gradeId,
+      required int categoryId,
+      Value<int> rowid,
+    });
+typedef $$GradeCategoriesTableUpdateCompanionBuilder =
+    GradeCategoriesCompanion Function({
+      Value<int> gradeId,
+      Value<int> categoryId,
+      Value<int> rowid,
+    });
+
+final class $$GradeCategoriesTableReferences
+    extends
+        BaseReferences<_$AppDatabase, $GradeCategoriesTable, GradeCategory> {
+  $$GradeCategoriesTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $GradesTable _gradeIdTable(_$AppDatabase db) => db.grades.createAlias(
+    $_aliasNameGenerator(db.gradeCategories.gradeId, db.grades.id),
+  );
+
+  $$GradesTableProcessedTableManager get gradeId {
+    final $_column = $_itemColumn<int>('grade_id')!;
+
+    final manager = $$GradesTableTableManager(
+      $_db,
+      $_db.grades,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_gradeIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $CategoriesTable _categoryIdTable(_$AppDatabase db) =>
+      db.categories.createAlias(
+        $_aliasNameGenerator(db.gradeCategories.categoryId, db.categories.id),
+      );
+
+  $$CategoriesTableProcessedTableManager get categoryId {
+    final $_column = $_itemColumn<int>('category_id')!;
+
+    final manager = $$CategoriesTableTableManager(
+      $_db,
+      $_db.categories,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_categoryIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$GradeCategoriesTableFilterComposer
+    extends Composer<_$AppDatabase, $GradeCategoriesTable> {
+  $$GradeCategoriesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  $$GradesTableFilterComposer get gradeId {
+    final $$GradesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.gradeId,
+      referencedTable: $db.grades,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GradesTableFilterComposer(
+            $db: $db,
+            $table: $db.grades,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$CategoriesTableFilterComposer get categoryId {
+    final $$CategoriesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.categoryId,
+      referencedTable: $db.categories,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CategoriesTableFilterComposer(
+            $db: $db,
+            $table: $db.categories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$GradeCategoriesTableOrderingComposer
+    extends Composer<_$AppDatabase, $GradeCategoriesTable> {
+  $$GradeCategoriesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  $$GradesTableOrderingComposer get gradeId {
+    final $$GradesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.gradeId,
+      referencedTable: $db.grades,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GradesTableOrderingComposer(
+            $db: $db,
+            $table: $db.grades,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$CategoriesTableOrderingComposer get categoryId {
+    final $$CategoriesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.categoryId,
+      referencedTable: $db.categories,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CategoriesTableOrderingComposer(
+            $db: $db,
+            $table: $db.categories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$GradeCategoriesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $GradeCategoriesTable> {
+  $$GradeCategoriesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  $$GradesTableAnnotationComposer get gradeId {
+    final $$GradesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.gradeId,
+      referencedTable: $db.grades,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GradesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.grades,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$CategoriesTableAnnotationComposer get categoryId {
+    final $$CategoriesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.categoryId,
+      referencedTable: $db.categories,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CategoriesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.categories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$GradeCategoriesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $GradeCategoriesTable,
+          GradeCategory,
+          $$GradeCategoriesTableFilterComposer,
+          $$GradeCategoriesTableOrderingComposer,
+          $$GradeCategoriesTableAnnotationComposer,
+          $$GradeCategoriesTableCreateCompanionBuilder,
+          $$GradeCategoriesTableUpdateCompanionBuilder,
+          (GradeCategory, $$GradeCategoriesTableReferences),
+          GradeCategory,
+          PrefetchHooks Function({bool gradeId, bool categoryId})
+        > {
+  $$GradeCategoriesTableTableManager(
+    _$AppDatabase db,
+    $GradeCategoriesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$GradeCategoriesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$GradeCategoriesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$GradeCategoriesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> gradeId = const Value.absent(),
+                Value<int> categoryId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => GradeCategoriesCompanion(
+                gradeId: gradeId,
+                categoryId: categoryId,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required int gradeId,
+                required int categoryId,
+                Value<int> rowid = const Value.absent(),
+              }) => GradeCategoriesCompanion.insert(
+                gradeId: gradeId,
+                categoryId: categoryId,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$GradeCategoriesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({gradeId = false, categoryId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (gradeId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.gradeId,
+                                referencedTable:
+                                    $$GradeCategoriesTableReferences
+                                        ._gradeIdTable(db),
+                                referencedColumn:
+                                    $$GradeCategoriesTableReferences
+                                        ._gradeIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+                    if (categoryId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.categoryId,
+                                referencedTable:
+                                    $$GradeCategoriesTableReferences
+                                        ._categoryIdTable(db),
+                                referencedColumn:
+                                    $$GradeCategoriesTableReferences
+                                        ._categoryIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$GradeCategoriesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $GradeCategoriesTable,
+      GradeCategory,
+      $$GradeCategoriesTableFilterComposer,
+      $$GradeCategoriesTableOrderingComposer,
+      $$GradeCategoriesTableAnnotationComposer,
+      $$GradeCategoriesTableCreateCompanionBuilder,
+      $$GradeCategoriesTableUpdateCompanionBuilder,
+      (GradeCategory, $$GradeCategoriesTableReferences),
+      GradeCategory,
+      PrefetchHooks Function({bool gradeId, bool categoryId})
     >;
 
 class $AppDatabaseManager {
@@ -2086,4 +2897,6 @@ class $AppDatabaseManager {
       $$GradesTableTableManager(_db, _db.grades);
   $$CategoriesTableTableManager get categories =>
       $$CategoriesTableTableManager(_db, _db.categories);
+  $$GradeCategoriesTableTableManager get gradeCategories =>
+      $$GradeCategoriesTableTableManager(_db, _db.gradeCategories);
 }

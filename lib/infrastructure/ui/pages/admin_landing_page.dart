@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../widgets/admin_layout.dart';
 import 'grados_page.dart';
 import 'categories_page.dart';
+import 'grade_category_page.dart';
 
 class AdminLandingPage extends StatelessWidget {
   const AdminLandingPage({super.key});
@@ -63,9 +64,17 @@ class AdminLandingPage extends StatelessWidget {
                     );
                   },
                 ),
-                const _DashboardCard(
+                _DashboardCard(
                   image: 'assets/images/course-categories.png',
                   label: 'Categorías/Grados',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const GradeCategoryPage(),
+                      ),
+                    );
+                  },
                 ),
                 const _DashboardCard(
                   image: 'assets/images/candidates.png',

@@ -36,12 +36,12 @@ class Categories extends Table {
   IntColumn get order => integer().withDefault(const Constant(0))();
 }
 
-@DriftDatabase(tables: [Settings, Users, Grades, Categories])
+@DriftDatabase(tables: [Settings, Users, Grades, Categories, GradeCategories])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(impl.connect());
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration {
@@ -66,6 +66,9 @@ class AppDatabase extends _$AppDatabase {
         }
         if (from < 7) {
           await m.createTable(categories);
+        }
+        if (from < 8) {
+          await m.createTable(gradeCategories);
         }
       },
       beforeOpen: (details) async {
@@ -158,7 +161,62 @@ class AppDatabase extends _$AppDatabase {
             );
           }
         }
+
+        // Populate grade_categories if empty
+        final allGradeCategories = await select(gradeCategories).get();
+        if (allGradeCategories.isEmpty) {
+          final gradesList = await select(grades).get();
+          final categoriesList = await select(categories).get();
+
+          final personero = categoriesList.firstWhere(
+            (c) => c.name == 'Personero',
+          );
+          final contralor = categoriesList.firstWhere(
+            (c) => c.name == 'Contralor',
+          );
+
+          for (final grade in gradesList) {
+            // All grades have Personero and Contralor
+            await into(gradeCategories).insert(
+              GradeCategoriesCompanion.insert(
+                gradeId: grade.id,
+                categoryId: personero.id,
+              ),
+            );
+            await into(gradeCategories).insert(
+              GradeCategoriesCompanion.insert(
+                gradeId: grade.id,
+                categoryId: contralor.id,
+              ),
+            );
+
+            // Specific representative for each grade
+            try {
+              final representative = categoriesList.firstWhere(
+                (c) =>
+                    c.name.toLowerCase().contains('representante') &&
+                    c.name.toLowerCase().contains(grade.name.toLowerCase()),
+              );
+              await into(gradeCategories).insert(
+                GradeCategoriesCompanion.insert(
+                  gradeId: grade.id,
+                  categoryId: representative.id,
+                ),
+              );
+            } catch (e) {
+              // No representative found for this grade
+            }
+          }
+        }
       },
     );
   }
+}
+
+class GradeCategories extends Table {
+  IntColumn get gradeId => integer().references(Grades, #id)();
+  IntColumn get categoryId => integer().references(Categories, #id)();
+
+  @override
+  Set<Column> get primaryKey => {gradeId, categoryId};
 }

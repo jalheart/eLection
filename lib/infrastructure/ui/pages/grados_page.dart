@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../application/providers/grados_provider.dart';
+import '../../../application/providers/categories_provider.dart';
+import '../../../application/providers/grade_category_provider.dart';
 import '../../../domain/entities/grado.dart';
+import '../../../domain/entities/category.dart';
 import '../widgets/admin_layout.dart';
 
 import '../widgets/confirm_delete_dialog.dart';
@@ -36,6 +39,13 @@ class _GradosPageState extends State<GradosPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<GradosProvider>().loadGrados();
     });
+  }
+
+  void _showManageCategoriesDialog(Grado grado) {
+    showDialog(
+      context: context,
+      builder: (context) => _ManageCategoriesDialog(grado: grado),
+    );
   }
 
   void _showGradoForm([Grado? grado]) {
@@ -136,6 +146,7 @@ class _GradosPageState extends State<GradosPage> {
                     grados: filteredGrados,
                     context: context,
                     onEdit: _showGradoForm,
+                    onManageCategories: _showManageCategoriesDialog,
                     onDelete: (grado) {
                       showDialog(
                         context: context,
@@ -242,12 +253,14 @@ class GradoDataSource extends DataTableSource {
   final List<Grado> grados;
   final BuildContext context;
   final Function(Grado) onEdit;
+  final Function(Grado) onManageCategories;
   final Function(Grado) onDelete;
 
   GradoDataSource({
     required this.grados,
     required this.context,
     required this.onEdit,
+    required this.onManageCategories,
     required this.onDelete,
   });
 
@@ -268,6 +281,11 @@ class GradoDataSource extends DataTableSource {
         DataCell(
           Row(
             children: [
+              IconButton(
+                icon: const Icon(Icons.category, color: Colors.orange),
+                tooltip: 'Gestionar Categorías',
+                onPressed: () => onManageCategories(grado),
+              ),
               IconButton(
                 icon: const Icon(Icons.edit, color: Colors.blue),
                 onPressed: () => onEdit(grado),
@@ -291,4 +309,147 @@ class GradoDataSource extends DataTableSource {
 
   @override
   int get selectedRowCount => 0;
+}
+
+class _ManageCategoriesDialog extends StatefulWidget {
+  final Grado grado;
+  const _ManageCategoriesDialog({required this.grado});
+
+  @override
+  State<_ManageCategoriesDialog> createState() =>
+      _ManageCategoriesDialogState();
+}
+
+class _ManageCategoriesDialogState extends State<_ManageCategoriesDialog> {
+  List<Category> _assignedCategories = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAssignedCategories();
+  }
+
+  Future<void> _loadAssignedCategories() async {
+    setState(() => _isLoading = true);
+    final categories = await context
+        .read<GradeCategoryProvider>()
+        .getCategoriesByGrade(widget.grado.id!);
+    setState(() {
+      _assignedCategories = categories;
+      _isLoading = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final allCategories = context.watch<CategoriesProvider>().categories;
+
+    return Dialog(
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          width: 400,
+          padding: EdgeInsets.zero,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                height: 48,
+                width: double.infinity,
+                color: Theme.of(context).primaryColor,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'CATEGORÍAS PARA ${widget.grado.name.toUpperCase()}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: _isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text(
+                            'Seleccione las categorías asignadas:',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(maxHeight: 300),
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: allCategories.length,
+                              itemBuilder: (context, index) {
+                                final category = allCategories[index];
+                                final isAssigned = _assignedCategories.any(
+                                  (c) => c.id == category.id,
+                                );
+
+                                return CheckboxListTile(
+                                  title: Text(
+                                    category.name,
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                  value: isAssigned,
+                                  dense: true,
+                                  onChanged: (bool? value) async {
+                                    if (value == true) {
+                                      await context
+                                          .read<GradeCategoryProvider>()
+                                          .assign(
+                                            widget.grado.id!,
+                                            category.id!,
+                                          );
+                                    } else {
+                                      await context
+                                          .read<GradeCategoryProvider>()
+                                          .unassign(
+                                            widget.grado.id!,
+                                            category.id!,
+                                          );
+                                    }
+                                    _loadAssignedCategories();
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () => Navigator.pop(context),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Theme.of(context).primaryColor,
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                elevation: 0,
+                              ),
+                              child: const Text('CERRAR'),
+                            ),
+                          ),
+                        ],
+                      ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

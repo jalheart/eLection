@@ -18,6 +18,13 @@ import 'infrastructure/database/adapters/drift_user_repository.dart';
 import 'infrastructure/database/adapters/drift_settings_repository.dart';
 import 'infrastructure/database/adapters/drift_grado_repository.dart';
 import 'infrastructure/database/adapters/drift_category_repository.dart';
+import 'infrastructure/database/adapters/drift_grade_category_repository.dart';
+import 'application/use_cases/get_categories_by_grade_use_case.dart';
+import 'application/use_cases/get_grades_by_category_use_case.dart';
+import 'application/use_cases/assign_category_to_grade_use_case.dart';
+import 'application/use_cases/unassign_category_from_grade_use_case.dart';
+import 'application/use_cases/get_all_assignments_use_case.dart';
+import 'application/providers/grade_category_provider.dart';
 import 'infrastructure/database/database.dart';
 import 'infrastructure/ui/pages/login_page.dart';
 import 'infrastructure/ui/pages/admin_landing_page.dart';
@@ -42,6 +49,9 @@ void main() {
         ),
         ProxyProvider<AppDatabase, DriftCategoryRepository>(
           update: (context, db, _) => DriftCategoryRepository(db),
+        ),
+        ProxyProvider<AppDatabase, DriftGradeCategoryRepository>(
+          update: (context, db, _) => DriftGradeCategoryRepository(db),
         ),
         // Use Cases
         ProxyProvider<DriftUserRepository, LoginUseCase>(
@@ -70,6 +80,24 @@ void main() {
         ),
         ProxyProvider<DriftCategoryRepository, DeleteCategoryUseCase>(
           update: (context, repo, _) => DeleteCategoryUseCase(repo),
+        ),
+        ProxyProvider<
+          DriftGradeCategoryRepository,
+          GetCategoriesByGradeUseCase
+        >(update: (context, repo, _) => GetCategoriesByGradeUseCase(repo)),
+        ProxyProvider<DriftGradeCategoryRepository, GetGradesByCategoryUseCase>(
+          update: (context, repo, _) => GetGradesByCategoryUseCase(repo),
+        ),
+        ProxyProvider<
+          DriftGradeCategoryRepository,
+          AssignCategoryToGradeUseCase
+        >(update: (context, repo, _) => AssignCategoryToGradeUseCase(repo)),
+        ProxyProvider<
+          DriftGradeCategoryRepository,
+          UnassignCategoryFromGradeUseCase
+        >(update: (context, repo, _) => UnassignCategoryFromGradeUseCase(repo)),
+        ProxyProvider<DriftGradeCategoryRepository, GetAllAssignmentsUseCase>(
+          update: (context, repo, _) => GetAllAssignmentsUseCase(repo),
         ),
         // Providers
         ChangeNotifierProxyProvider2<
@@ -117,6 +145,40 @@ void main() {
           ),
           update: (context, getUC, saveUC, deleteUC, previous) =>
               previous ?? CategoriesProvider(getUC, saveUC, deleteUC),
+        ),
+        ChangeNotifierProxyProvider5<
+          GetCategoriesByGradeUseCase,
+          GetGradesByCategoryUseCase,
+          AssignCategoryToGradeUseCase,
+          UnassignCategoryFromGradeUseCase,
+          GetAllAssignmentsUseCase,
+          GradeCategoryProvider
+        >(
+          create: (context) => GradeCategoryProvider(
+            context.read<GetCategoriesByGradeUseCase>(),
+            context.read<GetGradesByCategoryUseCase>(),
+            context.read<AssignCategoryToGradeUseCase>(),
+            context.read<UnassignCategoryFromGradeUseCase>(),
+            context.read<GetAllAssignmentsUseCase>(),
+          ),
+          update:
+              (
+                context,
+                getCatUC,
+                getGradoUC,
+                assignUC,
+                unassignUC,
+                getAllUC,
+                previous,
+              ) =>
+                  previous ??
+                  GradeCategoryProvider(
+                    getCatUC,
+                    getGradoUC,
+                    assignUC,
+                    unassignUC,
+                    getAllUC,
+                  ),
         ),
       ],
       child: const MyApp(),
