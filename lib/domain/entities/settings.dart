@@ -5,6 +5,7 @@ class Settings {
   final String theme;
   final String logo;
   final bool passRequired;
+  final String language;
 
   Settings({
     required this.id,
@@ -13,5 +14,6 @@ class Settings {
     required this.theme,
     required this.logo,
     required this.passRequired,
+    required this.language,
   });
 }

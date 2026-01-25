@@ -16,7 +16,9 @@ class DriftSettingsRepository implements SettingsRepository {
 
   @override
   Future<void> updateSettings(domain.Settings settings) async {
-    await db.update(db.settings).replace(
+    await db
+        .update(db.settings)
+        .replace(
           SettingsCompanion(
             id: Value(settings.id),
             name: Value(settings.name),
@@ -24,6 +26,7 @@ class DriftSettingsRepository implements SettingsRepository {
             theme: Value(settings.theme),
             logo: Value(settings.logo),
             passRequired: Value(settings.passRequired),
+            language: Value(settings.language),
           ),
         );
   }
@@ -36,6 +39,7 @@ class DriftSettingsRepository implements SettingsRepository {
       theme: setting.theme,
       logo: setting.logo,
       passRequired: setting.passRequired,
+      language: setting.language,
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/l10n/app_localizations.dart';
 
 class ConfirmDeleteDialog extends StatelessWidget {
   final String title;
@@ -14,6 +15,7 @@ class ConfirmDeleteDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Dialog(
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -63,7 +65,7 @@ class ConfirmDeleteDialog extends StatelessWidget {
                               ),
                               elevation: 0,
                             ),
-                            child: const Text('ELIMINAR'),
+                            child: Text(l10n.delete.toUpperCase()),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -78,7 +80,7 @@ class ConfirmDeleteDialog extends StatelessWidget {
                               ),
                               elevation: 0,
                             ),
-                            child: const Text('CANCELAR'),
+                            child: Text(l10n.cancel.toUpperCase()),
                           ),
                         ),
                       ],

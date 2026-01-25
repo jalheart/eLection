@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
 import '../../../domain/entities/category.dart';
 
@@ -39,6 +40,7 @@ class _CategoryFormDialogState extends State<CategoryFormDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Dialog(
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -58,8 +60,8 @@ class _CategoryFormDialogState extends State<CategoryFormDialog> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   widget.category == null
-                      ? 'NUEVA CATEGORÍA'
-                      : 'EDITAR CATEGORÍA',
+                      ? l10n.newCategory.toUpperCase()
+                      : l10n.editCategory.toUpperCase(),
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 12,
@@ -74,28 +76,28 @@ class _CategoryFormDialogState extends State<CategoryFormDialog> {
                   children: [
                     TextField(
                       controller: _nameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Nombre',
+                      decoration: InputDecoration(
+                        labelText: l10n.name,
                         isDense: true,
-                        border: UnderlineInputBorder(),
+                        border: const UnderlineInputBorder(),
                       ),
                     ),
                     const SizedBox(height: 16),
                     TextField(
                       controller: _shortNameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Nombre Corto',
+                      decoration: InputDecoration(
+                        labelText: l10n.shortName,
                         isDense: true,
-                        border: UnderlineInputBorder(),
+                        border: const UnderlineInputBorder(),
                       ),
                     ),
                     const SizedBox(height: 16),
                     TextField(
                       controller: _orderController,
-                      decoration: const InputDecoration(
-                        labelText: 'Orden',
+                      decoration: InputDecoration(
+                        labelText: l10n.order,
                         isDense: true,
-                        border: UnderlineInputBorder(),
+                        border: const UnderlineInputBorder(),
                       ),
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -123,7 +125,7 @@ class _CategoryFormDialogState extends State<CategoryFormDialog> {
                               ),
                               elevation: 0,
                             ),
-                            child: const Text('GUARDAR'),
+                            child: Text(l10n.save.toUpperCase()),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -138,7 +140,7 @@ class _CategoryFormDialogState extends State<CategoryFormDialog> {
                               ),
                               elevation: 0,
                             ),
-                            child: const Text('CANCELAR'),
+                            child: Text(l10n.cancel.toUpperCase()),
                           ),
                         ),
                       ],

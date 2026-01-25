@@ -12,6 +12,7 @@ class Settings extends Table {
   TextColumn get theme => text()();
   TextColumn get logo => text()();
   BoolColumn get passRequired => boolean()();
+  TextColumn get language => text().withDefault(const Constant('es'))();
 }
 
 class Users extends Table {
@@ -41,7 +42,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(impl.connect());
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration {
@@ -69,6 +70,9 @@ class AppDatabase extends _$AppDatabase {
         }
         if (from < 8) {
           await m.createTable(gradeCategories);
+        }
+        if (from < 9) {
+          await m.addColumn(settings, settings.language);
         }
       },
       beforeOpen: (details) async {

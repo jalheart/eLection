@@ -1,5 +1,6 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
+import 'package:myapp/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../../../application/providers/categories_provider.dart';
 import '../../../application/providers/grados_provider.dart';
@@ -37,6 +38,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<CategoriesProvider>().loadCategories();
+      context.read<GradosProvider>().loadGrados();
       context.read<GradeCategoryProvider>().loadAssignments();
     });
   }
@@ -62,8 +64,9 @@ class _CategoriesPageState extends State<CategoriesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AdminLayout(
-      title: 'Gestión de Categorías',
+      title: l10n.manageCategoriesTitle,
       child: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -72,14 +75,17 @@ class _CategoriesPageState extends State<CategoriesPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Listado de Categorías',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                Text(
+                  l10n.categoryList,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 ElevatedButton.icon(
                   onPressed: () => _showCategoryForm(),
                   icon: const Icon(Icons.add),
-                  label: const Text('Nueva Categoría'),
+                  label: Text(l10n.newCategory),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
                     foregroundColor: Colors.white,
@@ -106,9 +112,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                   }
 
                   if (provider.categories.isEmpty) {
-                    return const Center(
-                      child: Text('No hay categorías registradas.'),
-                    );
+                    return Center(child: Text(l10n.noCategories));
                   }
 
                   // Filter and Sort Logic
@@ -143,11 +147,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                   }
 
                   if (filteredCategories.isEmpty) {
-                    return const Center(
-                      child: Text(
-                        'No se encontraron categorías que coincidan.',
-                      ),
-                    );
+                    return Center(child: Text(l10n.noCategoriesFound));
                   }
 
                   final dataSource = CategoryDataSource(
@@ -159,19 +159,16 @@ class _CategoriesPageState extends State<CategoriesPage> {
                       showDialog(
                         context: context,
                         builder: (context) => ConfirmDeleteDialog(
-                          title: 'ELIMINAR CATEGORÍA',
-                          content:
-                              '¿Está seguro de eliminar la categoría ${category.name}?',
+                          title: l10n.deleteCategoryTitle,
+                          content: l10n.deleteCategoryConfirm(category.name),
                           onConfirm: () async {
                             try {
                               await provider.deleteCategory(category.id!);
                             } catch (e) {
                               if (mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'No se puede eliminar la categoría porque tiene grados o candidatos asociados.',
-                                    ),
+                                  SnackBar(
+                                    content: Text(l10n.deleteCategoryError),
                                     backgroundColor: Colors.red,
                                   ),
                                 );
@@ -211,9 +208,9 @@ class _CategoriesPageState extends State<CategoriesPage> {
                       sortAscending: _isAscending,
                       columns: [
                         DataColumn2(
-                          label: const Text(
-                            'Orden',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                          label: Text(
+                            l10n.order,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           size: ColumnSize.S,
                           onSort: (columnIndex, ascending) {
@@ -224,9 +221,9 @@ class _CategoriesPageState extends State<CategoriesPage> {
                           },
                         ),
                         DataColumn2(
-                          label: const Text(
-                            'Nombre',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                          label: Text(
+                            l10n.name,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           size: ColumnSize.L,
                           onSort: (columnIndex, ascending) {
@@ -237,9 +234,9 @@ class _CategoriesPageState extends State<CategoriesPage> {
                           },
                         ),
                         DataColumn2(
-                          label: const Text(
-                            'Nombre Corto',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                          label: Text(
+                            l10n.shortName,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           size: ColumnSize.M,
                           onSort: (columnIndex, ascending) {
@@ -249,10 +246,10 @@ class _CategoriesPageState extends State<CategoriesPage> {
                             });
                           },
                         ),
-                        const DataColumn2(
+                        DataColumn2(
                           label: Text(
-                            'Acciones',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            l10n.actions,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           size: ColumnSize.S,
                         ),
@@ -287,6 +284,7 @@ class CategoryDataSource extends DataTableSource {
 
   @override
   DataRow? getRow(int index) {
+    final l10n = AppLocalizations.of(context)!;
     if (index >= categories.length) return null;
     final category = categories[index];
     return DataRow(
@@ -316,7 +314,7 @@ class CategoryDataSource extends DataTableSource {
                     );
                   },
                 ),
-                tooltip: 'Gestionar Grados',
+                tooltip: l10n.manageGrades,
                 onPressed: () => onManageGrades(category),
               ),
               IconButton(
@@ -375,6 +373,7 @@ class _ManageGradesDialogState extends State<_ManageGradesDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final allGrades = context.watch<GradosProvider>().grados;
 
     return Dialog(
@@ -395,7 +394,7 @@ class _ManageGradesDialogState extends State<_ManageGradesDialog> {
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'GRADOS PARA ${widget.category.name.toUpperCase()}',
+                  l10n.gradesFor(widget.category.name.toUpperCase()),
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 12,
@@ -411,9 +410,9 @@ class _ManageGradesDialogState extends State<_ManageGradesDialog> {
                     : Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Text(
-                            'Seleccione los grados asignados:',
-                            style: TextStyle(
+                          Text(
+                            l10n.selectAssignedGrades,
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 13,
                             ),
@@ -421,43 +420,56 @@ class _ManageGradesDialogState extends State<_ManageGradesDialog> {
                           const SizedBox(height: 16),
                           ConstrainedBox(
                             constraints: const BoxConstraints(maxHeight: 300),
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: allGrades.length,
-                              itemBuilder: (context, index) {
-                                final grade = allGrades[index];
-                                final isAssigned = _assignedGrades.any(
-                                  (g) => g.id == grade.id,
-                                );
+                            child: allGrades.isEmpty
+                                ? Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Text(
+                                        l10n.noGrades,
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                : ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: allGrades.length,
+                                    itemBuilder: (context, index) {
+                                      final grade = allGrades[index];
+                                      final isAssigned = _assignedGrades.any(
+                                        (g) => g.id == grade.id,
+                                      );
 
-                                return CheckboxListTile(
-                                  title: Text(
-                                    grade.name,
-                                    style: const TextStyle(fontSize: 14),
+                                      return CheckboxListTile(
+                                        title: Text(
+                                          grade.name,
+                                          style: const TextStyle(fontSize: 14),
+                                        ),
+                                        value: isAssigned,
+                                        dense: true,
+                                        onChanged: (bool? value) async {
+                                          if (value == true) {
+                                            await context
+                                                .read<GradeCategoryProvider>()
+                                                .assign(
+                                                  grade.id!,
+                                                  widget.category.id!,
+                                                );
+                                          } else {
+                                            await context
+                                                .read<GradeCategoryProvider>()
+                                                .unassign(
+                                                  grade.id!,
+                                                  widget.category.id!,
+                                                );
+                                          }
+                                          _loadAssignedGrades();
+                                        },
+                                      );
+                                    },
                                   ),
-                                  value: isAssigned,
-                                  dense: true,
-                                  onChanged: (bool? value) async {
-                                    if (value == true) {
-                                      await context
-                                          .read<GradeCategoryProvider>()
-                                          .assign(
-                                            grade.id!,
-                                            widget.category.id!,
-                                          );
-                                    } else {
-                                      await context
-                                          .read<GradeCategoryProvider>()
-                                          .unassign(
-                                            grade.id!,
-                                            widget.category.id!,
-                                          );
-                                    }
-                                    _loadAssignedGrades();
-                                  },
-                                );
-                              },
-                            ),
                           ),
                           const SizedBox(height: 24),
                           SizedBox(
@@ -472,7 +484,7 @@ class _ManageGradesDialogState extends State<_ManageGradesDialog> {
                                 ),
                                 elevation: 0,
                               ),
-                              child: const Text('CERRAR'),
+                              child: Text(l10n.close),
                             ),
                           ),
                         ],

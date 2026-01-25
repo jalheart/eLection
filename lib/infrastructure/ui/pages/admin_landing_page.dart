@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import '../widgets/admin_layout.dart';
 import 'grados_page.dart';
 import 'categories_page.dart';
+import 'package:myapp/l10n/app_localizations.dart';
 
 class AdminLandingPage extends StatelessWidget {
   const AdminLandingPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AdminLayout(
       child: Center(
         child: Column(
@@ -19,14 +21,14 @@ class AdminLandingPage extends StatelessWidget {
               color: Colors.blueGrey,
             ),
             const SizedBox(height: 24),
-            const Text(
-              'Panel de Administración',
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            Text(
+              l10n.adminPanel,
+              style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Bienvenido al sistema de gestión electoral.',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
+            Text(
+              l10n.welcomeMessage,
+              style: const TextStyle(fontSize: 16, color: Colors.grey),
             ),
             const SizedBox(height: 40),
             // Example of a quick action or dashboard item
@@ -35,13 +37,13 @@ class AdminLandingPage extends StatelessWidget {
               runSpacing: 20,
               alignment: WrapAlignment.center,
               children: [
-                const _DashboardCard(
+                _DashboardCard(
                   image: 'assets/images/estudiante.png',
-                  label: 'Estudiantes',
+                  label: l10n.students,
                 ),
                 _DashboardCard(
                   image: 'assets/images/course.png',
-                  label: 'Grados',
+                  label: l10n.grades,
                   onTap: () {
                     Navigator.push(
                       context,
@@ -53,7 +55,7 @@ class AdminLandingPage extends StatelessWidget {
                 ),
                 _DashboardCard(
                   image: 'assets/images/categories.png',
-                  label: 'Categorías',
+                  label: l10n.categories,
                   onTap: () {
                     Navigator.push(
                       context,
@@ -63,17 +65,17 @@ class AdminLandingPage extends StatelessWidget {
                     );
                   },
                 ),
-                const _DashboardCard(
+                _DashboardCard(
                   image: 'assets/images/candidates.png',
-                  label: 'Candidatos',
+                  label: l10n.candidates,
                 ),
-                const _DashboardCard(
+                _DashboardCard(
                   image: 'assets/images/settings.png',
-                  label: 'Configuración',
+                  label: l10n.settings,
                 ),
-                const _DashboardCard(
+                _DashboardCard(
                   image: 'assets/images/resultados.png',
-                  label: 'Resultados',
+                  label: l10n.results,
                 ),
               ],
             ),

@@ -71,6 +71,18 @@ class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
       'CHECK ("pass_required" IN (0, 1))',
     ),
   );
+  static const VerificationMeta _languageMeta = const VerificationMeta(
+    'language',
+  );
+  @override
+  late final GeneratedColumn<String> language = GeneratedColumn<String>(
+    'language',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('es'),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -79,6 +91,7 @@ class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
     theme,
     logo,
     passRequired,
+    language,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -138,6 +151,12 @@ class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
     } else if (isInserting) {
       context.missing(_passRequiredMeta);
     }
+    if (data.containsKey('language')) {
+      context.handle(
+        _languageMeta,
+        language.isAcceptableOrUnknown(data['language']!, _languageMeta),
+      );
+    }
     return context;
   }
 
@@ -171,6 +190,10 @@ class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
         DriftSqlType.bool,
         data['${effectivePrefix}pass_required'],
       )!,
+      language: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}language'],
+      )!,
     );
   }
 
@@ -187,6 +210,7 @@ class Setting extends DataClass implements Insertable<Setting> {
   final String theme;
   final String logo;
   final bool passRequired;
+  final String language;
   const Setting({
     required this.id,
     required this.name,
@@ -194,6 +218,7 @@ class Setting extends DataClass implements Insertable<Setting> {
     required this.theme,
     required this.logo,
     required this.passRequired,
+    required this.language,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -204,6 +229,7 @@ class Setting extends DataClass implements Insertable<Setting> {
     map['theme'] = Variable<String>(theme);
     map['logo'] = Variable<String>(logo);
     map['pass_required'] = Variable<bool>(passRequired);
+    map['language'] = Variable<String>(language);
     return map;
   }
 
@@ -215,6 +241,7 @@ class Setting extends DataClass implements Insertable<Setting> {
       theme: Value(theme),
       logo: Value(logo),
       passRequired: Value(passRequired),
+      language: Value(language),
     );
   }
 
@@ -230,6 +257,7 @@ class Setting extends DataClass implements Insertable<Setting> {
       theme: serializer.fromJson<String>(json['theme']),
       logo: serializer.fromJson<String>(json['logo']),
       passRequired: serializer.fromJson<bool>(json['passRequired']),
+      language: serializer.fromJson<String>(json['language']),
     );
   }
   @override
@@ -242,6 +270,7 @@ class Setting extends DataClass implements Insertable<Setting> {
       'theme': serializer.toJson<String>(theme),
       'logo': serializer.toJson<String>(logo),
       'passRequired': serializer.toJson<bool>(passRequired),
+      'language': serializer.toJson<String>(language),
     };
   }
 
@@ -252,6 +281,7 @@ class Setting extends DataClass implements Insertable<Setting> {
     String? theme,
     String? logo,
     bool? passRequired,
+    String? language,
   }) => Setting(
     id: id ?? this.id,
     name: name ?? this.name,
@@ -259,6 +289,7 @@ class Setting extends DataClass implements Insertable<Setting> {
     theme: theme ?? this.theme,
     logo: logo ?? this.logo,
     passRequired: passRequired ?? this.passRequired,
+    language: language ?? this.language,
   );
   Setting copyWithCompanion(SettingsCompanion data) {
     return Setting(
@@ -270,6 +301,7 @@ class Setting extends DataClass implements Insertable<Setting> {
       passRequired: data.passRequired.present
           ? data.passRequired.value
           : this.passRequired,
+      language: data.language.present ? data.language.value : this.language,
     );
   }
 
@@ -281,13 +313,15 @@ class Setting extends DataClass implements Insertable<Setting> {
           ..write('slogan: $slogan, ')
           ..write('theme: $theme, ')
           ..write('logo: $logo, ')
-          ..write('passRequired: $passRequired')
+          ..write('passRequired: $passRequired, ')
+          ..write('language: $language')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, slogan, theme, logo, passRequired);
+  int get hashCode =>
+      Object.hash(id, name, slogan, theme, logo, passRequired, language);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -297,7 +331,8 @@ class Setting extends DataClass implements Insertable<Setting> {
           other.slogan == this.slogan &&
           other.theme == this.theme &&
           other.logo == this.logo &&
-          other.passRequired == this.passRequired);
+          other.passRequired == this.passRequired &&
+          other.language == this.language);
 }
 
 class SettingsCompanion extends UpdateCompanion<Setting> {
@@ -307,6 +342,7 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
   final Value<String> theme;
   final Value<String> logo;
   final Value<bool> passRequired;
+  final Value<String> language;
   const SettingsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
@@ -314,6 +350,7 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
     this.theme = const Value.absent(),
     this.logo = const Value.absent(),
     this.passRequired = const Value.absent(),
+    this.language = const Value.absent(),
   });
   SettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -322,6 +359,7 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
     required String theme,
     required String logo,
     required bool passRequired,
+    this.language = const Value.absent(),
   }) : name = Value(name),
        slogan = Value(slogan),
        theme = Value(theme),
@@ -334,6 +372,7 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
     Expression<String>? theme,
     Expression<String>? logo,
     Expression<bool>? passRequired,
+    Expression<String>? language,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -342,6 +381,7 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
       if (theme != null) 'theme': theme,
       if (logo != null) 'logo': logo,
       if (passRequired != null) 'pass_required': passRequired,
+      if (language != null) 'language': language,
     });
   }
 
@@ -352,6 +392,7 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
     Value<String>? theme,
     Value<String>? logo,
     Value<bool>? passRequired,
+    Value<String>? language,
   }) {
     return SettingsCompanion(
       id: id ?? this.id,
@@ -360,6 +401,7 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
       theme: theme ?? this.theme,
       logo: logo ?? this.logo,
       passRequired: passRequired ?? this.passRequired,
+      language: language ?? this.language,
     );
   }
 
@@ -384,6 +426,9 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
     if (passRequired.present) {
       map['pass_required'] = Variable<bool>(passRequired.value);
     }
+    if (language.present) {
+      map['language'] = Variable<String>(language.value);
+    }
     return map;
   }
 
@@ -395,7 +440,8 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
           ..write('slogan: $slogan, ')
           ..write('theme: $theme, ')
           ..write('logo: $logo, ')
-          ..write('passRequired: $passRequired')
+          ..write('passRequired: $passRequired, ')
+          ..write('language: $language')
           ..write(')'))
         .toString();
   }
@@ -1577,6 +1623,7 @@ typedef $$SettingsTableCreateCompanionBuilder =
       required String theme,
       required String logo,
       required bool passRequired,
+      Value<String> language,
     });
 typedef $$SettingsTableUpdateCompanionBuilder =
     SettingsCompanion Function({
@@ -1586,6 +1633,7 @@ typedef $$SettingsTableUpdateCompanionBuilder =
       Value<String> theme,
       Value<String> logo,
       Value<bool> passRequired,
+      Value<String> language,
     });
 
 class $$SettingsTableFilterComposer
@@ -1624,6 +1672,11 @@ class $$SettingsTableFilterComposer
 
   ColumnFilters<bool> get passRequired => $composableBuilder(
     column: $table.passRequired,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get language => $composableBuilder(
+    column: $table.language,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -1666,6 +1719,11 @@ class $$SettingsTableOrderingComposer
     column: $table.passRequired,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get language => $composableBuilder(
+    column: $table.language,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$SettingsTableAnnotationComposer
@@ -1696,6 +1754,9 @@ class $$SettingsTableAnnotationComposer
     column: $table.passRequired,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get language =>
+      $composableBuilder(column: $table.language, builder: (column) => column);
 }
 
 class $$SettingsTableTableManager
@@ -1732,6 +1793,7 @@ class $$SettingsTableTableManager
                 Value<String> theme = const Value.absent(),
                 Value<String> logo = const Value.absent(),
                 Value<bool> passRequired = const Value.absent(),
+                Value<String> language = const Value.absent(),
               }) => SettingsCompanion(
                 id: id,
                 name: name,
@@ -1739,6 +1801,7 @@ class $$SettingsTableTableManager
                 theme: theme,
                 logo: logo,
                 passRequired: passRequired,
+                language: language,
               ),
           createCompanionCallback:
               ({
@@ -1748,6 +1811,7 @@ class $$SettingsTableTableManager
                 required String theme,
                 required String logo,
                 required bool passRequired,
+                Value<String> language = const Value.absent(),
               }) => SettingsCompanion.insert(
                 id: id,
                 name: name,
@@ -1755,6 +1819,7 @@ class $$SettingsTableTableManager
                 theme: theme,
                 logo: logo,
                 passRequired: passRequired,
+                language: language,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

@@ -1,5 +1,6 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
+import 'package:myapp/l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../application/providers/grados_provider.dart';
@@ -38,6 +39,7 @@ class _GradosPageState extends State<GradosPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<GradosProvider>().loadGrados();
+      context.read<CategoriesProvider>().loadCategories();
       context.read<GradeCategoryProvider>().loadAssignments();
     });
   }
@@ -63,8 +65,9 @@ class _GradosPageState extends State<GradosPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AdminLayout(
-      title: 'Gestión de Grados',
+      title: l10n.manageGrades,
       child: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -73,14 +76,17 @@ class _GradosPageState extends State<GradosPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Listado de Grados',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                Text(
+                  l10n.gradeList,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 ElevatedButton.icon(
                   onPressed: () => _showGradoForm(),
                   icon: const Icon(Icons.add),
-                  label: const Text('Nuevo Grado'),
+                  label: Text(l10n.newGrade),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
                     foregroundColor: Colors.white,
@@ -107,9 +113,7 @@ class _GradosPageState extends State<GradosPage> {
                   }
 
                   if (provider.grados.isEmpty) {
-                    return const Center(
-                      child: Text('No hay grados registrados.'),
-                    );
+                    return Center(child: Text(l10n.noGrades));
                   }
 
                   // Filter and Sort Logic
@@ -138,9 +142,7 @@ class _GradosPageState extends State<GradosPage> {
                   }
 
                   if (filteredGrados.isEmpty) {
-                    return const Center(
-                      child: Text('No se encontraron grados que coincidan.'),
-                    );
+                    return Center(child: Text(l10n.noGradesFound));
                   }
 
                   final dataSource = GradoDataSource(
@@ -152,19 +154,16 @@ class _GradosPageState extends State<GradosPage> {
                       showDialog(
                         context: context,
                         builder: (context) => ConfirmDeleteDialog(
-                          title: 'ELIMINAR GRADO',
-                          content:
-                              '¿Está seguro de eliminar el grado ${grado.name}?',
+                          title: l10n.deleteGradeTitle,
+                          content: l10n.deleteGradeConfirm(grado.name),
                           onConfirm: () async {
                             try {
                               await provider.deleteGrado(grado.id!);
                             } catch (e) {
                               if (mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'No se puede eliminar el grado porque tiene categorías o candidatos asociados.',
-                                    ),
+                                  SnackBar(
+                                    content: Text(l10n.deleteGradeError),
                                     backgroundColor: Colors.red,
                                   ),
                                 );
@@ -204,9 +203,9 @@ class _GradosPageState extends State<GradosPage> {
                       sortAscending: _isAscending,
                       columns: [
                         DataColumn2(
-                          label: const Text(
-                            'Orden',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                          label: Text(
+                            l10n.order,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           size: ColumnSize.S,
                           onSort: (columnIndex, ascending) {
@@ -217,9 +216,9 @@ class _GradosPageState extends State<GradosPage> {
                           },
                         ),
                         DataColumn2(
-                          label: const Text(
-                            'Nombre',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                          label: Text(
+                            l10n.name,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           size: ColumnSize.L,
                           onSort: (columnIndex, ascending) {
@@ -230,9 +229,9 @@ class _GradosPageState extends State<GradosPage> {
                           },
                         ),
                         DataColumn2(
-                          label: const Text(
-                            'Nombre Corto',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                          label: Text(
+                            l10n.shortName,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           size: ColumnSize.M,
                           onSort: (columnIndex, ascending) {
@@ -242,10 +241,10 @@ class _GradosPageState extends State<GradosPage> {
                             });
                           },
                         ),
-                        const DataColumn2(
+                        DataColumn2(
                           label: Text(
-                            'Acciones',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            l10n.actions,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           size: ColumnSize.S,
                         ),
@@ -280,6 +279,7 @@ class GradoDataSource extends DataTableSource {
 
   @override
   DataRow? getRow(int index) {
+    final l10n = AppLocalizations.of(context)!;
     if (index >= grados.length) return null;
     final grado = grados[index];
     return DataRow(
@@ -309,7 +309,7 @@ class GradoDataSource extends DataTableSource {
                     );
                   },
                 ),
-                tooltip: 'Gestionar Categorías',
+                tooltip: l10n.manageCategories,
                 onPressed: () => onManageCategories(grado),
               ),
               IconButton(
@@ -369,6 +369,7 @@ class _ManageCategoriesDialogState extends State<_ManageCategoriesDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final allCategories = context.watch<CategoriesProvider>().categories;
 
     return Dialog(
@@ -389,7 +390,7 @@ class _ManageCategoriesDialogState extends State<_ManageCategoriesDialog> {
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'CATEGORÍAS PARA ${widget.grado.name.toUpperCase()}',
+                  l10n.categoriesFor(widget.grado.name.toUpperCase()),
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 12,
@@ -405,9 +406,9 @@ class _ManageCategoriesDialogState extends State<_ManageCategoriesDialog> {
                     : Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Text(
-                            'Seleccione las categorías asignadas:',
-                            style: TextStyle(
+                          Text(
+                            l10n.selectAssignedCategories,
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 13,
                             ),
@@ -415,43 +416,55 @@ class _ManageCategoriesDialogState extends State<_ManageCategoriesDialog> {
                           const SizedBox(height: 16),
                           ConstrainedBox(
                             constraints: const BoxConstraints(maxHeight: 300),
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: allCategories.length,
-                              itemBuilder: (context, index) {
-                                final category = allCategories[index];
-                                final isAssigned = _assignedCategories.any(
-                                  (c) => c.id == category.id,
-                                );
+                            child: allCategories.isEmpty
+                                ? Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Text(
+                                        l10n.noCategories,
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                : ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: allCategories.length,
+                                    itemBuilder: (context, index) {
+                                      final category = allCategories[index];
+                                      final isAssigned = _assignedCategories
+                                          .any((c) => c.id == category.id);
 
-                                return CheckboxListTile(
-                                  title: Text(
-                                    category.name,
-                                    style: const TextStyle(fontSize: 14),
+                                      return CheckboxListTile(
+                                        title: Text(
+                                          category.name,
+                                          style: const TextStyle(fontSize: 14),
+                                        ),
+                                        value: isAssigned,
+                                        dense: true,
+                                        onChanged: (bool? value) async {
+                                          if (value == true) {
+                                            await context
+                                                .read<GradeCategoryProvider>()
+                                                .assign(
+                                                  widget.grado.id!,
+                                                  category.id!,
+                                                );
+                                          } else {
+                                            await context
+                                                .read<GradeCategoryProvider>()
+                                                .unassign(
+                                                  widget.grado.id!,
+                                                  category.id!,
+                                                );
+                                          }
+                                          _loadAssignedCategories();
+                                        },
+                                      );
+                                    },
                                   ),
-                                  value: isAssigned,
-                                  dense: true,
-                                  onChanged: (bool? value) async {
-                                    if (value == true) {
-                                      await context
-                                          .read<GradeCategoryProvider>()
-                                          .assign(
-                                            widget.grado.id!,
-                                            category.id!,
-                                          );
-                                    } else {
-                                      await context
-                                          .read<GradeCategoryProvider>()
-                                          .unassign(
-                                            widget.grado.id!,
-                                            category.id!,
-                                          );
-                                    }
-                                    _loadAssignedCategories();
-                                  },
-                                );
-                              },
-                            ),
                           ),
                           const SizedBox(height: 24),
                           SizedBox(
@@ -466,7 +479,7 @@ class _ManageCategoriesDialogState extends State<_ManageCategoriesDialog> {
                                 ),
                                 elevation: 0,
                               ),
-                              child: const Text('CERRAR'),
+                              child: Text(l10n.close),
                             ),
                           ),
                         ],

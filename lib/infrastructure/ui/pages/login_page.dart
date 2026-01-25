@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../application/providers/auth_provider.dart';
+import 'package:myapp/l10n/app_localizations.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -45,8 +46,11 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    final success = await authProvider.login(_usernameController.text.trim(), password);
-    
+    final success = await authProvider.login(
+      _usernameController.text.trim(),
+      password,
+    );
+
     if (!success) {
       setState(() => _errorMessage = 'Contraseña incorrecta');
     }
@@ -69,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
               TextField(
                 controller: _usernameController,
                 decoration: InputDecoration(
-                  labelText: 'Usuario',
+                  labelText: AppLocalizations.of(context)!.username,
                   errorText: _errorMessage,
                   border: const OutlineInputBorder(),
                   prefixIcon: const Icon(Icons.person),
@@ -81,8 +85,8 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 16),
                 TextField(
                   controller: _passwordController,
-                  decoration: const InputDecoration(
-                    labelText: 'Contraseña',
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.password,
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.lock),
                   ),
@@ -97,7 +101,11 @@ class _LoginPageState extends State<LoginPage> {
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size.fromHeight(50),
                 ),
-                child: Text(_showPassword ? 'Ingresar' : 'Siguiente'),
+                child: Text(
+                  _showPassword
+                      ? AppLocalizations.of(context)!.login
+                      : 'Siguiente',
+                ),
               ),
               if (_showPassword)
                 TextButton(

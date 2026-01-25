@@ -28,6 +28,9 @@ import 'application/providers/grade_category_provider.dart';
 import 'infrastructure/database/database.dart';
 import 'infrastructure/ui/pages/login_page.dart';
 import 'infrastructure/ui/pages/admin_landing_page.dart';
+import 'application/use_cases/update_settings_use_case.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:myapp/l10n/app_localizations.dart';
 
 void main() {
   runApp(
@@ -62,6 +65,9 @@ void main() {
         ),
         ProxyProvider<DriftSettingsRepository, GetSettingsUseCase>(
           update: (context, repo, _) => GetSettingsUseCase(repo),
+        ),
+        ProxyProvider<DriftSettingsRepository, UpdateSettingsUseCase>(
+          update: (context, repo, _) => UpdateSettingsUseCase(repo),
         ),
         ProxyProvider<DriftGradoRepository, GetGradosUseCase>(
           update: (context, repo, _) => GetGradosUseCase(repo),
@@ -112,11 +118,17 @@ void main() {
           update: (context, loginUC, checkUC, previous) =>
               previous ?? AuthProvider(loginUC, checkUC),
         ),
-        ChangeNotifierProxyProvider<GetSettingsUseCase, SettingsProvider>(
-          create: (context) =>
-              SettingsProvider(context.read<GetSettingsUseCase>()),
-          update: (context, getSettingsUC, previous) =>
-              previous ?? SettingsProvider(getSettingsUC),
+        ChangeNotifierProxyProvider2<
+          GetSettingsUseCase,
+          UpdateSettingsUseCase,
+          SettingsProvider
+        >(
+          create: (context) => SettingsProvider(
+            context.read<GetSettingsUseCase>(),
+            context.read<UpdateSettingsUseCase>(),
+          ),
+          update: (context, getUC, updateUC, previous) =>
+              previous ?? SettingsProvider(getUC, updateUC),
         ),
         ChangeNotifierProxyProvider3<
           GetGradosUseCase,
@@ -210,7 +222,7 @@ class MyApp extends StatelessWidget {
         }
 
         return MaterialApp(
-          title: 'eLection',
+          onGenerateTitle: (context) => AppLocalizations.of(context)!.appName,
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(
@@ -223,6 +235,19 @@ class MyApp extends StatelessWidget {
               foregroundColor: Colors.white,
             ),
           ),
+          locale: settingsProvider.locale,
+          localizationsDelegates: [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('es'),
+            Locale('en'),
+            Locale('fr'),
+            Locale('pt'),
+          ],
           home: Consumer<AuthProvider>(
             builder: (context, auth, _) {
               if (auth.isAuthenticated) {

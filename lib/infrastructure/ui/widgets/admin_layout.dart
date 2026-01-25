@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../application/providers/settings_provider.dart';
 import '../../../application/providers/auth_provider.dart';
+import 'package:myapp/l10n/app_localizations.dart';
 
 class AdminLayout extends StatelessWidget {
   final Widget child;
@@ -11,6 +12,7 @@ class AdminLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: Column(
         children: [
@@ -103,19 +105,72 @@ class AdminLayout extends StatelessWidget {
               children: [
                 const Icon(Icons.info_outline, size: 14, color: Colors.grey),
                 const SizedBox(width: 4),
-                const Text(
-                  'Listo',
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                Text(
+                  l10n.ready,
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
                 ),
                 const Spacer(),
-                const Text(
-                  'Software desarrollado por Antigravity',
-                  style: TextStyle(fontSize: 10, color: Colors.grey),
+                Text(
+                  l10n.developedBy('Antigravity'),
+                  style: const TextStyle(fontSize: 10, color: Colors.grey),
+                ),
+                const SizedBox(width: 16),
+                Consumer<SettingsProvider>(
+                  builder: (context, settingsProvider, _) {
+                    return PopupMenuButton<String>(
+                      onSelected: (value) {
+                        settingsProvider.updateLanguage(value);
+                      },
+                      itemBuilder: (BuildContext context) => [
+                        const PopupMenuItem<String>(
+                          value: 'es',
+                          child: Text('Español'),
+                        ),
+                        const PopupMenuItem<String>(
+                          value: 'en',
+                          child: Text('English'),
+                        ),
+                        const PopupMenuItem<String>(
+                          value: 'fr',
+                          child: Text('Français'),
+                        ),
+                        const PopupMenuItem<String>(
+                          value: 'pt',
+                          child: Text('Português'),
+                        ),
+                      ],
+                      offset: const Offset(0, -180),
+                      child: MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.language,
+                              size: 14,
+                              color: Colors.blueGrey,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              settingsProvider.settings?.language
+                                      .toUpperCase() ??
+                                  'ES',
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: Colors.blueGrey,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(width: 16),
                 Consumer<AuthProvider>(
                   builder: (context, auth, _) {
                     final user = auth.currentUser;
+                    final l10n = AppLocalizations.of(context)!;
                     return PopupMenuButton<String>(
                       onSelected: (value) {
                         if (value == 'logout') {
@@ -126,13 +181,17 @@ class AdminLayout extends StatelessWidget {
                         }
                       },
                       itemBuilder: (BuildContext context) => [
-                        const PopupMenuItem<String>(
+                        PopupMenuItem<String>(
                           value: 'logout',
                           child: Row(
                             children: [
-                              Icon(Icons.logout, size: 18, color: Colors.red),
-                              SizedBox(width: 8),
-                              Text('Cerrar sesión'),
+                              const Icon(
+                                Icons.logout,
+                                size: 18,
+                                color: Colors.red,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(l10n.logout),
                             ],
                           ),
                         ),
@@ -141,7 +200,7 @@ class AdminLayout extends StatelessWidget {
                       child: MouseRegion(
                         cursor: SystemMouseCursors.click,
                         child: Text(
-                          'Usuario: ${user?.name ?? 'Invitado'}',
+                          '${l10n.username}: ${user?.name ?? l10n.guest}',
                           style: const TextStyle(
                             fontSize: 10,
                             color: Colors.blueGrey,
