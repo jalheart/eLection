@@ -162,8 +162,21 @@ class _CategoriesPageState extends State<CategoriesPage> {
                           title: 'ELIMINAR CATEGORÍA',
                           content:
                               '¿Está seguro de eliminar la categoría ${category.name}?',
-                          onConfirm: () {
-                            provider.deleteCategory(category.id!);
+                          onConfirm: () async {
+                            try {
+                              await provider.deleteCategory(category.id!);
+                            } catch (e) {
+                              if (mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'No se puede eliminar la categoría porque tiene grados o candidatos asociados.',
+                                    ),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            }
                           },
                         ),
                       );

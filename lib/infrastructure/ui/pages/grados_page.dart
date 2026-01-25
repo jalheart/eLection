@@ -155,8 +155,21 @@ class _GradosPageState extends State<GradosPage> {
                           title: 'ELIMINAR GRADO',
                           content:
                               '¿Está seguro de eliminar el grado ${grado.name}?',
-                          onConfirm: () {
-                            provider.deleteGrado(grado.id!);
+                          onConfirm: () async {
+                            try {
+                              await provider.deleteGrado(grado.id!);
+                            } catch (e) {
+                              if (mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'No se puede eliminar el grado porque tiene categorías o candidatos asociados.',
+                                    ),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            }
                           },
                         ),
                       );

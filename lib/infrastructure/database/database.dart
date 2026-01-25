@@ -72,6 +72,7 @@ class AppDatabase extends _$AppDatabase {
         }
       },
       beforeOpen: (details) async {
+        await customStatement('PRAGMA foreign_keys = ON');
         // Populate settings if empty
         final allSettings = await select(settings).get();
         if (allSettings.isEmpty) {

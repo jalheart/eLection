@@ -138,8 +138,21 @@ class _GradeCategoryPageState extends State<GradeCategoryPage> {
                           title: 'ELIMINAR ASIGNACIÓN',
                           content:
                               '¿Está seguro de eliminar la categoría ${category.name} del grado ${grade.name}?',
-                          onConfirm: () {
-                            provider.unassign(grade.id!, category.id!);
+                          onConfirm: () async {
+                            try {
+                              await provider.unassign(grade.id!, category.id!);
+                            } catch (e) {
+                              if (mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'No se puede eliminar la asignación porque tiene elementos asociados.',
+                                    ),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            }
                           },
                         ),
                       );
