@@ -111,7 +111,7 @@ class AdminLayout extends StatelessWidget {
                 ),
                 const Spacer(),
                 Text(
-                  l10n.developedBy('Antigravity'),
+                  l10n.developedBy('Jaime Hernández en Antigravity'),
                   style: const TextStyle(fontSize: 10, color: Colors.grey),
                 ),
                 const SizedBox(width: 16),
