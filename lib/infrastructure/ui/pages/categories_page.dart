@@ -9,7 +9,7 @@ import '../../../application/providers/candidates_provider.dart';
 import '../../../domain/entities/category.dart';
 import '../../../domain/entities/grado.dart';
 import '../widgets/admin_layout.dart';
-import 'candidates_page.dart';
+import '../widgets/category_candidates_dialog.dart';
 
 import '../widgets/confirm_delete_dialog.dart';
 import '../widgets/custom_search_bar.dart';
@@ -336,11 +336,10 @@ class CategoryDataSource extends DataTableSource {
                 ),
                 tooltip: l10n.manageCandidates,
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const CandidatesPage(),
-                    ),
+                  showDialog(
+                    context: context,
+                    builder: (context) =>
+                        CategoryCandidatesDialog(category: category),
                   );
                 },
               ),
