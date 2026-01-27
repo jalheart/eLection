@@ -44,14 +44,30 @@ class Candidates extends Table {
   IntColumn get categoryId => integer().references(Categories, #id)();
 }
 
+class Voters extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text()();
+  TextColumn get documentId => text().unique()();
+  IntColumn get gradeId => integer().references(Grades, #id)();
+  BoolColumn get hasVoted => boolean().withDefault(const Constant(false))();
+}
+
 @DriftDatabase(
-  tables: [Settings, Users, Grades, Categories, GradeCategories, Candidates],
+  tables: [
+    Settings,
+    Users,
+    Grades,
+    Categories,
+    GradeCategories,
+    Candidates,
+    Voters,
+  ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(impl.connect());
 
   @override
-  int get schemaVersion => 10;
+  int get schemaVersion => 11;
 
   @override
   MigrationStrategy get migration {
@@ -85,6 +101,9 @@ class AppDatabase extends _$AppDatabase {
         }
         if (from < 10) {
           await m.createTable(candidates);
+        }
+        if (from < 11) {
+          await m.createTable(voters);
         }
       },
       beforeOpen: (details) async {

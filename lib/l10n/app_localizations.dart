@@ -503,6 +503,84 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Candidato eliminado correctamente'**
   String get candidateDeleted;
+
+  /// No description provided for @manageVoters.
+  ///
+  /// In es, this message translates to:
+  /// **'Gestión de Votantes'**
+  String get manageVoters;
+
+  /// No description provided for @newVoter.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuevo Votante'**
+  String get newVoter;
+
+  /// No description provided for @editVoter.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar Votante'**
+  String get editVoter;
+
+  /// No description provided for @deleteVoter.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar Votante'**
+  String get deleteVoter;
+
+  /// No description provided for @deleteVoterConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Está seguro de eliminar al votante {name}?'**
+  String deleteVoterConfirm(Object name);
+
+  /// No description provided for @deleteAllVoters.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar Todos los Votantes'**
+  String get deleteAllVoters;
+
+  /// No description provided for @deleteAllVotersConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Está seguro de eliminar TODOS los votantes? Esta acción no se puede deshacer.'**
+  String get deleteAllVotersConfirm;
+
+  /// No description provided for @importVoters.
+  ///
+  /// In es, this message translates to:
+  /// **'Importar Votantes'**
+  String get importVoters;
+
+  /// No description provided for @noVoters.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay votantes registrados.'**
+  String get noVoters;
+
+  /// No description provided for @documentId.
+  ///
+  /// In es, this message translates to:
+  /// **'Documento/ID'**
+  String get documentId;
+
+  /// No description provided for @voterSaved.
+  ///
+  /// In es, this message translates to:
+  /// **'Votante guardado correctamente'**
+  String get voterSaved;
+
+  /// No description provided for @voterDeleted.
+  ///
+  /// In es, this message translates to:
+  /// **'Votante eliminado correctamente'**
+  String get voterDeleted;
+
+  /// No description provided for @votersImported.
+  ///
+  /// In es, this message translates to:
+  /// **'Votantes importados correctamente'**
+  String get votersImported;
 }
 
 class _AppLocalizationsDelegate

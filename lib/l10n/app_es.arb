@@ -66,5 +66,18 @@
   "selectPicture": "Seleccionar Foto",
   "noCandidates": "No hay candidatos registrados en esta categoría.",
   "candidateSaved": "Candidato guardado correctamente",
-  "candidateDeleted": "Candidato eliminado correctamente"
+  "candidateDeleted": "Candidato eliminado correctamente",
+  "manageVoters": "Gestión de Votantes",
+  "newVoter": "Nuevo Votante",
+  "editVoter": "Editar Votante",
+  "deleteVoter": "Eliminar Votante",
+  "deleteVoterConfirm": "¿Está seguro de eliminar al votante {name}?",
+  "deleteAllVoters": "Eliminar Todos los Votantes",
+  "deleteAllVotersConfirm": "¿Está seguro de eliminar TODOS los votantes? Esta acción no se puede deshacer.",
+  "importVoters": "Importar Votantes",
+  "noVoters": "No hay votantes registrados.",
+  "documentId": "Documento/ID",
+  "voterSaved": "Votante guardado correctamente",
+  "voterDeleted": "Votante eliminado correctamente",
+  "votersImported": "Votantes importados correctamente"
 }

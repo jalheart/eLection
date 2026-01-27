@@ -1896,6 +1896,362 @@ class CandidatesCompanion extends UpdateCompanion<Candidate> {
   }
 }
 
+class $VotersTable extends Voters with TableInfo<$VotersTable, Voter> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $VotersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _documentIdMeta = const VerificationMeta(
+    'documentId',
+  );
+  @override
+  late final GeneratedColumn<String> documentId = GeneratedColumn<String>(
+    'document_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  static const VerificationMeta _gradeIdMeta = const VerificationMeta(
+    'gradeId',
+  );
+  @override
+  late final GeneratedColumn<int> gradeId = GeneratedColumn<int>(
+    'grade_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES grades (id)',
+    ),
+  );
+  static const VerificationMeta _hasVotedMeta = const VerificationMeta(
+    'hasVoted',
+  );
+  @override
+  late final GeneratedColumn<bool> hasVoted = GeneratedColumn<bool>(
+    'has_voted',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("has_voted" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    documentId,
+    gradeId,
+    hasVoted,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'voters';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Voter> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('document_id')) {
+      context.handle(
+        _documentIdMeta,
+        documentId.isAcceptableOrUnknown(data['document_id']!, _documentIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_documentIdMeta);
+    }
+    if (data.containsKey('grade_id')) {
+      context.handle(
+        _gradeIdMeta,
+        gradeId.isAcceptableOrUnknown(data['grade_id']!, _gradeIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_gradeIdMeta);
+    }
+    if (data.containsKey('has_voted')) {
+      context.handle(
+        _hasVotedMeta,
+        hasVoted.isAcceptableOrUnknown(data['has_voted']!, _hasVotedMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Voter map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Voter(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      documentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}document_id'],
+      )!,
+      gradeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}grade_id'],
+      )!,
+      hasVoted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}has_voted'],
+      )!,
+    );
+  }
+
+  @override
+  $VotersTable createAlias(String alias) {
+    return $VotersTable(attachedDatabase, alias);
+  }
+}
+
+class Voter extends DataClass implements Insertable<Voter> {
+  final int id;
+  final String name;
+  final String documentId;
+  final int gradeId;
+  final bool hasVoted;
+  const Voter({
+    required this.id,
+    required this.name,
+    required this.documentId,
+    required this.gradeId,
+    required this.hasVoted,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    map['document_id'] = Variable<String>(documentId);
+    map['grade_id'] = Variable<int>(gradeId);
+    map['has_voted'] = Variable<bool>(hasVoted);
+    return map;
+  }
+
+  VotersCompanion toCompanion(bool nullToAbsent) {
+    return VotersCompanion(
+      id: Value(id),
+      name: Value(name),
+      documentId: Value(documentId),
+      gradeId: Value(gradeId),
+      hasVoted: Value(hasVoted),
+    );
+  }
+
+  factory Voter.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Voter(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      documentId: serializer.fromJson<String>(json['documentId']),
+      gradeId: serializer.fromJson<int>(json['gradeId']),
+      hasVoted: serializer.fromJson<bool>(json['hasVoted']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'documentId': serializer.toJson<String>(documentId),
+      'gradeId': serializer.toJson<int>(gradeId),
+      'hasVoted': serializer.toJson<bool>(hasVoted),
+    };
+  }
+
+  Voter copyWith({
+    int? id,
+    String? name,
+    String? documentId,
+    int? gradeId,
+    bool? hasVoted,
+  }) => Voter(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    documentId: documentId ?? this.documentId,
+    gradeId: gradeId ?? this.gradeId,
+    hasVoted: hasVoted ?? this.hasVoted,
+  );
+  Voter copyWithCompanion(VotersCompanion data) {
+    return Voter(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      documentId: data.documentId.present
+          ? data.documentId.value
+          : this.documentId,
+      gradeId: data.gradeId.present ? data.gradeId.value : this.gradeId,
+      hasVoted: data.hasVoted.present ? data.hasVoted.value : this.hasVoted,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Voter(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('documentId: $documentId, ')
+          ..write('gradeId: $gradeId, ')
+          ..write('hasVoted: $hasVoted')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, documentId, gradeId, hasVoted);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Voter &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.documentId == this.documentId &&
+          other.gradeId == this.gradeId &&
+          other.hasVoted == this.hasVoted);
+}
+
+class VotersCompanion extends UpdateCompanion<Voter> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<String> documentId;
+  final Value<int> gradeId;
+  final Value<bool> hasVoted;
+  const VotersCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.documentId = const Value.absent(),
+    this.gradeId = const Value.absent(),
+    this.hasVoted = const Value.absent(),
+  });
+  VotersCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    required String documentId,
+    required int gradeId,
+    this.hasVoted = const Value.absent(),
+  }) : name = Value(name),
+       documentId = Value(documentId),
+       gradeId = Value(gradeId);
+  static Insertable<Voter> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<String>? documentId,
+    Expression<int>? gradeId,
+    Expression<bool>? hasVoted,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (documentId != null) 'document_id': documentId,
+      if (gradeId != null) 'grade_id': gradeId,
+      if (hasVoted != null) 'has_voted': hasVoted,
+    });
+  }
+
+  VotersCompanion copyWith({
+    Value<int>? id,
+    Value<String>? name,
+    Value<String>? documentId,
+    Value<int>? gradeId,
+    Value<bool>? hasVoted,
+  }) {
+    return VotersCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      documentId: documentId ?? this.documentId,
+      gradeId: gradeId ?? this.gradeId,
+      hasVoted: hasVoted ?? this.hasVoted,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (documentId.present) {
+      map['document_id'] = Variable<String>(documentId.value);
+    }
+    if (gradeId.present) {
+      map['grade_id'] = Variable<int>(gradeId.value);
+    }
+    if (hasVoted.present) {
+      map['has_voted'] = Variable<bool>(hasVoted.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('VotersCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('documentId: $documentId, ')
+          ..write('gradeId: $gradeId, ')
+          ..write('hasVoted: $hasVoted')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1907,6 +2263,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this,
   );
   late final $CandidatesTable candidates = $CandidatesTable(this);
+  late final $VotersTable voters = $VotersTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1918,6 +2275,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     categories,
     gradeCategories,
     candidates,
+    voters,
   ];
 }
 
@@ -2374,6 +2732,25 @@ final class $$GradesTableReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<$VotersTable, List<Voter>> _votersRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.voters,
+    aliasName: $_aliasNameGenerator(db.grades.id, db.voters.gradeId),
+  );
+
+  $$VotersTableProcessedTableManager get votersRefs {
+    final manager = $$VotersTableTableManager(
+      $_db,
+      $_db.voters,
+    ).filter((f) => f.gradeId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_votersRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$GradesTableFilterComposer
@@ -2421,6 +2798,31 @@ class $$GradesTableFilterComposer
           }) => $$GradeCategoriesTableFilterComposer(
             $db: $db,
             $table: $db.gradeCategories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> votersRefs(
+    Expression<bool> Function($$VotersTableFilterComposer f) f,
+  ) {
+    final $$VotersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.voters,
+      getReferencedColumn: (t) => t.gradeId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VotersTableFilterComposer(
+            $db: $db,
+            $table: $db.voters,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -2506,6 +2908,31 @@ class $$GradesTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> votersRefs<T extends Object>(
+    Expression<T> Function($$VotersTableAnnotationComposer a) f,
+  ) {
+    final $$VotersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.voters,
+      getReferencedColumn: (t) => t.gradeId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VotersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.voters,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$GradesTableTableManager
@@ -2521,7 +2948,7 @@ class $$GradesTableTableManager
           $$GradesTableUpdateCompanionBuilder,
           (Grade, $$GradesTableReferences),
           Grade,
-          PrefetchHooks Function({bool gradeCategoriesRefs})
+          PrefetchHooks Function({bool gradeCategoriesRefs, bool votersRefs})
         > {
   $$GradesTableTableManager(_$AppDatabase db, $GradesTable table)
     : super(
@@ -2564,37 +2991,55 @@ class $$GradesTableTableManager
                     (e.readTable(table), $$GradesTableReferences(db, table, e)),
               )
               .toList(),
-          prefetchHooksCallback: ({gradeCategoriesRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [
-                if (gradeCategoriesRefs) db.gradeCategories,
-              ],
-              addJoins: null,
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (gradeCategoriesRefs)
-                    await $_getPrefetchedData<
-                      Grade,
-                      $GradesTable,
-                      GradeCategory
-                    >(
-                      currentTable: table,
-                      referencedTable: $$GradesTableReferences
-                          ._gradeCategoriesRefsTable(db),
-                      managerFromTypedResult: (p0) => $$GradesTableReferences(
-                        db,
-                        table,
-                        p0,
-                      ).gradeCategoriesRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.gradeId == item.id),
-                      typedResults: items,
-                    ),
-                ];
+          prefetchHooksCallback:
+              ({gradeCategoriesRefs = false, votersRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (gradeCategoriesRefs) db.gradeCategories,
+                    if (votersRefs) db.voters,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (gradeCategoriesRefs)
+                        await $_getPrefetchedData<
+                          Grade,
+                          $GradesTable,
+                          GradeCategory
+                        >(
+                          currentTable: table,
+                          referencedTable: $$GradesTableReferences
+                              ._gradeCategoriesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$GradesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).gradeCategoriesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.gradeId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (votersRefs)
+                        await $_getPrefetchedData<Grade, $GradesTable, Voter>(
+                          currentTable: table,
+                          referencedTable: $$GradesTableReferences
+                              ._votersRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$GradesTableReferences(db, table, p0).votersRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.gradeId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -2611,7 +3056,7 @@ typedef $$GradesTableProcessedTableManager =
       $$GradesTableUpdateCompanionBuilder,
       (Grade, $$GradesTableReferences),
       Grade,
-      PrefetchHooks Function({bool gradeCategoriesRefs})
+      PrefetchHooks Function({bool gradeCategoriesRefs, bool votersRefs})
     >;
 typedef $$CategoriesTableCreateCompanionBuilder =
     CategoriesCompanion Function({
@@ -3646,6 +4091,318 @@ typedef $$CandidatesTableProcessedTableManager =
       Candidate,
       PrefetchHooks Function({bool categoryId})
     >;
+typedef $$VotersTableCreateCompanionBuilder =
+    VotersCompanion Function({
+      Value<int> id,
+      required String name,
+      required String documentId,
+      required int gradeId,
+      Value<bool> hasVoted,
+    });
+typedef $$VotersTableUpdateCompanionBuilder =
+    VotersCompanion Function({
+      Value<int> id,
+      Value<String> name,
+      Value<String> documentId,
+      Value<int> gradeId,
+      Value<bool> hasVoted,
+    });
+
+final class $$VotersTableReferences
+    extends BaseReferences<_$AppDatabase, $VotersTable, Voter> {
+  $$VotersTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $GradesTable _gradeIdTable(_$AppDatabase db) => db.grades.createAlias(
+    $_aliasNameGenerator(db.voters.gradeId, db.grades.id),
+  );
+
+  $$GradesTableProcessedTableManager get gradeId {
+    final $_column = $_itemColumn<int>('grade_id')!;
+
+    final manager = $$GradesTableTableManager(
+      $_db,
+      $_db.grades,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_gradeIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$VotersTableFilterComposer
+    extends Composer<_$AppDatabase, $VotersTable> {
+  $$VotersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get documentId => $composableBuilder(
+    column: $table.documentId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get hasVoted => $composableBuilder(
+    column: $table.hasVoted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$GradesTableFilterComposer get gradeId {
+    final $$GradesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.gradeId,
+      referencedTable: $db.grades,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GradesTableFilterComposer(
+            $db: $db,
+            $table: $db.grades,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$VotersTableOrderingComposer
+    extends Composer<_$AppDatabase, $VotersTable> {
+  $$VotersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get documentId => $composableBuilder(
+    column: $table.documentId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get hasVoted => $composableBuilder(
+    column: $table.hasVoted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$GradesTableOrderingComposer get gradeId {
+    final $$GradesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.gradeId,
+      referencedTable: $db.grades,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GradesTableOrderingComposer(
+            $db: $db,
+            $table: $db.grades,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$VotersTableAnnotationComposer
+    extends Composer<_$AppDatabase, $VotersTable> {
+  $$VotersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get documentId => $composableBuilder(
+    column: $table.documentId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get hasVoted =>
+      $composableBuilder(column: $table.hasVoted, builder: (column) => column);
+
+  $$GradesTableAnnotationComposer get gradeId {
+    final $$GradesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.gradeId,
+      referencedTable: $db.grades,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GradesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.grades,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$VotersTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $VotersTable,
+          Voter,
+          $$VotersTableFilterComposer,
+          $$VotersTableOrderingComposer,
+          $$VotersTableAnnotationComposer,
+          $$VotersTableCreateCompanionBuilder,
+          $$VotersTableUpdateCompanionBuilder,
+          (Voter, $$VotersTableReferences),
+          Voter,
+          PrefetchHooks Function({bool gradeId})
+        > {
+  $$VotersTableTableManager(_$AppDatabase db, $VotersTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$VotersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$VotersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$VotersTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> documentId = const Value.absent(),
+                Value<int> gradeId = const Value.absent(),
+                Value<bool> hasVoted = const Value.absent(),
+              }) => VotersCompanion(
+                id: id,
+                name: name,
+                documentId: documentId,
+                gradeId: gradeId,
+                hasVoted: hasVoted,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String name,
+                required String documentId,
+                required int gradeId,
+                Value<bool> hasVoted = const Value.absent(),
+              }) => VotersCompanion.insert(
+                id: id,
+                name: name,
+                documentId: documentId,
+                gradeId: gradeId,
+                hasVoted: hasVoted,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) =>
+                    (e.readTable(table), $$VotersTableReferences(db, table, e)),
+              )
+              .toList(),
+          prefetchHooksCallback: ({gradeId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (gradeId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.gradeId,
+                                referencedTable: $$VotersTableReferences
+                                    ._gradeIdTable(db),
+                                referencedColumn: $$VotersTableReferences
+                                    ._gradeIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$VotersTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $VotersTable,
+      Voter,
+      $$VotersTableFilterComposer,
+      $$VotersTableOrderingComposer,
+      $$VotersTableAnnotationComposer,
+      $$VotersTableCreateCompanionBuilder,
+      $$VotersTableUpdateCompanionBuilder,
+      (Voter, $$VotersTableReferences),
+      Voter,
+      PrefetchHooks Function({bool gradeId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3662,4 +4419,6 @@ class $AppDatabaseManager {
       $$GradeCategoriesTableTableManager(_db, _db.gradeCategories);
   $$CandidatesTableTableManager get candidates =>
       $$CandidatesTableTableManager(_db, _db.candidates);
+  $$VotersTableTableManager get voters =>
+      $$VotersTableTableManager(_db, _db.voters);
 }

@@ -66,5 +66,18 @@
   "selectPicture": "Select Picture",
   "noCandidates": "No candidates registered in this category.",
   "candidateSaved": "Candidate saved successfully",
-  "candidateDeleted": "Candidate deleted successfully"
+  "candidateDeleted": "Candidate deleted successfully",
+  "manageVoters": "Manage Voters",
+  "newVoter": "New Voter",
+  "editVoter": "Edit Voter",
+  "deleteVoter": "Delete Voter",
+  "deleteVoterConfirm": "Are you sure you want to delete the voter {name}?",
+  "deleteAllVoters": "Delete All Voters",
+  "deleteAllVotersConfirm": "Are you sure you want to delete ALL voters? This action cannot be undone.",
+  "importVoters": "Import Voters",
+  "noVoters": "No voters registered.",
+  "documentId": "Document/ID",
+  "voterSaved": "Voter saved successfully",
+  "voterDeleted": "Voter deleted successfully",
+  "votersImported": "Voters imported successfully"
 }

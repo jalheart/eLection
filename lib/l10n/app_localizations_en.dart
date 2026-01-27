@@ -222,4 +222,46 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get candidateDeleted => 'Candidate deleted successfully';
+
+  @override
+  String get manageVoters => 'Manage Voters';
+
+  @override
+  String get newVoter => 'New Voter';
+
+  @override
+  String get editVoter => 'Edit Voter';
+
+  @override
+  String get deleteVoter => 'Delete Voter';
+
+  @override
+  String deleteVoterConfirm(Object name) {
+    return 'Are you sure you want to delete the voter $name?';
+  }
+
+  @override
+  String get deleteAllVoters => 'Delete All Voters';
+
+  @override
+  String get deleteAllVotersConfirm =>
+      'Are you sure you want to delete ALL voters? This action cannot be undone.';
+
+  @override
+  String get importVoters => 'Import Voters';
+
+  @override
+  String get noVoters => 'No voters registered.';
+
+  @override
+  String get documentId => 'Document/ID';
+
+  @override
+  String get voterSaved => 'Voter saved successfully';
+
+  @override
+  String get voterDeleted => 'Voter deleted successfully';
+
+  @override
+  String get votersImported => 'Voters imported successfully';
 }

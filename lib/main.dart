@@ -30,7 +30,16 @@ import 'application/use_cases/save_candidate_use_case.dart';
 import 'application/use_cases/delete_candidate_use_case.dart';
 import 'application/providers/candidates_provider.dart';
 import 'application/providers/grade_category_provider.dart';
+import 'application/providers/voters_provider.dart';
+import 'application/use_cases/get_voters_use_case.dart';
+import 'application/use_cases/get_voters_by_grade_use_case.dart';
+import 'application/use_cases/save_voter_use_case.dart';
+import 'application/use_cases/delete_voter_use_case.dart';
+import 'application/use_cases/save_voters_use_case.dart';
+import 'application/use_cases/delete_all_voters_use_case.dart';
+import 'application/use_cases/get_voter_by_document_id_use_case.dart';
 import 'infrastructure/database/adapters/drift_candidate_repository.dart';
+import 'infrastructure/database/adapters/drift_voter_repository.dart';
 import 'infrastructure/database/database.dart';
 import 'infrastructure/ui/pages/login_page.dart';
 import 'infrastructure/ui/pages/admin_landing_page.dart';
@@ -64,6 +73,9 @@ void main() {
         ),
         ProxyProvider<AppDatabase, DriftCandidateRepository>(
           update: (context, db, _) => DriftCandidateRepository(db),
+        ),
+        ProxyProvider<AppDatabase, DriftVoterRepository>(
+          update: (context, db, _) => DriftVoterRepository(db),
         ),
         // Use Cases
         ProxyProvider<DriftUserRepository, LoginUseCase>(
@@ -125,6 +137,27 @@ void main() {
         ),
         ProxyProvider<DriftCandidateRepository, DeleteCandidateUseCase>(
           update: (context, repo, _) => DeleteCandidateUseCase(repo),
+        ),
+        ProxyProvider<DriftVoterRepository, GetVotersUseCase>(
+          update: (context, repo, _) => GetVotersUseCase(repo),
+        ),
+        ProxyProvider<DriftVoterRepository, GetVotersByGradeUseCase>(
+          update: (context, repo, _) => GetVotersByGradeUseCase(repo),
+        ),
+        ProxyProvider<DriftVoterRepository, SaveVoterUseCase>(
+          update: (context, repo, _) => SaveVoterUseCase(repo),
+        ),
+        ProxyProvider<DriftVoterRepository, DeleteVoterUseCase>(
+          update: (context, repo, _) => DeleteVoterUseCase(repo),
+        ),
+        ProxyProvider<DriftVoterRepository, SaveVotersUseCase>(
+          update: (context, repo, _) => SaveVotersUseCase(repo),
+        ),
+        ProxyProvider<DriftVoterRepository, DeleteAllVotersUseCase>(
+          update: (context, repo, _) => DeleteAllVotersUseCase(repo),
+        ),
+        ProxyProvider<DriftVoterRepository, GetVoterByDocumentIdUseCase>(
+          update: (context, repo, _) => GetVoterByDocumentIdUseCase(repo),
         ),
         // Providers
         ChangeNotifierProxyProvider2<
@@ -229,6 +262,17 @@ void main() {
           update: (context, getUC, getByCatUC, saveUC, deleteUC, previous) =>
               previous ??
               CandidatesProvider(getUC, getByCatUC, saveUC, deleteUC),
+        ),
+        ChangeNotifierProvider<VotersProvider>(
+          create: (context) => VotersProvider(
+            context.read<GetVotersUseCase>(),
+            context.read<GetVotersByGradeUseCase>(),
+            context.read<SaveVoterUseCase>(),
+            context.read<DeleteVoterUseCase>(),
+            context.read<SaveVotersUseCase>(),
+            context.read<DeleteAllVotersUseCase>(),
+            context.read<GetVoterByDocumentIdUseCase>(),
+          ),
         ),
       ],
       child: const MyApp(),
