@@ -48,6 +48,7 @@ class Voters extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
   TextColumn get documentId => text().unique()();
+  TextColumn get password => text().nullable()();
   IntColumn get gradeId => integer().references(Grades, #id)();
   BoolColumn get hasVoted => boolean().withDefault(const Constant(false))();
 }
@@ -67,7 +68,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(impl.connect());
 
   @override
-  int get schemaVersion => 11;
+  int get schemaVersion => 12;
 
   @override
   MigrationStrategy get migration {
@@ -104,6 +105,9 @@ class AppDatabase extends _$AppDatabase {
         }
         if (from < 11) {
           await m.createTable(voters);
+        }
+        if (from < 12) {
+          await m.addColumn(voters, voters.password);
         }
       },
       beforeOpen: (details) async {

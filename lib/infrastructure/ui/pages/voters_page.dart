@@ -87,6 +87,10 @@ class _VotersPageState extends State<VotersPage> {
           final name = row[0]?.value?.toString() ?? '';
           final documentId = row[1]?.value?.toString() ?? '';
           final gradeName = row[2]?.value?.toString() ?? '';
+          String? password;
+          if (row.length > 3) {
+            password = row[3]?.value?.toString();
+          }
 
           if (name.isEmpty || documentId.isEmpty) continue;
 
@@ -96,7 +100,12 @@ class _VotersPageState extends State<VotersPage> {
           );
 
           importedVoters.add(
-            Voter(name: name, documentId: documentId, gradeId: grade.id!),
+            Voter(
+              name: name,
+              documentId: documentId,
+              gradeId: grade.id!,
+              password: password,
+            ),
           );
         }
       }

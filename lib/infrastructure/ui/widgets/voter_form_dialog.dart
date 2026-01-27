@@ -25,6 +25,7 @@ class _VoterFormDialogState extends State<VoterFormDialog> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
   late TextEditingController _documentController;
+  late TextEditingController _passwordController;
   int? _selectedGradeId;
 
   @override
@@ -34,6 +35,7 @@ class _VoterFormDialogState extends State<VoterFormDialog> {
     _documentController = TextEditingController(
       text: widget.voter?.documentId ?? '',
     );
+    _passwordController = TextEditingController(text: '');
     _selectedGradeId = widget.voter?.gradeId ?? widget.initialGradeId;
   }
 
@@ -41,6 +43,7 @@ class _VoterFormDialogState extends State<VoterFormDialog> {
   void dispose() {
     _nameController.dispose();
     _documentController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
@@ -105,6 +108,16 @@ class _VoterFormDialogState extends State<VoterFormDialog> {
                             value == null || value.isEmpty ? l10n.error : null,
                       ),
                       const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _passwordController,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          labelText: l10n.password,
+                          isDense: true,
+                          border: const UnderlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
                       DropdownButtonFormField<int>(
                         value: _selectedGradeId,
                         decoration: InputDecoration(
@@ -136,6 +149,7 @@ class _VoterFormDialogState extends State<VoterFormDialog> {
                                       documentId: _documentController.text,
                                       gradeId: _selectedGradeId!,
                                       hasVoted: widget.voter?.hasVoted ?? false,
+                                      password: _passwordController.text,
                                     ),
                                   );
                                   Navigator.pop(context);

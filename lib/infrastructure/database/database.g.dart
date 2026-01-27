@@ -1935,6 +1935,17 @@ class $VotersTable extends Voters with TableInfo<$VotersTable, Voter> {
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
   );
+  static const VerificationMeta _passwordMeta = const VerificationMeta(
+    'password',
+  );
+  @override
+  late final GeneratedColumn<String> password = GeneratedColumn<String>(
+    'password',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _gradeIdMeta = const VerificationMeta(
     'gradeId',
   );
@@ -1969,6 +1980,7 @@ class $VotersTable extends Voters with TableInfo<$VotersTable, Voter> {
     id,
     name,
     documentId,
+    password,
     gradeId,
     hasVoted,
   ];
@@ -2002,6 +2014,12 @@ class $VotersTable extends Voters with TableInfo<$VotersTable, Voter> {
       );
     } else if (isInserting) {
       context.missing(_documentIdMeta);
+    }
+    if (data.containsKey('password')) {
+      context.handle(
+        _passwordMeta,
+        password.isAcceptableOrUnknown(data['password']!, _passwordMeta),
+      );
     }
     if (data.containsKey('grade_id')) {
       context.handle(
@@ -2038,6 +2056,10 @@ class $VotersTable extends Voters with TableInfo<$VotersTable, Voter> {
         DriftSqlType.string,
         data['${effectivePrefix}document_id'],
       )!,
+      password: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}password'],
+      ),
       gradeId: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}grade_id'],
@@ -2059,12 +2081,14 @@ class Voter extends DataClass implements Insertable<Voter> {
   final int id;
   final String name;
   final String documentId;
+  final String? password;
   final int gradeId;
   final bool hasVoted;
   const Voter({
     required this.id,
     required this.name,
     required this.documentId,
+    this.password,
     required this.gradeId,
     required this.hasVoted,
   });
@@ -2074,6 +2098,9 @@ class Voter extends DataClass implements Insertable<Voter> {
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
     map['document_id'] = Variable<String>(documentId);
+    if (!nullToAbsent || password != null) {
+      map['password'] = Variable<String>(password);
+    }
     map['grade_id'] = Variable<int>(gradeId);
     map['has_voted'] = Variable<bool>(hasVoted);
     return map;
@@ -2084,6 +2111,9 @@ class Voter extends DataClass implements Insertable<Voter> {
       id: Value(id),
       name: Value(name),
       documentId: Value(documentId),
+      password: password == null && nullToAbsent
+          ? const Value.absent()
+          : Value(password),
       gradeId: Value(gradeId),
       hasVoted: Value(hasVoted),
     );
@@ -2098,6 +2128,7 @@ class Voter extends DataClass implements Insertable<Voter> {
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       documentId: serializer.fromJson<String>(json['documentId']),
+      password: serializer.fromJson<String?>(json['password']),
       gradeId: serializer.fromJson<int>(json['gradeId']),
       hasVoted: serializer.fromJson<bool>(json['hasVoted']),
     );
@@ -2109,6 +2140,7 @@ class Voter extends DataClass implements Insertable<Voter> {
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
       'documentId': serializer.toJson<String>(documentId),
+      'password': serializer.toJson<String?>(password),
       'gradeId': serializer.toJson<int>(gradeId),
       'hasVoted': serializer.toJson<bool>(hasVoted),
     };
@@ -2118,12 +2150,14 @@ class Voter extends DataClass implements Insertable<Voter> {
     int? id,
     String? name,
     String? documentId,
+    Value<String?> password = const Value.absent(),
     int? gradeId,
     bool? hasVoted,
   }) => Voter(
     id: id ?? this.id,
     name: name ?? this.name,
     documentId: documentId ?? this.documentId,
+    password: password.present ? password.value : this.password,
     gradeId: gradeId ?? this.gradeId,
     hasVoted: hasVoted ?? this.hasVoted,
   );
@@ -2134,6 +2168,7 @@ class Voter extends DataClass implements Insertable<Voter> {
       documentId: data.documentId.present
           ? data.documentId.value
           : this.documentId,
+      password: data.password.present ? data.password.value : this.password,
       gradeId: data.gradeId.present ? data.gradeId.value : this.gradeId,
       hasVoted: data.hasVoted.present ? data.hasVoted.value : this.hasVoted,
     );
@@ -2145,6 +2180,7 @@ class Voter extends DataClass implements Insertable<Voter> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('documentId: $documentId, ')
+          ..write('password: $password, ')
           ..write('gradeId: $gradeId, ')
           ..write('hasVoted: $hasVoted')
           ..write(')'))
@@ -2152,7 +2188,8 @@ class Voter extends DataClass implements Insertable<Voter> {
   }
 
   @override
-  int get hashCode => Object.hash(id, name, documentId, gradeId, hasVoted);
+  int get hashCode =>
+      Object.hash(id, name, documentId, password, gradeId, hasVoted);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2160,6 +2197,7 @@ class Voter extends DataClass implements Insertable<Voter> {
           other.id == this.id &&
           other.name == this.name &&
           other.documentId == this.documentId &&
+          other.password == this.password &&
           other.gradeId == this.gradeId &&
           other.hasVoted == this.hasVoted);
 }
@@ -2168,12 +2206,14 @@ class VotersCompanion extends UpdateCompanion<Voter> {
   final Value<int> id;
   final Value<String> name;
   final Value<String> documentId;
+  final Value<String?> password;
   final Value<int> gradeId;
   final Value<bool> hasVoted;
   const VotersCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.documentId = const Value.absent(),
+    this.password = const Value.absent(),
     this.gradeId = const Value.absent(),
     this.hasVoted = const Value.absent(),
   });
@@ -2181,6 +2221,7 @@ class VotersCompanion extends UpdateCompanion<Voter> {
     this.id = const Value.absent(),
     required String name,
     required String documentId,
+    this.password = const Value.absent(),
     required int gradeId,
     this.hasVoted = const Value.absent(),
   }) : name = Value(name),
@@ -2190,6 +2231,7 @@ class VotersCompanion extends UpdateCompanion<Voter> {
     Expression<int>? id,
     Expression<String>? name,
     Expression<String>? documentId,
+    Expression<String>? password,
     Expression<int>? gradeId,
     Expression<bool>? hasVoted,
   }) {
@@ -2197,6 +2239,7 @@ class VotersCompanion extends UpdateCompanion<Voter> {
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (documentId != null) 'document_id': documentId,
+      if (password != null) 'password': password,
       if (gradeId != null) 'grade_id': gradeId,
       if (hasVoted != null) 'has_voted': hasVoted,
     });
@@ -2206,6 +2249,7 @@ class VotersCompanion extends UpdateCompanion<Voter> {
     Value<int>? id,
     Value<String>? name,
     Value<String>? documentId,
+    Value<String?>? password,
     Value<int>? gradeId,
     Value<bool>? hasVoted,
   }) {
@@ -2213,6 +2257,7 @@ class VotersCompanion extends UpdateCompanion<Voter> {
       id: id ?? this.id,
       name: name ?? this.name,
       documentId: documentId ?? this.documentId,
+      password: password ?? this.password,
       gradeId: gradeId ?? this.gradeId,
       hasVoted: hasVoted ?? this.hasVoted,
     );
@@ -2230,6 +2275,9 @@ class VotersCompanion extends UpdateCompanion<Voter> {
     if (documentId.present) {
       map['document_id'] = Variable<String>(documentId.value);
     }
+    if (password.present) {
+      map['password'] = Variable<String>(password.value);
+    }
     if (gradeId.present) {
       map['grade_id'] = Variable<int>(gradeId.value);
     }
@@ -2245,6 +2293,7 @@ class VotersCompanion extends UpdateCompanion<Voter> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('documentId: $documentId, ')
+          ..write('password: $password, ')
           ..write('gradeId: $gradeId, ')
           ..write('hasVoted: $hasVoted')
           ..write(')'))
@@ -4096,6 +4145,7 @@ typedef $$VotersTableCreateCompanionBuilder =
       Value<int> id,
       required String name,
       required String documentId,
+      Value<String?> password,
       required int gradeId,
       Value<bool> hasVoted,
     });
@@ -4104,6 +4154,7 @@ typedef $$VotersTableUpdateCompanionBuilder =
       Value<int> id,
       Value<String> name,
       Value<String> documentId,
+      Value<String?> password,
       Value<int> gradeId,
       Value<bool> hasVoted,
     });
@@ -4152,6 +4203,11 @@ class $$VotersTableFilterComposer
 
   ColumnFilters<String> get documentId => $composableBuilder(
     column: $table.documentId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get password => $composableBuilder(
+    column: $table.password,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4208,6 +4264,11 @@ class $$VotersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get password => $composableBuilder(
+    column: $table.password,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<bool> get hasVoted => $composableBuilder(
     column: $table.hasVoted,
     builder: (column) => ColumnOrderings(column),
@@ -4256,6 +4317,9 @@ class $$VotersTableAnnotationComposer
     column: $table.documentId,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get password =>
+      $composableBuilder(column: $table.password, builder: (column) => column);
 
   GeneratedColumn<bool> get hasVoted =>
       $composableBuilder(column: $table.hasVoted, builder: (column) => column);
@@ -4315,12 +4379,14 @@ class $$VotersTableTableManager
                 Value<int> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String> documentId = const Value.absent(),
+                Value<String?> password = const Value.absent(),
                 Value<int> gradeId = const Value.absent(),
                 Value<bool> hasVoted = const Value.absent(),
               }) => VotersCompanion(
                 id: id,
                 name: name,
                 documentId: documentId,
+                password: password,
                 gradeId: gradeId,
                 hasVoted: hasVoted,
               ),
@@ -4329,12 +4395,14 @@ class $$VotersTableTableManager
                 Value<int> id = const Value.absent(),
                 required String name,
                 required String documentId,
+                Value<String?> password = const Value.absent(),
                 required int gradeId,
                 Value<bool> hasVoted = const Value.absent(),
               }) => VotersCompanion.insert(
                 id: id,
                 name: name,
                 documentId: documentId,
+                password: password,
                 gradeId: gradeId,
                 hasVoted: hasVoted,
               ),

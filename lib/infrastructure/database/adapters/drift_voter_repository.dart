@@ -1,3 +1,4 @@
+import 'package:bcrypt/bcrypt.dart';
 import 'package:drift/drift.dart';
 import '../../../domain/entities/voter.dart' as domain;
 import '../../../domain/repositories/voter_repository.dart';
@@ -23,26 +24,33 @@ class DriftVoterRepository implements VoterRepository {
 
   @override
   Future<void> saveVoter(domain.Voter voter) async {
+    String? hashedPassword;
+    if (voter.password != null && voter.password!.isNotEmpty) {
+      hashedPassword = BCrypt.hashpw(voter.password!, BCrypt.gensalt());
+    }
+
     if (voter.id == null) {
-      await db
-          .into(db.voters)
-          .insert(
-            VotersCompanion.insert(
-              name: voter.name,
-              documentId: voter.documentId,
-              gradeId: voter.gradeId,
-              hasVoted: Value(voter.hasVoted),
-            ),
-          );
-    } else {
-      await (db.update(db.voters)..where((t) => t.id.equals(voter.id!))).write(
-        VotersCompanion(
-          name: Value(voter.name),
-          documentId: Value(voter.documentId),
-          gradeId: Value(voter.gradeId),
+      await db.into(db.voters).insert(
+        VotersCompanion.insert(
+          name: voter.name,
+          documentId: voter.documentId,
+          gradeId: voter.gradeId,
           hasVoted: Value(voter.hasVoted),
+          password: Value(hashedPassword),
         ),
       );
+    } else {
+      final companion = VotersCompanion(
+        name: Value(voter.name),
+        documentId: Value(voter.documentId),
+        gradeId: Value(voter.gradeId),
+        hasVoted: Value(voter.hasVoted),
+        password: hashedPassword != null
+            ? Value(hashedPassword)
+            : const Value.absent(),
+      );
+      await (db.update(db.voters)..where((t) => t.id.equals(voter.id!)))
+          .write(companion);
     }
   }
 
@@ -54,18 +62,24 @@ class DriftVoterRepository implements VoterRepository {
   @override
   Future<void> saveVoters(List<domain.Voter> voters) async {
     await db.batch((batch) {
-      batch.insertAll(
-        db.voters,
-        voters.map(
-          (v) => VotersCompanion.insert(
+      for (final v in voters) {
+        String? hashedPassword;
+        if (v.password != null && v.password!.isNotEmpty) {
+          hashedPassword = BCrypt.hashpw(v.password!, BCrypt.gensalt());
+        }
+
+        batch.insert(
+          db.voters,
+          VotersCompanion.insert(
             name: v.name,
             documentId: v.documentId,
             gradeId: v.gradeId,
             hasVoted: Value(v.hasVoted),
+            password: Value(hashedPassword),
           ),
-        ),
-        mode: InsertMode.insertOrReplace,
-      );
+          mode: InsertMode.insertOrReplace,
+        );
+      }
     });
   }
 
@@ -89,6 +103,7 @@ class DriftVoterRepository implements VoterRepository {
       documentId: voter.documentId,
       gradeId: voter.gradeId,
       hasVoted: voter.hasVoted,
+      password: voter.password,
     );
   }
 }
