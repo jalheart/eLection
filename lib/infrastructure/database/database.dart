@@ -37,12 +37,21 @@ class Categories extends Table {
   IntColumn get order => integer().withDefault(const Constant(0))();
 }
 
-@DriftDatabase(tables: [Settings, Users, Grades, Categories, GradeCategories])
+class Candidates extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text()();
+  TextColumn get picture => text().nullable()();
+  IntColumn get categoryId => integer().references(Categories, #id)();
+}
+
+@DriftDatabase(
+  tables: [Settings, Users, Grades, Categories, GradeCategories, Candidates],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(impl.connect());
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 10;
 
   @override
   MigrationStrategy get migration {
@@ -73,6 +82,9 @@ class AppDatabase extends _$AppDatabase {
         }
         if (from < 9) {
           await m.addColumn(settings, settings.language);
+        }
+        if (from < 10) {
+          await m.createTable(candidates);
         }
       },
       beforeOpen: (details) async {

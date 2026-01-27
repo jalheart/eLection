@@ -187,4 +187,39 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get editCategory => 'Editar Categoría';
+
+  @override
+  String get manageCandidates => 'Gestionar Candidatos';
+
+  @override
+  String get newCandidate => 'Nuevo Candidato';
+
+  @override
+  String get editCandidate => 'Editar Candidato';
+
+  @override
+  String get deleteCandidate => 'Eliminar Candidato';
+
+  @override
+  String deleteCandidateConfirm(Object name) {
+    return '¿Está seguro de eliminar al candidato $name?';
+  }
+
+  @override
+  String get candidateName => 'Nombre del Candidato';
+
+  @override
+  String get candidatePicture => 'Foto del Candidato';
+
+  @override
+  String get selectPicture => 'Seleccionar Foto';
+
+  @override
+  String get noCandidates => 'No hay candidatos registrados en esta categoría.';
+
+  @override
+  String get candidateSaved => 'Candidato guardado correctamente';
+
+  @override
+  String get candidateDeleted => 'Candidato eliminado correctamente';
 }

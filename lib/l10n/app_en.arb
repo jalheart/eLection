@@ -55,5 +55,16 @@
   "developedBy": "Software developed by {name}",
   "guest": "Guest",
   "editGrade": "Edit Grade",
-  "editCategory": "Edit Category"
+  "editCategory": "Edit Category",
+  "manageCandidates": "Manage Candidates",
+  "newCandidate": "New Candidate",
+  "editCandidate": "Edit Candidate",
+  "deleteCandidate": "Delete Candidate",
+  "deleteCandidateConfirm": "Are you sure you want to delete the candidate {name}?",
+  "candidateName": "Candidate Name",
+  "candidatePicture": "Candidate Picture",
+  "selectPicture": "Select Picture",
+  "noCandidates": "No candidates registered in this category.",
+  "candidateSaved": "Candidate saved successfully",
+  "candidateDeleted": "Candidate deleted successfully"
 }

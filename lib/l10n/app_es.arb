@@ -55,5 +55,16 @@
   "developedBy": "Software desarrollado por {name}",
   "guest": "Invitado",
   "editGrade": "Editar Grado",
-  "editCategory": "Editar Categoría"
+  "editCategory": "Editar Categoría",
+  "manageCandidates": "Gestionar Candidatos",
+  "newCandidate": "Nuevo Candidato",
+  "editCandidate": "Editar Candidato",
+  "deleteCandidate": "Eliminar Candidato",
+  "deleteCandidateConfirm": "¿Está seguro de eliminar al candidato {name}?",
+  "candidateName": "Nombre del Candidato",
+  "candidatePicture": "Foto del Candidato",
+  "selectPicture": "Seleccionar Foto",
+  "noCandidates": "No hay candidatos registrados en esta categoría.",
+  "candidateSaved": "Candidato guardado correctamente",
+  "candidateDeleted": "Candidato eliminado correctamente"
 }

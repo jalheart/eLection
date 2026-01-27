@@ -437,6 +437,72 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Editar Categoría'**
   String get editCategory;
+
+  /// No description provided for @manageCandidates.
+  ///
+  /// In es, this message translates to:
+  /// **'Gestionar Candidatos'**
+  String get manageCandidates;
+
+  /// No description provided for @newCandidate.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuevo Candidato'**
+  String get newCandidate;
+
+  /// No description provided for @editCandidate.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar Candidato'**
+  String get editCandidate;
+
+  /// No description provided for @deleteCandidate.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar Candidato'**
+  String get deleteCandidate;
+
+  /// No description provided for @deleteCandidateConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Está seguro de eliminar al candidato {name}?'**
+  String deleteCandidateConfirm(Object name);
+
+  /// No description provided for @candidateName.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre del Candidato'**
+  String get candidateName;
+
+  /// No description provided for @candidatePicture.
+  ///
+  /// In es, this message translates to:
+  /// **'Foto del Candidato'**
+  String get candidatePicture;
+
+  /// No description provided for @selectPicture.
+  ///
+  /// In es, this message translates to:
+  /// **'Seleccionar Foto'**
+  String get selectPicture;
+
+  /// No description provided for @noCandidates.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay candidatos registrados en esta categoría.'**
+  String get noCandidates;
+
+  /// No description provided for @candidateSaved.
+  ///
+  /// In es, this message translates to:
+  /// **'Candidato guardado correctamente'**
+  String get candidateSaved;
+
+  /// No description provided for @candidateDeleted.
+  ///
+  /// In es, this message translates to:
+  /// **'Candidato eliminado correctamente'**
+  String get candidateDeleted;
 }
 
 class _AppLocalizationsDelegate

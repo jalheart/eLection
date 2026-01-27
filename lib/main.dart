@@ -24,7 +24,13 @@ import 'application/use_cases/get_grades_by_category_use_case.dart';
 import 'application/use_cases/assign_category_to_grade_use_case.dart';
 import 'application/use_cases/unassign_category_from_grade_use_case.dart';
 import 'application/use_cases/get_all_assignments_use_case.dart';
+import 'application/use_cases/get_candidates_use_case.dart';
+import 'application/use_cases/get_candidates_by_category_use_case.dart';
+import 'application/use_cases/save_candidate_use_case.dart';
+import 'application/use_cases/delete_candidate_use_case.dart';
+import 'application/providers/candidates_provider.dart';
 import 'application/providers/grade_category_provider.dart';
+import 'infrastructure/database/adapters/drift_candidate_repository.dart';
 import 'infrastructure/database/database.dart';
 import 'infrastructure/ui/pages/login_page.dart';
 import 'infrastructure/ui/pages/admin_landing_page.dart';
@@ -55,6 +61,9 @@ void main() {
         ),
         ProxyProvider<AppDatabase, DriftGradeCategoryRepository>(
           update: (context, db, _) => DriftGradeCategoryRepository(db),
+        ),
+        ProxyProvider<AppDatabase, DriftCandidateRepository>(
+          update: (context, db, _) => DriftCandidateRepository(db),
         ),
         // Use Cases
         ProxyProvider<DriftUserRepository, LoginUseCase>(
@@ -104,6 +113,18 @@ void main() {
         >(update: (context, repo, _) => UnassignCategoryFromGradeUseCase(repo)),
         ProxyProvider<DriftGradeCategoryRepository, GetAllAssignmentsUseCase>(
           update: (context, repo, _) => GetAllAssignmentsUseCase(repo),
+        ),
+        ProxyProvider<DriftCandidateRepository, GetCandidatesUseCase>(
+          update: (context, repo, _) => GetCandidatesUseCase(repo),
+        ),
+        ProxyProvider<DriftCandidateRepository, GetCandidatesByCategoryUseCase>(
+          update: (context, repo, _) => GetCandidatesByCategoryUseCase(repo),
+        ),
+        ProxyProvider<DriftCandidateRepository, SaveCandidateUseCase>(
+          update: (context, repo, _) => SaveCandidateUseCase(repo),
+        ),
+        ProxyProvider<DriftCandidateRepository, DeleteCandidateUseCase>(
+          update: (context, repo, _) => DeleteCandidateUseCase(repo),
         ),
         // Providers
         ChangeNotifierProxyProvider2<
@@ -191,6 +212,23 @@ void main() {
                     unassignUC,
                     getAllUC,
                   ),
+        ),
+        ChangeNotifierProxyProvider4<
+          GetCandidatesUseCase,
+          GetCandidatesByCategoryUseCase,
+          SaveCandidateUseCase,
+          DeleteCandidateUseCase,
+          CandidatesProvider
+        >(
+          create: (context) => CandidatesProvider(
+            context.read<GetCandidatesUseCase>(),
+            context.read<GetCandidatesByCategoryUseCase>(),
+            context.read<SaveCandidateUseCase>(),
+            context.read<DeleteCandidateUseCase>(),
+          ),
+          update: (context, getUC, getByCatUC, saveUC, deleteUC, previous) =>
+              previous ??
+              CandidatesProvider(getUC, getByCatUC, saveUC, deleteUC),
         ),
       ],
       child: const MyApp(),

@@ -1592,6 +1592,310 @@ class GradeCategoriesCompanion extends UpdateCompanion<GradeCategory> {
   }
 }
 
+class $CandidatesTable extends Candidates
+    with TableInfo<$CandidatesTable, Candidate> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CandidatesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _pictureMeta = const VerificationMeta(
+    'picture',
+  );
+  @override
+  late final GeneratedColumn<String> picture = GeneratedColumn<String>(
+    'picture',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _categoryIdMeta = const VerificationMeta(
+    'categoryId',
+  );
+  @override
+  late final GeneratedColumn<int> categoryId = GeneratedColumn<int>(
+    'category_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES categories (id)',
+    ),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, name, picture, categoryId];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'candidates';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Candidate> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('picture')) {
+      context.handle(
+        _pictureMeta,
+        picture.isAcceptableOrUnknown(data['picture']!, _pictureMeta),
+      );
+    }
+    if (data.containsKey('category_id')) {
+      context.handle(
+        _categoryIdMeta,
+        categoryId.isAcceptableOrUnknown(data['category_id']!, _categoryIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_categoryIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Candidate map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Candidate(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      picture: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}picture'],
+      ),
+      categoryId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}category_id'],
+      )!,
+    );
+  }
+
+  @override
+  $CandidatesTable createAlias(String alias) {
+    return $CandidatesTable(attachedDatabase, alias);
+  }
+}
+
+class Candidate extends DataClass implements Insertable<Candidate> {
+  final int id;
+  final String name;
+  final String? picture;
+  final int categoryId;
+  const Candidate({
+    required this.id,
+    required this.name,
+    this.picture,
+    required this.categoryId,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || picture != null) {
+      map['picture'] = Variable<String>(picture);
+    }
+    map['category_id'] = Variable<int>(categoryId);
+    return map;
+  }
+
+  CandidatesCompanion toCompanion(bool nullToAbsent) {
+    return CandidatesCompanion(
+      id: Value(id),
+      name: Value(name),
+      picture: picture == null && nullToAbsent
+          ? const Value.absent()
+          : Value(picture),
+      categoryId: Value(categoryId),
+    );
+  }
+
+  factory Candidate.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Candidate(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      picture: serializer.fromJson<String?>(json['picture']),
+      categoryId: serializer.fromJson<int>(json['categoryId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'picture': serializer.toJson<String?>(picture),
+      'categoryId': serializer.toJson<int>(categoryId),
+    };
+  }
+
+  Candidate copyWith({
+    int? id,
+    String? name,
+    Value<String?> picture = const Value.absent(),
+    int? categoryId,
+  }) => Candidate(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    picture: picture.present ? picture.value : this.picture,
+    categoryId: categoryId ?? this.categoryId,
+  );
+  Candidate copyWithCompanion(CandidatesCompanion data) {
+    return Candidate(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      picture: data.picture.present ? data.picture.value : this.picture,
+      categoryId: data.categoryId.present
+          ? data.categoryId.value
+          : this.categoryId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Candidate(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('picture: $picture, ')
+          ..write('categoryId: $categoryId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, picture, categoryId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Candidate &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.picture == this.picture &&
+          other.categoryId == this.categoryId);
+}
+
+class CandidatesCompanion extends UpdateCompanion<Candidate> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<String?> picture;
+  final Value<int> categoryId;
+  const CandidatesCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.picture = const Value.absent(),
+    this.categoryId = const Value.absent(),
+  });
+  CandidatesCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    this.picture = const Value.absent(),
+    required int categoryId,
+  }) : name = Value(name),
+       categoryId = Value(categoryId);
+  static Insertable<Candidate> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<String>? picture,
+    Expression<int>? categoryId,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (picture != null) 'picture': picture,
+      if (categoryId != null) 'category_id': categoryId,
+    });
+  }
+
+  CandidatesCompanion copyWith({
+    Value<int>? id,
+    Value<String>? name,
+    Value<String?>? picture,
+    Value<int>? categoryId,
+  }) {
+    return CandidatesCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      picture: picture ?? this.picture,
+      categoryId: categoryId ?? this.categoryId,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (picture.present) {
+      map['picture'] = Variable<String>(picture.value);
+    }
+    if (categoryId.present) {
+      map['category_id'] = Variable<int>(categoryId.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CandidatesCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('picture: $picture, ')
+          ..write('categoryId: $categoryId')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1602,6 +1906,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $GradeCategoriesTable gradeCategories = $GradeCategoriesTable(
     this,
   );
+  late final $CandidatesTable candidates = $CandidatesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1612,6 +1917,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     grades,
     categories,
     gradeCategories,
+    candidates,
   ];
 }
 
@@ -2348,6 +2654,24 @@ final class $$CategoriesTableReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<$CandidatesTable, List<Candidate>>
+  _candidatesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.candidates,
+    aliasName: $_aliasNameGenerator(db.categories.id, db.candidates.categoryId),
+  );
+
+  $$CandidatesTableProcessedTableManager get candidatesRefs {
+    final manager = $$CandidatesTableTableManager(
+      $_db,
+      $_db.candidates,
+    ).filter((f) => f.categoryId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_candidatesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$CategoriesTableFilterComposer
@@ -2395,6 +2719,31 @@ class $$CategoriesTableFilterComposer
           }) => $$GradeCategoriesTableFilterComposer(
             $db: $db,
             $table: $db.gradeCategories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> candidatesRefs(
+    Expression<bool> Function($$CandidatesTableFilterComposer f) f,
+  ) {
+    final $$CandidatesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.candidates,
+      getReferencedColumn: (t) => t.categoryId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CandidatesTableFilterComposer(
+            $db: $db,
+            $table: $db.candidates,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -2480,6 +2829,31 @@ class $$CategoriesTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> candidatesRefs<T extends Object>(
+    Expression<T> Function($$CandidatesTableAnnotationComposer a) f,
+  ) {
+    final $$CandidatesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.candidates,
+      getReferencedColumn: (t) => t.categoryId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CandidatesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.candidates,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$CategoriesTableTableManager
@@ -2495,7 +2869,10 @@ class $$CategoriesTableTableManager
           $$CategoriesTableUpdateCompanionBuilder,
           (Category, $$CategoriesTableReferences),
           Category,
-          PrefetchHooks Function({bool gradeCategoriesRefs})
+          PrefetchHooks Function({
+            bool gradeCategoriesRefs,
+            bool candidatesRefs,
+          })
         > {
   $$CategoriesTableTableManager(_$AppDatabase db, $CategoriesTable table)
     : super(
@@ -2540,38 +2917,63 @@ class $$CategoriesTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({gradeCategoriesRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [
-                if (gradeCategoriesRefs) db.gradeCategories,
-              ],
-              addJoins: null,
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (gradeCategoriesRefs)
-                    await $_getPrefetchedData<
-                      Category,
-                      $CategoriesTable,
-                      GradeCategory
-                    >(
-                      currentTable: table,
-                      referencedTable: $$CategoriesTableReferences
-                          ._gradeCategoriesRefsTable(db),
-                      managerFromTypedResult: (p0) =>
-                          $$CategoriesTableReferences(
-                            db,
-                            table,
-                            p0,
-                          ).gradeCategoriesRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.categoryId == item.id),
-                      typedResults: items,
-                    ),
-                ];
+          prefetchHooksCallback:
+              ({gradeCategoriesRefs = false, candidatesRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (gradeCategoriesRefs) db.gradeCategories,
+                    if (candidatesRefs) db.candidates,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (gradeCategoriesRefs)
+                        await $_getPrefetchedData<
+                          Category,
+                          $CategoriesTable,
+                          GradeCategory
+                        >(
+                          currentTable: table,
+                          referencedTable: $$CategoriesTableReferences
+                              ._gradeCategoriesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$CategoriesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).gradeCategoriesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.categoryId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (candidatesRefs)
+                        await $_getPrefetchedData<
+                          Category,
+                          $CategoriesTable,
+                          Candidate
+                        >(
+                          currentTable: table,
+                          referencedTable: $$CategoriesTableReferences
+                              ._candidatesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$CategoriesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).candidatesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.categoryId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -2588,7 +2990,7 @@ typedef $$CategoriesTableProcessedTableManager =
       $$CategoriesTableUpdateCompanionBuilder,
       (Category, $$CategoriesTableReferences),
       Category,
-      PrefetchHooks Function({bool gradeCategoriesRefs})
+      PrefetchHooks Function({bool gradeCategoriesRefs, bool candidatesRefs})
     >;
 typedef $$GradeCategoriesTableCreateCompanionBuilder =
     GradeCategoriesCompanion Function({
@@ -2950,6 +3352,300 @@ typedef $$GradeCategoriesTableProcessedTableManager =
       GradeCategory,
       PrefetchHooks Function({bool gradeId, bool categoryId})
     >;
+typedef $$CandidatesTableCreateCompanionBuilder =
+    CandidatesCompanion Function({
+      Value<int> id,
+      required String name,
+      Value<String?> picture,
+      required int categoryId,
+    });
+typedef $$CandidatesTableUpdateCompanionBuilder =
+    CandidatesCompanion Function({
+      Value<int> id,
+      Value<String> name,
+      Value<String?> picture,
+      Value<int> categoryId,
+    });
+
+final class $$CandidatesTableReferences
+    extends BaseReferences<_$AppDatabase, $CandidatesTable, Candidate> {
+  $$CandidatesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $CategoriesTable _categoryIdTable(_$AppDatabase db) =>
+      db.categories.createAlias(
+        $_aliasNameGenerator(db.candidates.categoryId, db.categories.id),
+      );
+
+  $$CategoriesTableProcessedTableManager get categoryId {
+    final $_column = $_itemColumn<int>('category_id')!;
+
+    final manager = $$CategoriesTableTableManager(
+      $_db,
+      $_db.categories,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_categoryIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$CandidatesTableFilterComposer
+    extends Composer<_$AppDatabase, $CandidatesTable> {
+  $$CandidatesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get picture => $composableBuilder(
+    column: $table.picture,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$CategoriesTableFilterComposer get categoryId {
+    final $$CategoriesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.categoryId,
+      referencedTable: $db.categories,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CategoriesTableFilterComposer(
+            $db: $db,
+            $table: $db.categories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CandidatesTableOrderingComposer
+    extends Composer<_$AppDatabase, $CandidatesTable> {
+  $$CandidatesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get picture => $composableBuilder(
+    column: $table.picture,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$CategoriesTableOrderingComposer get categoryId {
+    final $$CategoriesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.categoryId,
+      referencedTable: $db.categories,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CategoriesTableOrderingComposer(
+            $db: $db,
+            $table: $db.categories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CandidatesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CandidatesTable> {
+  $$CandidatesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get picture =>
+      $composableBuilder(column: $table.picture, builder: (column) => column);
+
+  $$CategoriesTableAnnotationComposer get categoryId {
+    final $$CategoriesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.categoryId,
+      referencedTable: $db.categories,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CategoriesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.categories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CandidatesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CandidatesTable,
+          Candidate,
+          $$CandidatesTableFilterComposer,
+          $$CandidatesTableOrderingComposer,
+          $$CandidatesTableAnnotationComposer,
+          $$CandidatesTableCreateCompanionBuilder,
+          $$CandidatesTableUpdateCompanionBuilder,
+          (Candidate, $$CandidatesTableReferences),
+          Candidate,
+          PrefetchHooks Function({bool categoryId})
+        > {
+  $$CandidatesTableTableManager(_$AppDatabase db, $CandidatesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CandidatesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CandidatesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CandidatesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String?> picture = const Value.absent(),
+                Value<int> categoryId = const Value.absent(),
+              }) => CandidatesCompanion(
+                id: id,
+                name: name,
+                picture: picture,
+                categoryId: categoryId,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String name,
+                Value<String?> picture = const Value.absent(),
+                required int categoryId,
+              }) => CandidatesCompanion.insert(
+                id: id,
+                name: name,
+                picture: picture,
+                categoryId: categoryId,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$CandidatesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({categoryId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (categoryId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.categoryId,
+                                referencedTable: $$CandidatesTableReferences
+                                    ._categoryIdTable(db),
+                                referencedColumn: $$CandidatesTableReferences
+                                    ._categoryIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$CandidatesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CandidatesTable,
+      Candidate,
+      $$CandidatesTableFilterComposer,
+      $$CandidatesTableOrderingComposer,
+      $$CandidatesTableAnnotationComposer,
+      $$CandidatesTableCreateCompanionBuilder,
+      $$CandidatesTableUpdateCompanionBuilder,
+      (Candidate, $$CandidatesTableReferences),
+      Candidate,
+      PrefetchHooks Function({bool categoryId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -2964,4 +3660,6 @@ class $AppDatabaseManager {
       $$CategoriesTableTableManager(_db, _db.categories);
   $$GradeCategoriesTableTableManager get gradeCategories =>
       $$GradeCategoriesTableTableManager(_db, _db.gradeCategories);
+  $$CandidatesTableTableManager get candidates =>
+      $$CandidatesTableTableManager(_db, _db.candidates);
 }

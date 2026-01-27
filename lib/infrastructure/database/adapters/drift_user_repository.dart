@@ -10,7 +10,8 @@ class DriftUserRepository implements UserRepository {
 
   @override
   Future<domain.User?> login(String username, String password) async {
-    final query = db.select(db.users)..where((u) => u.username.equals(username));
+    final query = db.select(db.users)
+      ..where((u) => u.username.equals(username));
     final user = await query.getSingleOrNull();
 
     if (user != null && BCrypt.checkpw(password, user.password)) {
@@ -21,7 +22,8 @@ class DriftUserRepository implements UserRepository {
 
   @override
   Future<domain.User?> findByUsername(String username) async {
-    final query = db.select(db.users)..where((u) => u.username.equals(username));
+    final query = db.select(db.users)
+      ..where((u) => u.username.equals(username));
     final user = await query.getSingleOrNull();
     return user != null ? _mapToDomain(user) : null;
   }

@@ -5,9 +5,11 @@ import 'package:provider/provider.dart';
 import '../../../application/providers/categories_provider.dart';
 import '../../../application/providers/grados_provider.dart';
 import '../../../application/providers/grade_category_provider.dart';
+import '../../../application/providers/candidates_provider.dart';
 import '../../../domain/entities/category.dart';
 import '../../../domain/entities/grado.dart';
 import '../widgets/admin_layout.dart';
+import 'candidates_page.dart';
 
 import '../widgets/confirm_delete_dialog.dart';
 import '../widgets/custom_search_bar.dart';
@@ -40,6 +42,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
       context.read<CategoriesProvider>().loadCategories();
       context.read<GradosProvider>().loadGrados();
       context.read<GradeCategoryProvider>().loadAssignments();
+      context.read<CandidatesProvider>().loadCandidates();
     });
   }
 
@@ -316,6 +319,30 @@ class CategoryDataSource extends DataTableSource {
                 ),
                 tooltip: l10n.manageGrades,
                 onPressed: () => onManageGrades(category),
+              ),
+              IconButton(
+                icon: Consumer<CandidatesProvider>(
+                  builder: (context, candProvider, _) {
+                    final count = candProvider.candidates
+                        .where((c) => c.categoryId == category.id)
+                        .length;
+                    return Badge(
+                      label: Text(count.toString()),
+                      backgroundColor: Colors.teal,
+                      isLabelVisible: count > 0,
+                      child: const Icon(Icons.people, color: Colors.teal),
+                    );
+                  },
+                ),
+                tooltip: l10n.manageCandidates,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CandidatesPage(),
+                    ),
+                  );
+                },
               ),
               IconButton(
                 icon: const Icon(Icons.edit, color: Colors.blue),

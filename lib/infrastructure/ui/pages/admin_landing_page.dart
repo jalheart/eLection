@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../widgets/admin_layout.dart';
 import 'grados_page.dart';
 import 'categories_page.dart';
+import 'candidates_page.dart';
 import 'package:myapp/l10n/app_localizations.dart';
 
 class AdminLandingPage extends StatelessWidget {
@@ -68,6 +69,14 @@ class AdminLandingPage extends StatelessWidget {
                 _DashboardCard(
                   image: 'assets/images/candidates.png',
                   label: l10n.candidates,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CandidatesPage(),
+                      ),
+                    );
+                  },
                 ),
                 _DashboardCard(
                   image: 'assets/images/settings.png',
