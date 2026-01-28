@@ -96,6 +96,17 @@ class DriftVoterRepository implements VoterRepository {
     return result != null ? _mapToDomain(result) : null;
   }
 
+  @override
+  Future<domain.Voter?> login(String documentId, String password) async {
+    final voter = await getVoterByDocumentId(documentId);
+    if (voter != null && voter.password != null) {
+      if (BCrypt.checkpw(password, voter.password!)) {
+        return voter;
+      }
+    }
+    return null;
+  }
+
   domain.Voter _mapToDomain(Voter voter) {
     return domain.Voter(
       id: voter.id,

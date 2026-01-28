@@ -1,26 +1,57 @@
 import 'package:flutter/material.dart';
 import '../../domain/entities/user.dart';
+import '../../domain/entities/voter.dart';
 import '../use_cases/login_use_case.dart';
-import '../use_cases/check_username_use_case.dart';
+import '../use_cases/login_voter_use_case.dart';
+import '../use_cases/identify_user_use_case.dart';
 
 class AuthProvider with ChangeNotifier {
   final LoginUseCase loginUseCase;
-  final CheckUsernameUseCase checkUsernameUseCase;
-  User? _currentUser;
+  final LoginVoterUseCase loginVoterUseCase;
+  final IdentifyUserUseCase identifyUserUseCase;
+  Object? _currentUser;
 
-  AuthProvider(this.loginUseCase, this.checkUsernameUseCase);
+  AuthProvider({
+    required this.loginUseCase,
+    required this.loginVoterUseCase,
+    required this.identifyUserUseCase,
+  });
 
-  User? get currentUser => _currentUser;
+  Object? get currentUser => _currentUser;
   bool get isAuthenticated => _currentUser != null;
+  bool get isAdmin => _currentUser is User;
+  bool get isVoter => _currentUser is Voter;
 
-  Future<User?> checkUsername(String username) async {
-    return await checkUsernameUseCase.execute(username);
+  Future<IdentificationResult?> identifyUser(String identifier) async {
+    return await identifyUserUseCase.execute(identifier);
   }
 
-  Future<bool> login(String username, String password) async {
+  Future<bool> loginAdmin(String username, String password) async {
     final user = await loginUseCase.execute(username, password);
     if (user != null) {
       _currentUser = user;
+      notifyListeners();
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> loginVoter(String documentId, String? password, {bool passRequired = true}) async {
+    if (!passRequired) {
+      final voter = await identifyUserUseCase.voterRepository.getVoterByDocumentId(documentId);
+      if (voter != null) {
+        _currentUser = voter;
+        notifyListeners();
+        return true;
+      }
+      return false;
+    }
+
+    if (password == null) return false;
+
+    final voter = await loginVoterUseCase.execute(documentId, password);
+    if (voter != null) {
+      _currentUser = voter;
       notifyListeners();
       return true;
     }

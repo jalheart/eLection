@@ -43,6 +43,9 @@ import 'infrastructure/database/adapters/drift_voter_repository.dart';
 import 'infrastructure/database/database.dart';
 import 'infrastructure/ui/pages/login_page.dart';
 import 'infrastructure/ui/pages/admin_landing_page.dart';
+import 'infrastructure/ui/pages/voter_landing_page.dart';
+import 'application/use_cases/login_voter_use_case.dart';
+import 'application/use_cases/identify_user_use_case.dart';
 import 'application/use_cases/update_settings_use_case.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:myapp/l10n/app_localizations.dart';
@@ -78,8 +81,15 @@ void main() {
           update: (context, db, _) => DriftVoterRepository(db),
         ),
         // Use Cases
+        // Use Cases
         ProxyProvider<DriftUserRepository, LoginUseCase>(
           update: (context, repo, _) => LoginUseCase(repo),
+        ),
+        ProxyProvider<DriftVoterRepository, LoginVoterUseCase>(
+          update: (context, repo, _) => LoginVoterUseCase(repo),
+        ),
+        ProxyProvider2<DriftUserRepository, DriftVoterRepository, IdentifyUserUseCase>(
+          update: (context, userRepo, voterRepo, _) => IdentifyUserUseCase(userRepo, voterRepo),
         ),
         ProxyProvider<DriftUserRepository, CheckUsernameUseCase>(
           update: (context, repo, _) => CheckUsernameUseCase(repo),
@@ -159,18 +169,25 @@ void main() {
         ProxyProvider<DriftVoterRepository, GetVoterByDocumentIdUseCase>(
           update: (context, repo, _) => GetVoterByDocumentIdUseCase(repo),
         ),
+
         // Providers
-        ChangeNotifierProxyProvider2<
+        ChangeNotifierProxyProvider3<
           LoginUseCase,
-          CheckUsernameUseCase,
+          LoginVoterUseCase,
+          IdentifyUserUseCase,
           AuthProvider
         >(
           create: (context) => AuthProvider(
-            context.read<LoginUseCase>(),
-            context.read<CheckUsernameUseCase>(),
+            loginUseCase: context.read<LoginUseCase>(),
+            loginVoterUseCase: context.read<LoginVoterUseCase>(),
+            identifyUserUseCase: context.read<IdentifyUserUseCase>(),
           ),
-          update: (context, loginUC, checkUC, previous) =>
-              previous ?? AuthProvider(loginUC, checkUC),
+          update: (context, loginUC, loginVoterUC, identifyUC, previous) =>
+              previous ?? AuthProvider(
+                loginUseCase: loginUC,
+                loginVoterUseCase: loginVoterUC,
+                identifyUserUseCase: identifyUC,
+              ),
         ),
         ChangeNotifierProxyProvider2<
           GetSettingsUseCase,
@@ -333,7 +350,11 @@ class MyApp extends StatelessWidget {
           home: Consumer<AuthProvider>(
             builder: (context, auth, _) {
               if (auth.isAuthenticated) {
-                return const AdminLandingPage();
+                if (auth.isAdmin) {
+                  return const AdminLandingPage();
+                } else if (auth.isVoter) {
+                  return const VoterLandingPage();
+                }
               }
               return const LoginPage();
             },

@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:path/path.dart' as p;
 import '../../../application/providers/settings_provider.dart';
 import '../../../application/providers/auth_provider.dart';
+import '../../../domain/entities/user.dart';
+import '../../../domain/entities/voter.dart';
 import 'package:myapp/l10n/app_localizations.dart';
 
 class AdminLayout extends StatelessWidget {
@@ -213,14 +215,24 @@ class AdminLayout extends StatelessWidget {
                       offset: const Offset(0, -50), // Show menu above the bar
                       child: MouseRegion(
                         cursor: SystemMouseCursors.click,
-                        child: Text(
-                          '${l10n.username}: ${user?.name ?? l10n.guest}',
-                          style: const TextStyle(
-                            fontSize: 10,
-                            color: Colors.blueGrey,
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline,
-                          ),
+                        child: Builder(
+                          builder: (context) {
+                            String displayName = l10n.guest;
+                            if (auth.isAdmin) {
+                              displayName = (user as User).name;
+                            } else if (auth.isVoter) {
+                              displayName = (user as Voter).name;
+                            }
+                            return Text(
+                              '${l10n.username}: $displayName',
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: Colors.blueGrey,
+                                fontWeight: FontWeight.bold,
+                                decoration: TextDecoration.underline,
+                              ),
+                            );
+                          },
                         ),
                       ),
                     );
