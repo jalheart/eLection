@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:path/path.dart' as p;
 import '../../../application/providers/auth_provider.dart';
 import '../../../application/providers/settings_provider.dart';
 import '../../../application/use_cases/identify_user_use_case.dart';
@@ -108,73 +110,203 @@ class _LoginPageState extends State<LoginPage> {
     final l10n = AppLocalizations.of(context)!;
     
     return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                'eLection Login',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 32),
-              TextField(
-                controller: _identifierController,
-                decoration: InputDecoration(
-                  labelText: l10n.username,
-                  errorText: _errorMessage,
-                  border: const OutlineInputBorder(),
-                  prefixIcon: const Icon(Icons.person),
-                ),
-                enabled: !_showPassword && !_isLoading,
-                onSubmitted: (_) => _identify(),
-              ),
-              if (_showPassword) ...[
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _passwordController,
-                  decoration: InputDecoration(
-                    labelText: l10n.password,
-                    border: const OutlineInputBorder(),
-                    prefixIcon: const Icon(Icons.lock),
-                  ),
-                  obscureText: true,
-                  autofocus: true,
-                  enabled: !_isLoading,
-                  onSubmitted: (_) => _login(),
-                ),
-              ],
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: _isLoading ? null : (_showPassword ? _login : _identify),
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(50),
-                ),
-                child: _isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+      backgroundColor: Colors.white,
+      body: Consumer<SettingsProvider>(
+        builder: (context, settingsProvider, _) {
+          final settings = settingsProvider.settings;
+          final theme = Theme.of(context);
+
+          return Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24.0),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 400),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Institutional Header
+                    if (settings?.logo != null && settings!.logo.isNotEmpty)
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 24),
+                        height: 120,
+                        child: Builder(
+                          builder: (context) {
+                            final logo = settings.logo;
+                            if (logo.startsWith('assets/')) {
+                              return Image.asset(logo, fit: BoxFit.contain);
+                            } else if (p.isAbsolute(logo)) {
+                              return Image.file(File(logo), fit: BoxFit.contain);
+                            } else {
+                              final resolved = settingsProvider.resolvePath(logo);
+                              return resolved != null
+                                  ? Image.file(File(resolved), fit: BoxFit.contain)
+                                  : Icon(Icons.school, size: 80, color: theme.primaryColor);
+                            }
+                          },
+                        ),
                       )
-                    : Text(
-                        _showPassword ? l10n.login : 'Siguiente',
+                    else 
+                      Icon(Icons.school, size: 80, color: theme.primaryColor.withOpacity(0.5)),
+                    
+                    Text(
+                      settings?.name ?? 'eLection',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
                       ),
-              ),
-              if (_showPassword && !_isLoading)
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      _showPassword = false;
-                      _passwordController.clear();
-                      _identifiedType = null;
-                    });
-                  },
-                  child: const Text('Cambiar usuario'),
+                    ),
+                    if (settings?.slogan != null && settings!.slogan.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        settings.slogan,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey[600],
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ],
+                    
+                    const SizedBox(height: 48),
+                    
+                    // Login Card
+                    Card(
+                      elevation: 4,
+                      shadowColor: Colors.black12,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(32.0),
+                        child: Column(
+                          children: [
+                            Text(
+                              l10n.login,
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            const SizedBox(height: 32),
+                            TextField(
+                              controller: _identifierController,
+                              decoration: InputDecoration(
+                                labelText: l10n.username,
+                                errorText: _errorMessage,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                prefixIcon: const Icon(Icons.person),
+                              ),
+                              enabled: !_showPassword && !_isLoading,
+                              onSubmitted: (_) => _identify(),
+                            ),
+                            if (_showPassword) ...[
+                              const SizedBox(height: 20),
+                              TextField(
+                                controller: _passwordController,
+                                decoration: InputDecoration(
+                                  labelText: l10n.password,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  prefixIcon: const Icon(Icons.lock),
+                                ),
+                                obscureText: true,
+                                autofocus: true,
+                                enabled: !_isLoading,
+                                onSubmitted: (_) => _login(),
+                              ),
+                            ],
+                            const SizedBox(height: 32),
+                            ElevatedButton(
+                              onPressed: _isLoading ? null : (_showPassword ? _login : _identify),
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: const Size.fromHeight(56),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                elevation: 0,
+                              ),
+                              child: _isLoading
+                                  ? const SizedBox(
+                                      height: 24,
+                                      width: 24,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  : Text(
+                                      _showPassword ? l10n.login : 'SIGUIENTE',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 1.2,
+                                      ),
+                                    ),
+                            ),
+                            if (_showPassword && !_isLoading) ...[
+                              const SizedBox(height: 16),
+                              TextButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _showPassword = false;
+                                    _passwordController.clear();
+                                    _identifiedType = null;
+                                  });
+                                },
+                                child: Text(
+                                  'Cambiar usuario',
+                                  style: TextStyle(color: theme.primaryColor),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 48),
+                    Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'eLection',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey[500],
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'v1.0.0',
+                              style: TextStyle(
+                                color: Colors.grey[400],
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          l10n.developedBy('Jaime Hernández'),
+                          style: TextStyle(
+                            color: Colors.grey[400],
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-            ],
-          ),
-        ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
