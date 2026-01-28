@@ -202,43 +202,38 @@ class _SettingsPageState extends State<SettingsPage> {
                   const SizedBox(height: 24),
                   
                   _buildSectionTitle(l10n.logo),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: _logoController,
-                          decoration: InputDecoration(
-                            labelText: l10n.logo,
-                            hintText: 'Select or enter path',
-                            border: const OutlineInputBorder(),
-                            prefixIcon: const Icon(Icons.image),
+                  GestureDetector(
+                    onTap: _pickLogo,
+                    child: Container(
+                      height: 150,
+                      width: 150,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.grey.shade300),
+                      ),
+                      child: _logoController.text.isNotEmpty
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: _buildLogoPreview(_logoController.text),
+                          )
+                        : Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.add_photo_alternate, size: 40, color: Colors.grey[600]),
+                              const SizedBox(height: 8),
+                              Text(
+                                l10n.selectLogo,
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
                           ),
-                          readOnly: true, 
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      ElevatedButton(
-                        onPressed: _pickLogo,
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                        ),
-                        child: const Icon(Icons.folder_open),
-                      ),
-                    ],
-                  ),
-                  if (_logoController.text.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16.0),
-                      child: Container(
-                        height: 120,
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade300),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: _buildLogoPreview(_logoController.text),
-                      ),
                     ),
+                  ),
                 ],
               ),
               const SizedBox(height: 20),
