@@ -94,12 +94,18 @@ class _LoginPageState extends State<LoginPage> {
       if (_identifiedType == UserType.admin) {
         success = await authProvider.loginAdmin(identifier, password);
       } else if (_identifiedType == UserType.voter) {
-        success = await authProvider.loginVoter(identifier, password, passRequired: true);
+        success = await authProvider.loginVoter(identifier, password,
+            passRequired: true);
       }
 
       if (!success) {
         setState(() => _errorMessage = 'Contraseña incorrecta');
+      } else {
+        // If login successful, main.dart's Consumer<AuthProvider> will handle navigation.
+        // We don't need to do anything here.
       }
+    } catch (e) {
+      setState(() => _errorMessage = 'Error: $e');
     } finally {
       setState(() => _isLoading = false);
     }
