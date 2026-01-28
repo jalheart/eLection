@@ -46,6 +46,13 @@ class _VoterLandingPageState extends State<VoterLandingPage> {
                     setState(() {
                       _isVotingStarted = false;
                     });
+                    
+                    // Automatically logout after 5 seconds
+                    Future.delayed(const Duration(seconds: 5), () {
+                      if (mounted && authProvider.isAuthenticated) {
+                        authProvider.logout();
+                      }
+                    });
                   },
                 )
               : Center(
