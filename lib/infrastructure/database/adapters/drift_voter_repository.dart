@@ -107,6 +107,13 @@ class DriftVoterRepository implements VoterRepository {
     return null;
   }
 
+  @override
+  Future<domain.Voter?> getVoterById(int id) async {
+    final query = db.select(db.voters)..where((t) => t.id.equals(id));
+    final result = await query.getSingleOrNull();
+    return result != null ? _mapToDomain(result) : null;
+  }
+
   domain.Voter _mapToDomain(Voter voter) {
     return domain.Voter(
       id: voter.id,

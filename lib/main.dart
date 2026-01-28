@@ -30,6 +30,7 @@ import 'application/use_cases/save_candidate_use_case.dart';
 import 'application/use_cases/delete_candidate_use_case.dart';
 import 'application/providers/candidates_provider.dart';
 import 'application/providers/grade_category_provider.dart';
+import 'application/providers/voting_provider.dart';
 import 'application/providers/voters_provider.dart';
 import 'application/use_cases/get_voters_use_case.dart';
 import 'application/use_cases/get_voters_by_grade_use_case.dart';
@@ -37,9 +38,11 @@ import 'application/use_cases/save_voter_use_case.dart';
 import 'application/use_cases/delete_voter_use_case.dart';
 import 'application/use_cases/save_voters_use_case.dart';
 import 'application/use_cases/delete_all_voters_use_case.dart';
-import 'application/use_cases/get_voter_by_document_id_use_case.dart';
 import 'infrastructure/database/adapters/drift_candidate_repository.dart';
 import 'infrastructure/database/adapters/drift_voter_repository.dart';
+import 'infrastructure/database/adapters/drift_vote_repository.dart';
+import 'application/use_cases/get_voter_by_document_id_use_case.dart';
+import 'application/use_cases/cast_votes_use_case.dart';
 import 'infrastructure/database/database.dart';
 import 'infrastructure/ui/pages/login_page.dart';
 import 'infrastructure/ui/pages/admin_landing_page.dart';
@@ -79,6 +82,9 @@ void main() {
         ),
         ProxyProvider<AppDatabase, DriftVoterRepository>(
           update: (context, db, _) => DriftVoterRepository(db),
+        ),
+        ProxyProvider<AppDatabase, DriftVoteRepository>(
+          update: (context, db, _) => DriftVoteRepository(db),
         ),
         // Use Cases
         // Use Cases
@@ -168,6 +174,9 @@ void main() {
         ),
         ProxyProvider<DriftVoterRepository, GetVoterByDocumentIdUseCase>(
           update: (context, repo, _) => GetVoterByDocumentIdUseCase(repo),
+        ),
+        ProxyProvider2<DriftVoteRepository, DriftVoterRepository, CastVotesUseCase>(
+          update: (context, voteRepo, voterRepo, _) => CastVotesUseCase(voteRepo, voterRepo),
         ),
 
         // Providers
@@ -279,6 +288,20 @@ void main() {
           update: (context, getUC, getByCatUC, saveUC, deleteUC, previous) =>
               previous ??
               CandidatesProvider(getUC, getByCatUC, saveUC, deleteUC),
+        ),
+        ChangeNotifierProxyProvider3<
+          GetCategoriesByGradeUseCase,
+          GetCandidatesByCategoryUseCase,
+          CastVotesUseCase,
+          VotingProvider
+        >(
+          create: (context) => VotingProvider(
+            context.read<GetCategoriesByGradeUseCase>(),
+            context.read<GetCandidatesByCategoryUseCase>(),
+            context.read<CastVotesUseCase>(),
+          ),
+          update: (context, catUC, candUC, castUC, previous) =>
+              previous ?? VotingProvider(catUC, candUC, castUC),
         ),
         ChangeNotifierProvider<VotersProvider>(
           create: (context) => VotersProvider(

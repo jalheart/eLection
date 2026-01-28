@@ -3,10 +3,18 @@ import 'package:provider/provider.dart';
 import '../../../application/providers/auth_provider.dart';
 import '../../../domain/entities/voter.dart';
 import '../widgets/admin_layout.dart';
+import '../widgets/voting_view.dart';
 import 'package:myapp/l10n/app_localizations.dart';
 
-class VoterLandingPage extends StatelessWidget {
+class VoterLandingPage extends StatefulWidget {
   const VoterLandingPage({super.key});
+
+  @override
+  State<VoterLandingPage> createState() => _VoterLandingPageState();
+}
+
+class _VoterLandingPageState extends State<VoterLandingPage> {
+  bool _isVotingStarted = false;
 
   @override
   Widget build(BuildContext context) {
@@ -15,83 +23,101 @@ class VoterLandingPage extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
+    if (voter == null) return const Scaffold(body: Center(child: CircularProgressIndicator()));
+
     return AdminLayout(
-      child: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 48.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.how_to_vote_rounded,
-                  size: 80,
-                  color: theme.colorScheme.primary,
-                ),
-              ),
-              const SizedBox(height: 32),
-              Text(
-                '¡Hola, ${voter?.name ?? 'Votante'}!',
-                style: const TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: -0.5,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'Bienvenido al sistema de votación escolar eLection.',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey.shade600,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 48),
-              if (voter?.hasVoted ?? false)
-                _StatusCard(
+      child: (voter.hasVoted)
+          ? Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                child: _StatusCard(
                   icon: Icons.check_circle_rounded,
                   color: Colors.green,
                   message: 'Tu voto ya ha sido registrado correctamente.',
                   subMessage: 'Gracias por participar en la democracia escolar.',
+                ),
+              ),
+            )
+          : (_isVotingStarted)
+              ? VotingView(
+                  voter: voter,
+                  onVotesSubmitted: () async {
+                    await authProvider.refreshVoter();
+                    setState(() {
+                      _isVotingStarted = false;
+                    });
+                  },
                 )
-              else
-                SizedBox(
-                  width: 300,
-                  height: 60,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // TODO: Navigate to voting flow
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.colorScheme.primary,
-                      foregroundColor: Colors.white,
-                      elevation: 4,
-                      shadowColor: theme.colorScheme.primary.withOpacity(0.4),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: const Text(
-                      'COMENZAR A VOTAR',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2,
-                      ),
+              : Center(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 48.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primary.withOpacity(0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.how_to_vote_rounded,
+                            size: 80,
+                            color: theme.colorScheme.primary,
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                        Text(
+                          '¡Hola, ${voter.name}!',
+                          style: const TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: -0.5,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Bienvenido al sistema de votación escolar eLection.',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey.shade600,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 48),
+                        SizedBox(
+                          width: 300,
+                          height: 60,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                _isVotingStarted = true;
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: theme.colorScheme.primary,
+                              foregroundColor: Colors.white,
+                              elevation: 4,
+                              shadowColor: theme.colorScheme.primary.withOpacity(0.4),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+                            child: const Text(
+                              'COMENZAR A VOTAR',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

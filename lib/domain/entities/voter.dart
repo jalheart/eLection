@@ -14,4 +14,22 @@ class Voter {
     required this.gradeId,
     this.hasVoted = false,
   });
+
+  Voter copyWith({
+    int? id,
+    String? name,
+    String? documentId,
+    String? password,
+    int? gradeId,
+    bool? hasVoted,
+  }) {
+    return Voter(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      documentId: documentId ?? this.documentId,
+      password: password ?? this.password,
+      gradeId: gradeId ?? this.gradeId,
+      hasVoted: hasVoted ?? this.hasVoted,
+    );
+  }
 }

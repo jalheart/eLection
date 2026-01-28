@@ -8,5 +8,6 @@ abstract class VoterRepository {
   Future<void> saveVoters(List<Voter> voters);
   Future<void> deleteAllVoters();
   Future<Voter?> getVoterByDocumentId(String documentId);
+  Future<Voter?> getVoterById(int id);
   Future<Voter?> login(String documentId, String password);
 }

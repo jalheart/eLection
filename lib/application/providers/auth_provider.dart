@@ -58,6 +58,17 @@ class AuthProvider with ChangeNotifier {
     return false;
   }
 
+  Future<void> refreshVoter() async {
+    if (_currentUser is Voter) {
+      final voter = _currentUser as Voter;
+      final updatedVoter = await identifyUserUseCase.voterRepository.getVoterById(voter.id!);
+      if (updatedVoter != null) {
+        _currentUser = updatedVoter;
+        notifyListeners();
+      }
+    }
+  }
+
   void logout() {
     _currentUser = null;
     notifyListeners();
