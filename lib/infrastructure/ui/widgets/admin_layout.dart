@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:path/path.dart' as p;
 import '../../../application/providers/settings_provider.dart';
 import '../../../application/providers/auth_provider.dart';
 import 'package:myapp/l10n/app_localizations.dart';
@@ -38,18 +40,25 @@ class AdminLayout extends StatelessWidget {
                             ),
                             onPressed: () => Navigator.pop(context),
                           ),
-                        if (settings?.logo != null && settings!.logo.isNotEmpty)
+                          if (settings?.logo != null && settings!.logo.isNotEmpty)
                           Padding(
                             padding: const EdgeInsets.only(right: 8.0),
-                            child: Image.asset(
-                              'assets/images/${settings.logo}',
-                              height: 30,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  const Icon(
-                                    Icons.school,
-                                    color: Colors.white,
-                                    size: 30,
-                                  ),
+                            child: Builder(
+                              builder: (context) {
+                                final logo = settings.logo;
+                                if (logo.startsWith('assets/')) {
+                                  return Image.asset(logo, height: 30, errorBuilder: (_,__,___) => const Icon(Icons.school, color: Colors.white, size: 30));
+                                } else if (p.isAbsolute(logo)) {
+                                  return Image.file(File(logo), height: 30, errorBuilder: (_,__,___) => const Icon(Icons.school, color: Colors.white, size: 30));
+                                } else {
+                                  final resolved = settingsProvider.resolvePath(logo);
+                                   if (resolved != null) {
+                                      return Image.file(File(resolved), height: 30, errorBuilder: (_,__,___) => const Icon(Icons.school, color: Colors.white, size: 30));
+                                   } else {
+                                      return const Icon(Icons.school, color: Colors.white, size: 30);
+                                   }
+                                }
+                              }
                             ),
                           )
                         else
@@ -151,9 +160,8 @@ class AdminLayout extends StatelessWidget {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              settingsProvider.settings?.language
-                                      .toUpperCase() ??
-                                  'ES',
+                              (settingsProvider.settings?.language ?? 'es')
+                                  .toUpperCase(),
                               style: const TextStyle(
                                 fontSize: 10,
                                 color: Colors.blueGrey,

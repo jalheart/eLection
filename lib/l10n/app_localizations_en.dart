@@ -264,4 +264,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get votersImported => 'Voters imported successfully';
+
+  @override
+  String get settingsTitle => 'System Settings';
+
+  @override
+  String get schoolName => 'Institution Name';
+
+  @override
+  String get slogan => 'Motto / Slogan';
+
+  @override
+  String get themeColor => 'Theme Color';
+
+  @override
+  String get logo => 'Logo';
+
+  @override
+  String get selectLogo => 'Select Logo';
+
+  @override
+  String get passRequired => 'Require Password to Vote';
+
+  @override
+  String get saveSettings => 'Save Settings';
+
+  @override
+  String get settingsSaved => 'Settings saved successfully';
 }

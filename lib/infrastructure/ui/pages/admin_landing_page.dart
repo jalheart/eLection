@@ -6,6 +6,7 @@ import 'candidates_page.dart';
 import 'package:myapp/l10n/app_localizations.dart';
 
 import 'voters_page.dart';
+import 'settings_page.dart';
 
 class AdminLandingPage extends StatelessWidget {
   const AdminLandingPage({super.key});
@@ -91,6 +92,14 @@ class AdminLandingPage extends StatelessWidget {
                 _DashboardCard(
                   image: 'assets/images/settings.png',
                   label: l10n.settings,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SettingsPage(),
+                      ),
+                    );
+                  },
                 ),
                 _DashboardCard(
                   image: 'assets/images/resultados.png',

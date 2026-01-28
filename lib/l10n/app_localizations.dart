@@ -581,6 +581,60 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Votantes importados correctamente'**
   String get votersImported;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Configuración del Sistema'**
+  String get settingsTitle;
+
+  /// No description provided for @schoolName.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre de la Institución'**
+  String get schoolName;
+
+  /// No description provided for @slogan.
+  ///
+  /// In es, this message translates to:
+  /// **'Lema / Slogan'**
+  String get slogan;
+
+  /// No description provided for @themeColor.
+  ///
+  /// In es, this message translates to:
+  /// **'Color del Tema'**
+  String get themeColor;
+
+  /// No description provided for @logo.
+  ///
+  /// In es, this message translates to:
+  /// **'Logo'**
+  String get logo;
+
+  /// No description provided for @selectLogo.
+  ///
+  /// In es, this message translates to:
+  /// **'Seleccionar Logo'**
+  String get selectLogo;
+
+  /// No description provided for @passRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Requerir Contraseña para Votar'**
+  String get passRequired;
+
+  /// No description provided for @saveSettings.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar Configuración'**
+  String get saveSettings;
+
+  /// No description provided for @settingsSaved.
+  ///
+  /// In es, this message translates to:
+  /// **'Configuración guardada correctamente'**
+  String get settingsSaved;
 }
 
 class _AppLocalizationsDelegate

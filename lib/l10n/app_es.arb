@@ -79,5 +79,14 @@
   "documentId": "Documento/ID",
   "voterSaved": "Votante guardado correctamente",
   "voterDeleted": "Votante eliminado correctamente",
-  "votersImported": "Votantes importados correctamente"
+  "votersImported": "Votantes importados correctamente",
+  "settingsTitle": "Configuración del Sistema",
+  "schoolName": "Nombre de la Institución",
+  "slogan": "Lema / Slogan",
+  "themeColor": "Color del Tema",
+  "logo": "Logo",
+  "selectLogo": "Seleccionar Logo",
+  "passRequired": "Requerir Contraseña para Votar",
+  "saveSettings": "Guardar Configuración",
+  "settingsSaved": "Configuración guardada correctamente"
 }
