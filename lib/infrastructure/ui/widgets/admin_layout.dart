@@ -11,8 +11,9 @@ import 'package:myapp/l10n/app_localizations.dart';
 class AdminLayout extends StatelessWidget {
   final Widget child;
   final String title;
+  final List<Widget>? actions;
 
-  const AdminLayout({super.key, required this.child, this.title = ''});
+  const AdminLayout({super.key, required this.child, this.title = '', this.actions});
 
   @override
   Widget build(BuildContext context) {
@@ -82,21 +83,27 @@ class AdminLayout extends StatelessWidget {
                         ),
                       ],
                     ),
-                    // Right: Software Name and Version
-                    const Row(
+                    // Right: Software Name and Version + Actions
+                    Row(
                       children: [
-                        Text(
-                          'eLection',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          'v1.0.0',
-                          style: TextStyle(color: Colors.white70, fontSize: 12),
+                        if (actions != null) ...actions!,
+                        if (actions != null) const SizedBox(width: 16),
+                        const Row(
+                          children: [
+                            Text(
+                              'eLection',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              'v1.0.0',
+                              style: TextStyle(color: Colors.white70, fontSize: 12),
+                            ),
+                          ],
                         ),
                       ],
                     ),

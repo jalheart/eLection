@@ -50,6 +50,8 @@ import 'infrastructure/ui/pages/voter_landing_page.dart';
 import 'application/use_cases/login_voter_use_case.dart';
 import 'application/use_cases/identify_user_use_case.dart';
 import 'application/use_cases/update_settings_use_case.dart';
+import 'application/use_cases/get_results_use_case.dart';
+import 'application/providers/results_provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:myapp/l10n/app_localizations.dart';
 
@@ -177,6 +179,9 @@ void main() {
         ),
         ProxyProvider2<DriftVoteRepository, DriftVoterRepository, CastVotesUseCase>(
           update: (context, voteRepo, voterRepo, _) => CastVotesUseCase(voteRepo, voterRepo),
+        ),
+        ProxyProvider<DriftVoteRepository, GetResultsUseCase>(
+          update: (context, repo, _) => GetResultsUseCase(repo),
         ),
 
         // Providers
@@ -313,6 +318,20 @@ void main() {
             context.read<DeleteAllVotersUseCase>(),
             context.read<GetVoterByDocumentIdUseCase>(),
           ),
+        ),
+        ChangeNotifierProxyProvider3<
+          GetCategoriesUseCase,
+          GetCandidatesByCategoryUseCase,
+          GetResultsUseCase,
+          ResultsProvider
+        >(
+          create: (context) => ResultsProvider(
+            context.read<GetCategoriesUseCase>(),
+            context.read<GetCandidatesByCategoryUseCase>(),
+            context.read<GetResultsUseCase>(),
+          ),
+          update: (context, getCatUC, getCandUC, getResUC, previous) =>
+              previous ?? ResultsProvider(getCatUC, getCandUC, getResUC),
         ),
       ],
       child: const MyApp(),
