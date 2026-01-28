@@ -2301,6 +2301,266 @@ class VotersCompanion extends UpdateCompanion<Voter> {
   }
 }
 
+class $VotesTable extends Votes with TableInfo<$VotesTable, Vote> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $VotesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _voterIdMeta = const VerificationMeta(
+    'voterId',
+  );
+  @override
+  late final GeneratedColumn<int> voterId = GeneratedColumn<int>(
+    'voter_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES voters (id)',
+    ),
+  );
+  static const VerificationMeta _candidateIdMeta = const VerificationMeta(
+    'candidateId',
+  );
+  @override
+  late final GeneratedColumn<int> candidateId = GeneratedColumn<int>(
+    'candidate_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES candidates (id)',
+    ),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, voterId, candidateId];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'votes';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Vote> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('voter_id')) {
+      context.handle(
+        _voterIdMeta,
+        voterId.isAcceptableOrUnknown(data['voter_id']!, _voterIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_voterIdMeta);
+    }
+    if (data.containsKey('candidate_id')) {
+      context.handle(
+        _candidateIdMeta,
+        candidateId.isAcceptableOrUnknown(
+          data['candidate_id']!,
+          _candidateIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_candidateIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Vote map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Vote(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      voterId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}voter_id'],
+      )!,
+      candidateId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}candidate_id'],
+      )!,
+    );
+  }
+
+  @override
+  $VotesTable createAlias(String alias) {
+    return $VotesTable(attachedDatabase, alias);
+  }
+}
+
+class Vote extends DataClass implements Insertable<Vote> {
+  final int id;
+  final int voterId;
+  final int candidateId;
+  const Vote({
+    required this.id,
+    required this.voterId,
+    required this.candidateId,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['voter_id'] = Variable<int>(voterId);
+    map['candidate_id'] = Variable<int>(candidateId);
+    return map;
+  }
+
+  VotesCompanion toCompanion(bool nullToAbsent) {
+    return VotesCompanion(
+      id: Value(id),
+      voterId: Value(voterId),
+      candidateId: Value(candidateId),
+    );
+  }
+
+  factory Vote.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Vote(
+      id: serializer.fromJson<int>(json['id']),
+      voterId: serializer.fromJson<int>(json['voterId']),
+      candidateId: serializer.fromJson<int>(json['candidateId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'voterId': serializer.toJson<int>(voterId),
+      'candidateId': serializer.toJson<int>(candidateId),
+    };
+  }
+
+  Vote copyWith({int? id, int? voterId, int? candidateId}) => Vote(
+    id: id ?? this.id,
+    voterId: voterId ?? this.voterId,
+    candidateId: candidateId ?? this.candidateId,
+  );
+  Vote copyWithCompanion(VotesCompanion data) {
+    return Vote(
+      id: data.id.present ? data.id.value : this.id,
+      voterId: data.voterId.present ? data.voterId.value : this.voterId,
+      candidateId: data.candidateId.present
+          ? data.candidateId.value
+          : this.candidateId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Vote(')
+          ..write('id: $id, ')
+          ..write('voterId: $voterId, ')
+          ..write('candidateId: $candidateId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, voterId, candidateId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Vote &&
+          other.id == this.id &&
+          other.voterId == this.voterId &&
+          other.candidateId == this.candidateId);
+}
+
+class VotesCompanion extends UpdateCompanion<Vote> {
+  final Value<int> id;
+  final Value<int> voterId;
+  final Value<int> candidateId;
+  const VotesCompanion({
+    this.id = const Value.absent(),
+    this.voterId = const Value.absent(),
+    this.candidateId = const Value.absent(),
+  });
+  VotesCompanion.insert({
+    this.id = const Value.absent(),
+    required int voterId,
+    required int candidateId,
+  }) : voterId = Value(voterId),
+       candidateId = Value(candidateId);
+  static Insertable<Vote> custom({
+    Expression<int>? id,
+    Expression<int>? voterId,
+    Expression<int>? candidateId,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (voterId != null) 'voter_id': voterId,
+      if (candidateId != null) 'candidate_id': candidateId,
+    });
+  }
+
+  VotesCompanion copyWith({
+    Value<int>? id,
+    Value<int>? voterId,
+    Value<int>? candidateId,
+  }) {
+    return VotesCompanion(
+      id: id ?? this.id,
+      voterId: voterId ?? this.voterId,
+      candidateId: candidateId ?? this.candidateId,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (voterId.present) {
+      map['voter_id'] = Variable<int>(voterId.value);
+    }
+    if (candidateId.present) {
+      map['candidate_id'] = Variable<int>(candidateId.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('VotesCompanion(')
+          ..write('id: $id, ')
+          ..write('voterId: $voterId, ')
+          ..write('candidateId: $candidateId')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2313,6 +2573,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   );
   late final $CandidatesTable candidates = $CandidatesTable(this);
   late final $VotersTable voters = $VotersTable(this);
+  late final $VotesTable votes = $VotesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2325,6 +2586,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     gradeCategories,
     candidates,
     voters,
+    votes,
   ];
 }
 
@@ -3883,6 +4145,25 @@ final class $$CandidatesTableReferences
       manager.$state.copyWith(prefetchedData: [item]),
     );
   }
+
+  static MultiTypedResultKey<$VotesTable, List<Vote>> _votesRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.votes,
+    aliasName: $_aliasNameGenerator(db.candidates.id, db.votes.candidateId),
+  );
+
+  $$VotesTableProcessedTableManager get votesRefs {
+    final manager = $$VotesTableTableManager(
+      $_db,
+      $_db.votes,
+    ).filter((f) => f.candidateId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_votesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$CandidatesTableFilterComposer
@@ -3930,6 +4211,31 @@ class $$CandidatesTableFilterComposer
           ),
     );
     return composer;
+  }
+
+  Expression<bool> votesRefs(
+    Expression<bool> Function($$VotesTableFilterComposer f) f,
+  ) {
+    final $$VotesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.votes,
+      getReferencedColumn: (t) => t.candidateId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VotesTableFilterComposer(
+            $db: $db,
+            $table: $db.votes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
   }
 }
 
@@ -4021,6 +4327,31 @@ class $$CandidatesTableAnnotationComposer
     );
     return composer;
   }
+
+  Expression<T> votesRefs<T extends Object>(
+    Expression<T> Function($$VotesTableAnnotationComposer a) f,
+  ) {
+    final $$VotesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.votes,
+      getReferencedColumn: (t) => t.candidateId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VotesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.votes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$CandidatesTableTableManager
@@ -4036,7 +4367,7 @@ class $$CandidatesTableTableManager
           $$CandidatesTableUpdateCompanionBuilder,
           (Candidate, $$CandidatesTableReferences),
           Candidate,
-          PrefetchHooks Function({bool categoryId})
+          PrefetchHooks Function({bool categoryId, bool votesRefs})
         > {
   $$CandidatesTableTableManager(_$AppDatabase db, $CandidatesTable table)
     : super(
@@ -4081,10 +4412,10 @@ class $$CandidatesTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({categoryId = false}) {
+          prefetchHooksCallback: ({categoryId = false, votesRefs = false}) {
             return PrefetchHooks(
               db: db,
-              explicitlyWatchedTables: [],
+              explicitlyWatchedTables: [if (votesRefs) db.votes],
               addJoins:
                   <
                     T extends TableManagerState<
@@ -4118,7 +4449,25 @@ class $$CandidatesTableTableManager
                     return state;
                   },
               getPrefetchedDataCallback: (items) async {
-                return [];
+                return [
+                  if (votesRefs)
+                    await $_getPrefetchedData<
+                      Candidate,
+                      $CandidatesTable,
+                      Vote
+                    >(
+                      currentTable: table,
+                      referencedTable: $$CandidatesTableReferences
+                          ._votesRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$CandidatesTableReferences(db, table, p0).votesRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where(
+                            (e) => e.candidateId == item.id,
+                          ),
+                      typedResults: items,
+                    ),
+                ];
               },
             );
           },
@@ -4138,7 +4487,7 @@ typedef $$CandidatesTableProcessedTableManager =
       $$CandidatesTableUpdateCompanionBuilder,
       (Candidate, $$CandidatesTableReferences),
       Candidate,
-      PrefetchHooks Function({bool categoryId})
+      PrefetchHooks Function({bool categoryId, bool votesRefs})
     >;
 typedef $$VotersTableCreateCompanionBuilder =
     VotersCompanion Function({
@@ -4178,6 +4527,25 @@ final class $$VotersTableReferences
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<$VotesTable, List<Vote>> _votesRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.votes,
+    aliasName: $_aliasNameGenerator(db.voters.id, db.votes.voterId),
+  );
+
+  $$VotesTableProcessedTableManager get votesRefs {
+    final manager = $$VotesTableTableManager(
+      $_db,
+      $_db.votes,
+    ).filter((f) => f.voterId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_votesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
     );
   }
 }
@@ -4237,6 +4605,31 @@ class $$VotersTableFilterComposer
           ),
     );
     return composer;
+  }
+
+  Expression<bool> votesRefs(
+    Expression<bool> Function($$VotesTableFilterComposer f) f,
+  ) {
+    final $$VotesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.votes,
+      getReferencedColumn: (t) => t.voterId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VotesTableFilterComposer(
+            $db: $db,
+            $table: $db.votes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
   }
 }
 
@@ -4346,6 +4739,31 @@ class $$VotersTableAnnotationComposer
     );
     return composer;
   }
+
+  Expression<T> votesRefs<T extends Object>(
+    Expression<T> Function($$VotesTableAnnotationComposer a) f,
+  ) {
+    final $$VotesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.votes,
+      getReferencedColumn: (t) => t.voterId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VotesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.votes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$VotersTableTableManager
@@ -4361,7 +4779,7 @@ class $$VotersTableTableManager
           $$VotersTableUpdateCompanionBuilder,
           (Voter, $$VotersTableReferences),
           Voter,
-          PrefetchHooks Function({bool gradeId})
+          PrefetchHooks Function({bool gradeId, bool votesRefs})
         > {
   $$VotersTableTableManager(_$AppDatabase db, $VotersTable table)
     : super(
@@ -4412,10 +4830,10 @@ class $$VotersTableTableManager
                     (e.readTable(table), $$VotersTableReferences(db, table, e)),
               )
               .toList(),
-          prefetchHooksCallback: ({gradeId = false}) {
+          prefetchHooksCallback: ({gradeId = false, votesRefs = false}) {
             return PrefetchHooks(
               db: db,
-              explicitlyWatchedTables: [],
+              explicitlyWatchedTables: [if (votesRefs) db.votes],
               addJoins:
                   <
                     T extends TableManagerState<
@@ -4449,7 +4867,20 @@ class $$VotersTableTableManager
                     return state;
                   },
               getPrefetchedDataCallback: (items) async {
-                return [];
+                return [
+                  if (votesRefs)
+                    await $_getPrefetchedData<Voter, $VotersTable, Vote>(
+                      currentTable: table,
+                      referencedTable: $$VotersTableReferences._votesRefsTable(
+                        db,
+                      ),
+                      managerFromTypedResult: (p0) =>
+                          $$VotersTableReferences(db, table, p0).votesRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where((e) => e.voterId == item.id),
+                      typedResults: items,
+                    ),
+                ];
               },
             );
           },
@@ -4469,7 +4900,366 @@ typedef $$VotersTableProcessedTableManager =
       $$VotersTableUpdateCompanionBuilder,
       (Voter, $$VotersTableReferences),
       Voter,
-      PrefetchHooks Function({bool gradeId})
+      PrefetchHooks Function({bool gradeId, bool votesRefs})
+    >;
+typedef $$VotesTableCreateCompanionBuilder =
+    VotesCompanion Function({
+      Value<int> id,
+      required int voterId,
+      required int candidateId,
+    });
+typedef $$VotesTableUpdateCompanionBuilder =
+    VotesCompanion Function({
+      Value<int> id,
+      Value<int> voterId,
+      Value<int> candidateId,
+    });
+
+final class $$VotesTableReferences
+    extends BaseReferences<_$AppDatabase, $VotesTable, Vote> {
+  $$VotesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $VotersTable _voterIdTable(_$AppDatabase db) => db.voters.createAlias(
+    $_aliasNameGenerator(db.votes.voterId, db.voters.id),
+  );
+
+  $$VotersTableProcessedTableManager get voterId {
+    final $_column = $_itemColumn<int>('voter_id')!;
+
+    final manager = $$VotersTableTableManager(
+      $_db,
+      $_db.voters,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_voterIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $CandidatesTable _candidateIdTable(_$AppDatabase db) =>
+      db.candidates.createAlias(
+        $_aliasNameGenerator(db.votes.candidateId, db.candidates.id),
+      );
+
+  $$CandidatesTableProcessedTableManager get candidateId {
+    final $_column = $_itemColumn<int>('candidate_id')!;
+
+    final manager = $$CandidatesTableTableManager(
+      $_db,
+      $_db.candidates,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_candidateIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$VotesTableFilterComposer extends Composer<_$AppDatabase, $VotesTable> {
+  $$VotesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$VotersTableFilterComposer get voterId {
+    final $$VotersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.voterId,
+      referencedTable: $db.voters,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VotersTableFilterComposer(
+            $db: $db,
+            $table: $db.voters,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$CandidatesTableFilterComposer get candidateId {
+    final $$CandidatesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.candidateId,
+      referencedTable: $db.candidates,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CandidatesTableFilterComposer(
+            $db: $db,
+            $table: $db.candidates,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$VotesTableOrderingComposer
+    extends Composer<_$AppDatabase, $VotesTable> {
+  $$VotesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$VotersTableOrderingComposer get voterId {
+    final $$VotersTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.voterId,
+      referencedTable: $db.voters,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VotersTableOrderingComposer(
+            $db: $db,
+            $table: $db.voters,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$CandidatesTableOrderingComposer get candidateId {
+    final $$CandidatesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.candidateId,
+      referencedTable: $db.candidates,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CandidatesTableOrderingComposer(
+            $db: $db,
+            $table: $db.candidates,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$VotesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $VotesTable> {
+  $$VotesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  $$VotersTableAnnotationComposer get voterId {
+    final $$VotersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.voterId,
+      referencedTable: $db.voters,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VotersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.voters,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$CandidatesTableAnnotationComposer get candidateId {
+    final $$CandidatesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.candidateId,
+      referencedTable: $db.candidates,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CandidatesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.candidates,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$VotesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $VotesTable,
+          Vote,
+          $$VotesTableFilterComposer,
+          $$VotesTableOrderingComposer,
+          $$VotesTableAnnotationComposer,
+          $$VotesTableCreateCompanionBuilder,
+          $$VotesTableUpdateCompanionBuilder,
+          (Vote, $$VotesTableReferences),
+          Vote,
+          PrefetchHooks Function({bool voterId, bool candidateId})
+        > {
+  $$VotesTableTableManager(_$AppDatabase db, $VotesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$VotesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$VotesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$VotesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> voterId = const Value.absent(),
+                Value<int> candidateId = const Value.absent(),
+              }) => VotesCompanion(
+                id: id,
+                voterId: voterId,
+                candidateId: candidateId,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int voterId,
+                required int candidateId,
+              }) => VotesCompanion.insert(
+                id: id,
+                voterId: voterId,
+                candidateId: candidateId,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) =>
+                    (e.readTable(table), $$VotesTableReferences(db, table, e)),
+              )
+              .toList(),
+          prefetchHooksCallback: ({voterId = false, candidateId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (voterId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.voterId,
+                                referencedTable: $$VotesTableReferences
+                                    ._voterIdTable(db),
+                                referencedColumn: $$VotesTableReferences
+                                    ._voterIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+                    if (candidateId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.candidateId,
+                                referencedTable: $$VotesTableReferences
+                                    ._candidateIdTable(db),
+                                referencedColumn: $$VotesTableReferences
+                                    ._candidateIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$VotesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $VotesTable,
+      Vote,
+      $$VotesTableFilterComposer,
+      $$VotesTableOrderingComposer,
+      $$VotesTableAnnotationComposer,
+      $$VotesTableCreateCompanionBuilder,
+      $$VotesTableUpdateCompanionBuilder,
+      (Vote, $$VotesTableReferences),
+      Vote,
+      PrefetchHooks Function({bool voterId, bool candidateId})
     >;
 
 class $AppDatabaseManager {
@@ -4489,4 +5279,6 @@ class $AppDatabaseManager {
       $$CandidatesTableTableManager(_db, _db.candidates);
   $$VotersTableTableManager get voters =>
       $$VotersTableTableManager(_db, _db.voters);
+  $$VotesTableTableManager get votes =>
+      $$VotesTableTableManager(_db, _db.votes);
 }

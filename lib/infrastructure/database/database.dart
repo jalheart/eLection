@@ -62,13 +62,14 @@ class Voters extends Table {
     GradeCategories,
     Candidates,
     Voters,
+    Votes,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(impl.connect());
 
   @override
-  int get schemaVersion => 12;
+  int get schemaVersion => 13;
 
   @override
   MigrationStrategy get migration {
@@ -108,6 +109,9 @@ class AppDatabase extends _$AppDatabase {
         }
         if (from < 12) {
           await m.addColumn(voters, voters.password);
+        }
+        if (from < 13) {
+          await m.createTable(votes);
         }
       },
       beforeOpen: (details) async {
@@ -259,4 +263,10 @@ class GradeCategories extends Table {
 
   @override
   Set<Column> get primaryKey => {gradeId, categoryId};
+}
+
+class Votes extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get voterId => integer().references(Voters, #id)();
+  IntColumn get candidateId => integer().references(Candidates, #id)();
 }
