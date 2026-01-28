@@ -109,82 +109,70 @@ class _LoginPageState extends State<LoginPage> {
     
     return Scaffold(
       body: Center(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              child: Padding(
-                padding: const EdgeInsets.all(32.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.how_to_vote, size: 64, color: Colors.blue),
-                    const SizedBox(height: 16),
-                    Text(
-                      l10n.appName,
-                      style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 32),
-                    TextField(
-                      controller: _identifierController,
-                      decoration: InputDecoration(
-                        labelText: 'Documento o Usuario',
-                        errorText: _errorMessage,
-                        border: const OutlineInputBorder(),
-                        prefixIcon: const Icon(Icons.person),
-                      ),
-                      enabled: !_showPassword && !_isLoading,
-                      onSubmitted: (_) => _identify(),
-                    ),
-                    if (_showPassword) ...[
-                      const SizedBox(height: 16),
-                      TextField(
-                        controller: _passwordController,
-                        decoration: InputDecoration(
-                          labelText: l10n.password,
-                          border: const OutlineInputBorder(),
-                          prefixIcon: const Icon(Icons.lock),
-                        ),
-                        obscureText: true,
-                        autofocus: true,
-                        enabled: !_isLoading,
-                        onSubmitted: (_) => _login(),
-                      ),
-                    ],
-                    const SizedBox(height: 24),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: _isLoading ? null : (_showPassword ? _login : _identify),
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        ),
-                        child: _isLoading
-                            ? const CircularProgressIndicator()
-                            : Text(
-                                _showPassword ? l10n.login : 'Siguiente',
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                      ),
-                    ),
-                    if (_showPassword && !_isLoading)
-                      TextButton(
-                        onPressed: () {
-                          setState(() {
-                            _showPassword = false;
-                            _passwordController.clear();
-                            _identifiedType = null;
-                          });
-                        },
-                        child: const Text('Cambiar usuario'),
-                      ),
-                  ],
-                ),
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'eLection Login',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
-            ),
+              const SizedBox(height: 32),
+              TextField(
+                controller: _identifierController,
+                decoration: InputDecoration(
+                  labelText: l10n.username,
+                  errorText: _errorMessage,
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.person),
+                ),
+                enabled: !_showPassword && !_isLoading,
+                onSubmitted: (_) => _identify(),
+              ),
+              if (_showPassword) ...[
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _passwordController,
+                  decoration: InputDecoration(
+                    labelText: l10n.password,
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.lock),
+                  ),
+                  obscureText: true,
+                  autofocus: true,
+                  enabled: !_isLoading,
+                  onSubmitted: (_) => _login(),
+                ),
+              ],
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: _isLoading ? null : (_showPassword ? _login : _identify),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(50),
+                ),
+                child: _isLoading
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      )
+                    : Text(
+                        _showPassword ? l10n.login : 'Siguiente',
+                      ),
+              ),
+              if (_showPassword && !_isLoading)
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      _showPassword = false;
+                      _passwordController.clear();
+                      _identifiedType = null;
+                    });
+                  },
+                  child: const Text('Cambiar usuario'),
+                ),
+            ],
           ),
         ),
       ),
