@@ -35,6 +35,9 @@ class _VoterLandingPageState extends State<VoterLandingPage> {
                   color: Colors.green,
                   message: 'Tu voto ya ha sido registrado correctamente.',
                   subMessage: 'Gracias por participar en la democracia escolar.',
+                  footer: _LogoutCountdown(
+                    onFinished: () => authProvider.logout(),
+                  ),
                 ),
               ),
             )
@@ -45,13 +48,6 @@ class _VoterLandingPageState extends State<VoterLandingPage> {
                     await authProvider.refreshVoter();
                     setState(() {
                       _isVotingStarted = false;
-                    });
-                    
-                    // Automatically logout after 5 seconds
-                    Future.delayed(const Duration(seconds: 5), () {
-                      if (mounted && authProvider.isAuthenticated) {
-                        authProvider.logout();
-                      }
                     });
                   },
                 )
@@ -134,12 +130,14 @@ class _StatusCard extends StatelessWidget {
   final Color color;
   final String message;
   final String subMessage;
+  final Widget? footer;
 
   const _StatusCard({
     required this.icon,
     required this.color,
     required this.message,
     required this.subMessage,
+    this.footer,
   });
 
   @override
@@ -174,8 +172,70 @@ class _StatusCard extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
+          if (footer != null) footer!,
         ],
       ),
+    );
+  }
+}
+
+class _LogoutCountdown extends StatefulWidget {
+  final VoidCallback onFinished;
+  const _LogoutCountdown({required this.onFinished});
+
+  @override
+  State<_LogoutCountdown> createState() => _LogoutCountdownState();
+}
+
+class _LogoutCountdownState extends State<_LogoutCountdown>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 5),
+    );
+    _controller.forward().then((_) => widget.onFinished());
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        final remaining = (5 * (1 - _controller.value)).ceil();
+        return Column(
+          children: [
+            const SizedBox(height: 32),
+            Text(
+              'Cerrando sesión en $remaining segundos...',
+              style: TextStyle(
+                color: Colors.grey.shade600,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 12),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: LinearProgressIndicator(
+                value: 1 - _controller.value,
+                backgroundColor: Colors.grey.shade200,
+                minHeight: 8,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
