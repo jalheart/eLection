@@ -28,6 +28,7 @@ class _VotingViewState extends State<VotingView> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<VotingProvider>().initVoting(widget.voter);
+      context.read<CandidatesProvider>().loadCandidates();
     });
   }
 

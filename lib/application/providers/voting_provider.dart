@@ -41,11 +41,6 @@ class VotingProvider with ChangeNotifier {
         if (category.id != null) {
           final candidates = await _getCandidatesUC.execute(category.id!);
           
-          // Add "Voto en Blanco" candidate if it doesn't exist
-          // In a real app, this should be in the DB. For now, let's assume 
-          // we add it programmatically if needed or it's already there.
-          // The image shows "00 Voto en Blanco".
-          
           _candidatesByCategory[category.id!] = candidates;
           _selectedCandidates[category.id!] = null;
         }

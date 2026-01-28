@@ -56,7 +56,12 @@ class CandidatesProvider with ChangeNotifier {
     if (relativePath.startsWith('http') || relativePath.startsWith('assets')) {
       return relativePath;
     }
-    if (_appDocDir == null) return null; // Should be loaded by loadCandidates
+    
+    // If _appDocDir is null, we can't resolve the path yet.
+    // However, since resolvePath is synchronous, we can't await getAppDocDir here.
+    // We should ensure it's loaded during Provider initialization or in the view.
+    if (_appDocDir == null) return null; 
+    
     return p.join(_appDocDir!, relativePath);
   }
 
