@@ -114,9 +114,15 @@ class AdminLayout extends StatelessWidget {
               children: [
                 const Icon(Icons.info_outline, size: 14, color: Colors.grey),
                 const SizedBox(width: 4),
-                Text(
-                  l10n.ready,
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                Consumer<SettingsProvider>(
+                  builder: (context, provider, _) {
+                    return Text(
+                      (provider.settings?.slogan?.isNotEmpty == true)
+                          ? provider.settings!.slogan
+                          : l10n.ready,
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    );
+                  },
                 ),
                 const Spacer(),
                 Text(
