@@ -57,6 +57,7 @@ import 'application/use_cases/import_data_use_case.dart';
 import 'application/providers/results_provider.dart';
 import 'application/providers/backup_provider.dart';
 import 'infrastructure/services/backup_service.dart';
+import 'infrastructure/services/pdf_report_service.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:myapp/l10n/app_localizations.dart';
 
@@ -70,6 +71,9 @@ void main() {
         ),
         Provider<BackupService>(
           create: (context) => BackupService(),
+        ),
+        Provider<PDFReportService>(
+          create: (context) => PDFReportService(),
         ),
         // Repositories
         ProxyProvider<AppDatabase, DriftUserRepository>(
@@ -338,19 +342,21 @@ void main() {
             context.read<GetVoterByDocumentIdUseCase>(),
           ),
         ),
-        ChangeNotifierProxyProvider3<
+        ChangeNotifierProxyProvider4<
           GetCategoriesUseCase,
           GetCandidatesByCategoryUseCase,
           GetResultsUseCase,
+          PDFReportService,
           ResultsProvider
         >(
           create: (context) => ResultsProvider(
             context.read<GetCategoriesUseCase>(),
             context.read<GetCandidatesByCategoryUseCase>(),
             context.read<GetResultsUseCase>(),
+            context.read<PDFReportService>(),
           ),
-          update: (context, getCatUC, getCandUC, getResUC, previous) =>
-              previous ?? ResultsProvider(getCatUC, getCandUC, getResUC),
+          update: (context, getCatUC, getCandUC, getResUC, pdfService, previous) =>
+              previous ?? ResultsProvider(getCatUC, getCandUC, getResUC, pdfService),
         ),
         ChangeNotifierProxyProvider3<
           ExportDataUseCase,

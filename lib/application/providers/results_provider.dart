@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../domain/entities/category.dart';
 import '../../domain/entities/candidate.dart';
+import '../../domain/entities/settings.dart';
 import '../use_cases/get_categories_use_case.dart';
 import '../use_cases/get_candidates_by_category_use_case.dart';
 import '../use_cases/get_results_use_case.dart';
+import '../../infrastructure/services/pdf_report_service.dart';
 
 class ResultData {
   final Category category;
@@ -23,6 +25,7 @@ class ResultsProvider with ChangeNotifier {
   final GetCategoriesUseCase _getCategoriesUC;
   final GetCandidatesByCategoryUseCase _getCandidatesUC;
   final GetResultsUseCase _getResultsUC;
+  final PDFReportService _pdfService;
 
   List<ResultData> _results = [];
   bool _isLoading = false;
@@ -31,6 +34,7 @@ class ResultsProvider with ChangeNotifier {
     this._getCategoriesUC,
     this._getCandidatesUC,
     this._getResultsUC,
+    this._pdfService,
   );
 
   List<ResultData> get results => _results;
@@ -72,5 +76,21 @@ class ResultsProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<void> exportToPDF({
+    required Settings? settings,
+    required String mesa,
+    required String sede,
+    String? logoPath,
+  }) async {
+    final pdfBytes = await _pdfService.generateResultsPDF(
+      results: _results,
+      settings: settings,
+      mesa: mesa,
+      sede: sede,
+      logoPath: logoPath,
+    );
+    await _pdfService.saveAndOpenFile(pdfBytes, 'resultados_votacion.pdf');
   }
 }

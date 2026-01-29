@@ -6,6 +6,7 @@ import '../../../application/providers/results_provider.dart';
 import '../../../application/providers/candidates_provider.dart';
 import '../../../domain/entities/candidate.dart';
 import '../../../domain/entities/category.dart';
+import '../../../application/providers/settings_provider.dart';
 import '../widgets/admin_layout.dart';
 
 class ResultsPage extends StatefulWidget {
@@ -25,6 +26,54 @@ class _ResultsPageState extends State<ResultsPage> {
     });
   }
 
+  void _showExportDialog() {
+    final l10n = AppLocalizations.of(context)!;
+    final mesaController = TextEditingController();
+    final sedeController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Exportar Resultados (PDF)'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: sedeController,
+              decoration: const InputDecoration(labelText: 'Sede'),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: mesaController,
+              decoration: const InputDecoration(labelText: 'Mesa / Puesto de Votación'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final settings = context.read<SettingsProvider>().settings;
+              final logoPath = context.read<SettingsProvider>().resolvePath(settings?.logo);
+              
+              context.read<ResultsProvider>().exportToPDF(
+                settings: settings,
+                mesa: mesaController.text,
+                sede: sedeController.text,
+                logoPath: logoPath,
+              );
+              Navigator.pop(context);
+            },
+            child: const Text('EXPORTAR'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -33,6 +82,11 @@ class _ResultsPageState extends State<ResultsPage> {
     return AdminLayout(
       title: l10n.results,
       actions: [
+        IconButton(
+          icon: const Icon(Icons.picture_as_pdf_rounded, color: Colors.white),
+          onPressed: _showExportDialog,
+          tooltip: 'Exportar PDF',
+        ),
         IconButton(
           icon: const Icon(Icons.refresh, color: Colors.white),
           onPressed: () => context.read<ResultsProvider>().loadResults(),
