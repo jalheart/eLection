@@ -24,7 +24,7 @@ class PDFReportService {
 
     pdf.addPage(
       pw.MultiPage(
-        pageFormat: PdfPageFormat.a4,
+        pageFormat: PdfPageFormat.letter,
         margin: const pw.EdgeInsets.all(32),
         build: (pw.Context context) {
           return [

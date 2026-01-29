@@ -28,48 +28,112 @@ class _ResultsPageState extends State<ResultsPage> {
 
   void _showExportDialog() {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
     final mesaController = TextEditingController();
     final sedeController = TextEditingController();
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Exportar Resultados (PDF)'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: sedeController,
-              decoration: const InputDecoration(labelText: 'Sede'),
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            width: 400,
+            color: Colors.white,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  color: theme.primaryColor,
+                  child: Row(
+                    children: [
+                      const Icon(Icons.picture_as_pdf_rounded, color: Colors.white),
+                      const SizedBox(width: 12),
+                      const Text(
+                        'EXPORTAR RESULTADOS',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const Text(
+                        'Información del Reporte',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      TextField(
+                        controller: sedeController,
+                        decoration: const InputDecoration(
+                          labelText: 'Sede / Institución',
+                          prefixIcon: Icon(Icons.location_on_outlined),
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: mesaController,
+                        decoration: const InputDecoration(
+                          labelText: 'Mesa / Puesto de Votación',
+                          prefixIcon: Icon(Icons.event_seat_outlined),
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text(l10n.cancel),
+                          ),
+                          const SizedBox(width: 12),
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              final settings = context.read<SettingsProvider>().settings;
+                              final logoPath = context.read<SettingsProvider>().resolvePath(settings?.logo);
+                              
+                              context.read<ResultsProvider>().exportToPDF(
+                                settings: settings,
+                                mesa: mesaController.text,
+                                sede: sedeController.text,
+                                logoPath: logoPath,
+                              );
+                              Navigator.pop(context);
+                            },
+                            icon: const Icon(Icons.download_rounded),
+                            label: const Text('GENERAR PDF'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: theme.primaryColor,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: mesaController,
-              decoration: const InputDecoration(labelText: 'Mesa / Puesto de Votación'),
-            ),
-          ],
+          ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancel),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final settings = context.read<SettingsProvider>().settings;
-              final logoPath = context.read<SettingsProvider>().resolvePath(settings?.logo);
-              
-              context.read<ResultsProvider>().exportToPDF(
-                settings: settings,
-                mesa: mesaController.text,
-                sede: sedeController.text,
-                logoPath: logoPath,
-              );
-              Navigator.pop(context);
-            },
-            child: const Text('EXPORTAR'),
-          ),
-        ],
       ),
     );
   }
