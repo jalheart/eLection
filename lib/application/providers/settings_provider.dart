@@ -3,15 +3,17 @@ import 'package:flutter/material.dart';
 import '../../domain/entities/settings.dart';
 import '../use_cases/get_settings_use_case.dart';
 import '../use_cases/update_settings_use_case.dart';
+import '../use_cases/delete_all_votes_use_case.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
 class SettingsProvider with ChangeNotifier {
   final GetSettingsUseCase getSettingsUseCase;
   final UpdateSettingsUseCase updateSettingsUseCase;
+  final DeleteAllVotesUseCase deleteAllVotesUseCase;
   Settings? _settings;
 
-  SettingsProvider(this.getSettingsUseCase, this.updateSettingsUseCase);
+  SettingsProvider(this.getSettingsUseCase, this.updateSettingsUseCase, this.deleteAllVotesUseCase);
 
   Settings? get settings => _settings;
 
@@ -112,6 +114,11 @@ class SettingsProvider with ChangeNotifier {
     );
     await updateSettingsUseCase.execute(newSettings);
     _settings = newSettings;
+    notifyListeners();
+  }
+
+  Future<void> deleteAllVotes() async {
+    await deleteAllVotesUseCase.execute();
     notifyListeners();
   }
 }

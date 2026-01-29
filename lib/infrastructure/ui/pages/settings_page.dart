@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
@@ -98,6 +99,107 @@ class _SettingsPageState extends State<SettingsPage> {
         }
       }
     }
+  }
+
+  String _generateRandomCode() {
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#%&*';
+    final rnd = math.Random();
+    final length = 5 + rnd.nextInt(4); // 5 to 8
+    return String.fromCharCodes(
+      Iterable.generate(length, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))),
+    );
+  }
+
+  Future<void> _showDeleteVotesDialog() async {
+    final l10n = AppLocalizations.of(context)!;
+    final code = _generateRandomCode();
+    final controller = TextEditingController();
+    bool isCodeCorrect = false;
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Row(
+                children: [
+                  Icon(Icons.warning_amber_rounded, color: Colors.red),
+                  SizedBox(width: 8),
+                  Text('Borrar Votos'),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                   const Text(
+                    'Esta acción eliminará todos los votos registrados y restablecerá el estado de los votantes.',
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text('Para confirmar, ingrese el siguiente código:'),
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.grey[400]!),
+                    ),
+                    child: Text(
+                      code,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 2,
+                        fontFamily: 'Courier',
+                      ),
+                    ),
+                  ),
+                  TextField(
+                    controller: controller,
+                    decoration: const InputDecoration(
+                      hintText: 'Ingrese el código aquí',
+                      border: OutlineInputBorder(),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        isCodeCorrect = value == code;
+                      });
+                    },
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(l10n.cancel),
+                ),
+                ElevatedButton(
+                  onPressed: isCodeCorrect
+                      ? () async {
+                          await context.read<SettingsProvider>().deleteAllVotes();
+                          if (context.mounted) {
+                            Navigator.pop(context);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Todos los votos han sido eliminados')),
+                            );
+                          }
+                        }
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text('BORRAR TODO'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -285,6 +387,29 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                 ]
                ),
+
+              const SizedBox(height: 20),
+
+              _buildSectionCard(
+                title: 'Mantenimiento',
+                icon: Icons.build,
+                children: [
+                   const Text(
+                    'Acciones peligrosas que pueden afectar los datos de la elección.',
+                    style: TextStyle(fontSize: 13, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 16),
+                  OutlinedButton.icon(
+                    onPressed: _showDeleteVotesDialog,
+                    icon: const Icon(Icons.delete_forever, color: Colors.red),
+                    label: const Text('BORRAR TODOS LOS VOTOS', style: TextStyle(color: Colors.red)),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      side: const BorderSide(color: Colors.red),
+                    ),
+                  ),
+                ]
+              ),
 
 
               const SizedBox(height: 40),

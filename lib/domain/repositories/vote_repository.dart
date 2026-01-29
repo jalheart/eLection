@@ -5,4 +5,5 @@ abstract class VoteRepository {
   Future<void> saveVotes(List<Vote> votes);
   Future<List<Vote>> getVotesByVoter(int voterId);
   Future<Map<int, int>> getResultsByCategory(int categoryId);
+  Future<void> deleteAll();
 }

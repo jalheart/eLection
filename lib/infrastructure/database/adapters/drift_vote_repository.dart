@@ -61,6 +61,11 @@ class DriftVoteRepository implements VoteRepository {
     return resultMap;
   }
 
+  @override
+  Future<void> deleteAll() async {
+    await db.delete(db.votes).go();
+  }
+
   domain.Vote _mapToDomain(Vote vote) {
     return domain.Vote(
       id: vote.id,

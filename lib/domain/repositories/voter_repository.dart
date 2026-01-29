@@ -10,4 +10,5 @@ abstract class VoterRepository {
   Future<Voter?> getVoterByDocumentId(String documentId);
   Future<Voter?> getVoterById(int id);
   Future<Voter?> login(String documentId, String password);
+  Future<void> resetAllVotersStatus();
 }

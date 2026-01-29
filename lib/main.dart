@@ -51,6 +51,7 @@ import 'application/use_cases/login_voter_use_case.dart';
 import 'application/use_cases/identify_user_use_case.dart';
 import 'application/use_cases/update_settings_use_case.dart';
 import 'application/use_cases/get_results_use_case.dart';
+import 'application/use_cases/delete_all_votes_use_case.dart';
 import 'application/providers/results_provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:myapp/l10n/app_localizations.dart';
@@ -184,6 +185,9 @@ void main() {
           update: (context, repo, _) => GetResultsUseCase(repo),
         ),
 
+        ProxyProvider2<DriftVoteRepository, DriftVoterRepository, DeleteAllVotesUseCase>(
+          update: (context, voteRepo, voterRepo, _) => DeleteAllVotesUseCase(voteRepo, voterRepo),
+        ),
         // Providers
         ChangeNotifierProxyProvider3<
           LoginUseCase,
@@ -203,17 +207,19 @@ void main() {
                 identifyUserUseCase: identifyUC,
               ),
         ),
-        ChangeNotifierProxyProvider2<
+        ChangeNotifierProxyProvider3<
           GetSettingsUseCase,
           UpdateSettingsUseCase,
+          DeleteAllVotesUseCase,
           SettingsProvider
         >(
           create: (context) => SettingsProvider(
             context.read<GetSettingsUseCase>(),
             context.read<UpdateSettingsUseCase>(),
+            context.read<DeleteAllVotesUseCase>(),
           ),
-          update: (context, getUC, updateUC, previous) =>
-              previous ?? SettingsProvider(getUC, updateUC),
+          update: (context, getUC, updateUC, deleteUC, previous) =>
+              previous ?? SettingsProvider(getUC, updateUC, deleteUC),
         ),
         ChangeNotifierProxyProvider3<
           GetGradosUseCase,

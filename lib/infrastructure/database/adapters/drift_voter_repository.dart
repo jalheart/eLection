@@ -114,6 +114,13 @@ class DriftVoterRepository implements VoterRepository {
     return result != null ? _mapToDomain(result) : null;
   }
 
+  @override
+  Future<void> resetAllVotersStatus() async {
+    await (db.update(db.voters)).write(const VotersCompanion(
+      hasVoted: Value(false),
+    ));
+  }
+
   domain.Voter _mapToDomain(Voter voter) {
     return domain.Voter(
       id: voter.id,
