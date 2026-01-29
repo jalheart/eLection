@@ -59,7 +59,7 @@ import 'application/providers/backup_provider.dart';
 import 'infrastructure/services/backup_service.dart';
 import 'infrastructure/services/pdf_report_service.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:myapp/l10n/app_localizations.dart';
+import 'package:election/l10n/app_localizations.dart';
 
 void main() {
   runApp(

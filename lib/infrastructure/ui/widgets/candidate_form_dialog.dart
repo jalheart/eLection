@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:myapp/l10n/app_localizations.dart';
+import 'package:election/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../../../application/providers/candidates_provider.dart';
 import '../../../domain/entities/candidate.dart';

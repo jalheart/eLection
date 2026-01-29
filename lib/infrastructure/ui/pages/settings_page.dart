@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:myapp/l10n/app_localizations.dart';
+import 'package:election/l10n/app_localizations.dart';
 import '../../../application/providers/settings_provider.dart';
 import '../../../application/providers/backup_provider.dart';
 import 'package:path/path.dart' as p;
@@ -490,10 +490,9 @@ class _SettingsPageState extends State<SettingsPage> {
                         physics: const NeverScrollableScrollPhysics(),
                         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                           maxCrossAxisExtent: 600,
-                          mainAxisExtent: isWide ? 380 : 320, // Approximate height adjustment
+                          mainAxisExtent: isWide ? 420 : 360, // Increased height to prevent overflow
                           crossAxisSpacing: 24,
                           mainAxisSpacing: 24,
-                          childAspectRatio: 1.5,
                         ),
                         itemCount: sections.length,
                         itemBuilder: (context, index) => sections[index],

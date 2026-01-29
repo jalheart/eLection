@@ -3,7 +3,7 @@ import '../widgets/admin_layout.dart';
 import 'grados_page.dart';
 import 'categories_page.dart';
 import 'candidates_page.dart';
-import 'package:myapp/l10n/app_localizations.dart';
+import 'package:election/l10n/app_localizations.dart';
 
 import 'voters_page.dart';
 import 'settings_page.dart';

@@ -6,7 +6,7 @@ import '../../../application/providers/settings_provider.dart';
 import '../../../application/providers/auth_provider.dart';
 import '../../../domain/entities/user.dart';
 import '../../../domain/entities/voter.dart';
-import 'package:myapp/l10n/app_localizations.dart';
+import 'package:election/l10n/app_localizations.dart';
 
 class AdminLayout extends StatelessWidget {
   final Widget child;

@@ -5,7 +5,7 @@ import 'package:path/path.dart' as p;
 import '../../../application/providers/auth_provider.dart';
 import '../../../application/providers/settings_provider.dart';
 import '../../../application/use_cases/identify_user_use_case.dart';
-import 'package:myapp/l10n/app_localizations.dart';
+import 'package:election/l10n/app_localizations.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

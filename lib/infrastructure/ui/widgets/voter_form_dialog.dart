@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/l10n/app_localizations.dart';
+import 'package:election/l10n/app_localizations.dart';
 import '../../../domain/entities/voter.dart';
 import '../../../domain/entities/grado.dart';
 

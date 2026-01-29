@@ -4,15 +4,15 @@ import 'package:provider/provider.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:excel/excel.dart';
-import 'package:myapp/l10n/app_localizations.dart';
-import 'package:myapp/application/providers/voters_provider.dart';
-import 'package:myapp/application/providers/grados_provider.dart';
-import 'package:myapp/domain/entities/voter.dart';
-import 'package:myapp/domain/entities/grado.dart';
-import 'package:myapp/infrastructure/ui/widgets/admin_layout.dart';
-import 'package:myapp/infrastructure/ui/widgets/custom_search_bar.dart';
-import 'package:myapp/infrastructure/ui/widgets/voter_form_dialog.dart';
-import 'package:myapp/infrastructure/ui/widgets/confirm_delete_dialog.dart';
+import 'package:election/l10n/app_localizations.dart';
+import 'package:election/application/providers/voters_provider.dart';
+import 'package:election/application/providers/grados_provider.dart';
+import 'package:election/domain/entities/voter.dart';
+import 'package:election/domain/entities/grado.dart';
+import 'package:election/infrastructure/ui/widgets/admin_layout.dart';
+import 'package:election/infrastructure/ui/widgets/custom_search_bar.dart';
+import 'package:election/infrastructure/ui/widgets/voter_form_dialog.dart';
+import 'package:election/infrastructure/ui/widgets/confirm_delete_dialog.dart';
 
 class VotersPage extends StatefulWidget {
   const VotersPage({super.key});

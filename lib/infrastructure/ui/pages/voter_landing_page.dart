@@ -4,7 +4,7 @@ import '../../../application/providers/auth_provider.dart';
 import '../../../domain/entities/voter.dart';
 import '../widgets/admin_layout.dart';
 import '../widgets/voting_view.dart';
-import 'package:myapp/l10n/app_localizations.dart';
+import 'package:election/l10n/app_localizations.dart';
 
 class VoterLandingPage extends StatefulWidget {
   const VoterLandingPage({super.key});

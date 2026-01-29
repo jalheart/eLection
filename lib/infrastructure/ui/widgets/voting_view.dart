@@ -6,7 +6,7 @@ import '../../../application/providers/candidates_provider.dart';
 import '../../../domain/entities/category.dart';
 import '../../../domain/entities/candidate.dart';
 import '../../../domain/entities/voter.dart';
-import 'package:myapp/l10n/app_localizations.dart';
+import 'package:election/l10n/app_localizations.dart';
 
 class VotingView extends StatefulWidget {
   final Voter voter;
