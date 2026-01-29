@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:myapp/l10n/app_localizations.dart';
 import '../../../application/providers/settings_provider.dart';
+import '../../../application/providers/backup_provider.dart';
 import 'package:path/path.dart' as p;
 
 class SettingsPage extends StatefulWidget {
@@ -399,6 +400,81 @@ class _SettingsPageState extends State<SettingsPage> {
                     style: TextStyle(fontSize: 13, color: Colors.grey),
                   ),
                   const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () async {
+                            try {
+                              await context.read<BackupProvider>().exportData();
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Datos exportados con éxito')),
+                                );
+                              }
+                            } catch (e) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Error exportando: $e')),
+                                );
+                              }
+                            }
+                          },
+                          icon: const Icon(Icons.upload_file),
+                          label: const Text('EXPORTAR DATOS'),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () async {
+                            final confirm = await showDialog<bool>(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Importar Datos'),
+                                content: const Text('Esta acción reemplazará todos los datos actuales por los del archivo seleccionado. La aplicación se cerrará después de la importación para cargar los nuevos datos. ¿Continuar?'),
+                                actions: [
+                                  TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancel)),
+                                  ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text('IMPORTAR')),
+                                ],
+                              ),
+                            );
+
+                            if (confirm == true) {
+                              try {
+                                final success = await context.read<BackupProvider>().importData();
+                                if (success && context.mounted) {
+                                  await showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (context) => AlertDialog(
+                                      title: const Text('Importación Exitosa'),
+                                      content: const Text('Los datos han sido importados correctamente. Por favor, reinicie la aplicación manualmente para ver los cambios.'),
+                                      actions: [
+                                        ElevatedButton(
+                                          onPressed: () => exit(0), 
+                                          child: const Text('CERRAR APLICACIÓN'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
+                              } catch (e) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Error importando: $e')),
+                                  );
+                                }
+                              }
+                            }
+                          },
+                          icon: const Icon(Icons.download_for_offline),
+                          label: const Text('IMPORTAR DATOS'),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
                   OutlinedButton.icon(
                     onPressed: _showDeleteVotesDialog,
                     icon: const Icon(Icons.delete_forever, color: Colors.red),

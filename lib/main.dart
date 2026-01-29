@@ -52,7 +52,11 @@ import 'application/use_cases/identify_user_use_case.dart';
 import 'application/use_cases/update_settings_use_case.dart';
 import 'application/use_cases/get_results_use_case.dart';
 import 'application/use_cases/delete_all_votes_use_case.dart';
+import 'application/use_cases/export_data_use_case.dart';
+import 'application/use_cases/import_data_use_case.dart';
 import 'application/providers/results_provider.dart';
+import 'application/providers/backup_provider.dart';
+import 'infrastructure/services/backup_service.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:myapp/l10n/app_localizations.dart';
 
@@ -63,6 +67,9 @@ void main() {
         Provider<AppDatabase>(
           create: (context) => AppDatabase(),
           dispose: (context, db) => db.close(),
+        ),
+        Provider<BackupService>(
+          create: (context) => BackupService(),
         ),
         // Repositories
         ProxyProvider<AppDatabase, DriftUserRepository>(
@@ -187,6 +194,12 @@ void main() {
 
         ProxyProvider2<DriftVoteRepository, DriftVoterRepository, DeleteAllVotesUseCase>(
           update: (context, voteRepo, voterRepo, _) => DeleteAllVotesUseCase(voteRepo, voterRepo),
+        ),
+        ProxyProvider<BackupService, ExportDataUseCase>(
+          update: (context, service, _) => ExportDataUseCase(service),
+        ),
+        ProxyProvider<BackupService, ImportDataUseCase>(
+          update: (context, service, _) => ImportDataUseCase(service),
         ),
         // Providers
         ChangeNotifierProxyProvider3<
@@ -338,6 +351,20 @@ void main() {
           ),
           update: (context, getCatUC, getCandUC, getResUC, previous) =>
               previous ?? ResultsProvider(getCatUC, getCandUC, getResUC),
+        ),
+        ChangeNotifierProxyProvider3<
+          ExportDataUseCase,
+          ImportDataUseCase,
+          AppDatabase,
+          BackupProvider
+        >(
+          create: (context) => BackupProvider(
+            exportUC: context.read<ExportDataUseCase>(),
+            importUC: context.read<ImportDataUseCase>(),
+            db: context.read<AppDatabase>(),
+          ),
+          update: (context, exportUC, importUC, db, previous) =>
+              previous ?? BackupProvider(exportUC: exportUC, importUC: importUC, db: db),
         ),
       ],
       child: const MyApp(),
