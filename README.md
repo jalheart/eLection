@@ -121,7 +121,8 @@ lib/
 
 ## 🤝 Developed By
 
-- **Software developed by Jaime Hernández**
+- **Jaime Hernández**
+- **Antigravity**
 
 ---
 
