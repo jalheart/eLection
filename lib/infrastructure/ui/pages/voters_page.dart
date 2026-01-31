@@ -239,7 +239,7 @@ class _VotersPageState extends State<VotersPage> {
                     SizedBox(
                       width: 250,
                       child: DropdownButtonFormField<int>(
-                        value: _selectedGradeId,
+                        initialValue: _selectedGradeId,
                         decoration: InputDecoration(
                           labelText: l10n.grades,
                           isDense: true,

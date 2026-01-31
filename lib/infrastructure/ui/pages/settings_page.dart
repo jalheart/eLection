@@ -332,7 +332,7 @@ class _SettingsPageState extends State<SettingsPage> {
             title: Text(l10n.passRequired, style: const TextStyle(fontWeight: FontWeight.w500)),
             subtitle: const Text('Increase security by requiring password for voters'),
             value: _passRequired,
-            activeColor: primaryColor,
+            activeThumbColor: primaryColor,
             onChanged: (bool value) {
               setState(() {
                 _passRequired = value;
@@ -346,7 +346,7 @@ class _SettingsPageState extends State<SettingsPage> {
         icon: Icons.language,
         children: [
           DropdownButtonFormField<String>(
-            value: _selectedLanguage,
+            initialValue: _selectedLanguage,
             decoration: const InputDecoration(
               labelText: 'Select Language',
               border: OutlineInputBorder(),

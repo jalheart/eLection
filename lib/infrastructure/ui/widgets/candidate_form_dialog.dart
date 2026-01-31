@@ -104,7 +104,7 @@ class _CandidateFormDialogState extends State<CandidateFormDialog> {
                       Center(
                         child: GestureDetector(
                           onTap: _pickImage,
-                          child: Container(
+                          child: SizedBox(
                             width: 180,
                             child: AspectRatio(
                               aspectRatio: 3 / 4,

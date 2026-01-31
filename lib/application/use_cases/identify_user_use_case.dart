@@ -1,5 +1,3 @@
-import '../../domain/entities/user.dart';
-import '../../domain/entities/voter.dart';
 import '../../domain/repositories/user_repository.dart';
 import '../../domain/repositories/voter_repository.dart';
 

@@ -119,7 +119,7 @@ class _VoterFormDialogState extends State<VoterFormDialog> {
                       ),
                       const SizedBox(height: 16),
                       DropdownButtonFormField<int>(
-                        value: _selectedGradeId,
+                        initialValue: _selectedGradeId,
                         decoration: InputDecoration(
                           labelText: l10n.grades,
                           isDense: true,

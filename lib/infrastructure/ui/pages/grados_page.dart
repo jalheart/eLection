@@ -1,7 +1,6 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:election/l10n/app_localizations.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../application/providers/grados_provider.dart';
 import '../../../application/providers/categories_provider.dart';

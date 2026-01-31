@@ -126,7 +126,7 @@ class AdminLayout extends StatelessWidget {
                 Consumer<SettingsProvider>(
                   builder: (context, provider, _) {
                     return Text(
-                      (provider.settings?.slogan?.isNotEmpty == true)
+                      (provider.settings?.slogan.isNotEmpty == true)
                           ? provider.settings!.slogan
                           : l10n.ready,
                       style: const TextStyle(fontSize: 12, color: Colors.grey),

@@ -4,8 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:election/l10n/app_localizations.dart';
 import '../../../application/providers/results_provider.dart';
 import '../../../application/providers/candidates_provider.dart';
-import '../../../domain/entities/candidate.dart';
-import '../../../domain/entities/category.dart';
 import '../../../application/providers/settings_provider.dart';
 import '../widgets/admin_layout.dart';
 

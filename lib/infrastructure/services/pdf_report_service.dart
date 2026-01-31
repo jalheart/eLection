@@ -131,7 +131,7 @@ class PDFReportService {
                   pw.SizedBox(height: 16),
                 ],
               );
-            }).toList(),
+            }),
 
             // Footer / Signatures
             pw.SizedBox(height: 48),

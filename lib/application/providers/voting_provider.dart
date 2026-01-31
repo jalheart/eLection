@@ -12,8 +12,8 @@ class VotingProvider with ChangeNotifier {
   final CastVotesUseCase _castVotesUC;
 
   List<Category> _categories = [];
-  Map<int, List<Candidate>> _candidatesByCategory = {};
-  Map<int, int?> _selectedCandidates = {}; // categoryId -> candidateId
+  final Map<int, List<Candidate>> _candidatesByCategory = {};
+  final Map<int, int?> _selectedCandidates = {}; // categoryId -> candidateId
   bool _isLoading = false;
   bool _isSaving = false;
 

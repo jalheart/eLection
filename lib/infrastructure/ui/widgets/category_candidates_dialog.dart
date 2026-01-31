@@ -35,7 +35,7 @@ class CategoryCandidatesDialog extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(8),
-        child: Container(
+        child: SizedBox(
           width: 800,
           height: 600,
           child: Column(
