@@ -28,7 +28,9 @@ class _LoginPageState extends State<LoginPage> {
     final identifier = _identifierController.text.trim();
 
     if (identifier.isEmpty) {
-      setState(() => _errorMessage = 'Por favor, ingrese su documento o usuario');
+      setState(
+        () => _errorMessage = 'Por favor, ingrese su documento o usuario',
+      );
       return;
     }
 
@@ -42,12 +44,16 @@ class _LoginPageState extends State<LoginPage> {
 
       if (result != null) {
         _identifiedType = result.type;
-        
+
         if (result.type == UserType.voter) {
           final passRequired = settingsProvider.settings?.passRequired ?? false;
           if (!passRequired) {
             // Log in immediately
-            final success = await authProvider.loginVoter(identifier, null, passRequired: false);
+            final success = await authProvider.loginVoter(
+              identifier,
+              null,
+              passRequired: false,
+            );
             if (success) {
               // Navigation is handled by main.dart listening to AuthProvider
               return;
@@ -94,8 +100,11 @@ class _LoginPageState extends State<LoginPage> {
       if (_identifiedType == UserType.admin) {
         success = await authProvider.loginAdmin(identifier, password);
       } else if (_identifiedType == UserType.voter) {
-        success = await authProvider.loginVoter(identifier, password,
-            passRequired: true);
+        success = await authProvider.loginVoter(
+          identifier,
+          password,
+          passRequired: true,
+        );
       }
 
       if (!success) {
@@ -114,7 +123,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Consumer<SettingsProvider>(
@@ -141,19 +150,43 @@ class _LoginPageState extends State<LoginPage> {
                             if (logo.startsWith('assets/')) {
                               return Image.asset(logo, fit: BoxFit.contain);
                             } else if (p.isAbsolute(logo)) {
-                              return Image.file(File(logo), fit: BoxFit.contain);
+                              final file = File(logo);
+                              return file.existsSync()
+                                  ? Image.file(file, fit: BoxFit.contain)
+                                  : Icon(
+                                      Icons.school,
+                                      size: 80,
+                                      color: theme.primaryColor.withOpacity(
+                                        0.5,
+                                      ),
+                                    );
                             } else {
-                              final resolved = settingsProvider.resolvePath(logo);
-                              return resolved != null
-                                  ? Image.file(File(resolved), fit: BoxFit.contain)
-                                  : Icon(Icons.school, size: 80, color: theme.primaryColor);
+                              final resolved = settingsProvider.resolvePath(
+                                logo,
+                              );
+                              final file = resolved != null
+                                  ? File(resolved)
+                                  : null;
+                              return file != null && file.existsSync()
+                                  ? Image.file(file, fit: BoxFit.contain)
+                                  : Icon(
+                                      Icons.school,
+                                      size: 80,
+                                      color: theme.primaryColor.withOpacity(
+                                        0.5,
+                                      ),
+                                    );
                             }
                           },
                         ),
                       )
-                    else 
-                      Icon(Icons.school, size: 80, color: theme.primaryColor.withOpacity(0.5)),
-                    
+                    else
+                      Icon(
+                        Icons.school,
+                        size: 80,
+                        color: theme.primaryColor.withOpacity(0.5),
+                      ),
+
                     Text(
                       settings?.name ?? 'eLection',
                       textAlign: TextAlign.center,
@@ -162,7 +195,8 @@ class _LoginPageState extends State<LoginPage> {
                         color: Colors.black87,
                       ),
                     ),
-                    if (settings?.slogan != null && settings!.slogan.isNotEmpty) ...[
+                    if (settings?.slogan != null &&
+                        settings!.slogan.isNotEmpty) ...[
                       const SizedBox(height: 8),
                       Text(
                         settings.slogan,
@@ -174,14 +208,16 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ],
-                    
+
                     const SizedBox(height: 48),
-                    
+
                     // Login Card
                     Card(
                       elevation: 4,
                       shadowColor: Colors.black12,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                       child: Padding(
                         padding: const EdgeInsets.all(32.0),
                         child: Column(
@@ -227,7 +263,9 @@ class _LoginPageState extends State<LoginPage> {
                             ],
                             const SizedBox(height: 32),
                             ElevatedButton(
-                              onPressed: _isLoading ? null : (_showPassword ? _login : _identify),
+                              onPressed: _isLoading
+                                  ? null
+                                  : (_showPassword ? _login : _identify),
                               style: ElevatedButton.styleFrom(
                                 minimumSize: const Size.fromHeight(56),
                                 shape: RoundedRectangleBorder(
@@ -272,7 +310,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 48),
                     Column(
                       children: [

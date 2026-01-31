@@ -6,6 +6,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:election/l10n/app_localizations.dart';
 import '../../../application/providers/settings_provider.dart';
 import '../../../application/providers/backup_provider.dart';
+import '../../../application/providers/auth_provider.dart';
+import '../../../domain/entities/user.dart' as domain_user;
 import 'package:path/path.dart' as p;
 
 class SettingsPage extends StatefulWidget {
@@ -20,6 +22,7 @@ class _SettingsPageState extends State<SettingsPage> {
   late TextEditingController _nameController;
   late TextEditingController _sloganController;
   late TextEditingController _logoController;
+  late TextEditingController _adminPassController;
   bool _passRequired = false;
   String _themeColor = '0xFF2196F3'; // Default blue
   String _selectedLanguage = 'es';
@@ -45,6 +48,7 @@ class _SettingsPageState extends State<SettingsPage> {
     _nameController = TextEditingController(text: settings?.name ?? '');
     _sloganController = TextEditingController(text: settings?.slogan ?? '');
     _logoController = TextEditingController(text: settings?.logo ?? '');
+    _adminPassController = TextEditingController();
     _passRequired = settings?.passRequired ?? true;
     _themeColor = settings?.theme ?? '0xFF2196F3';
     _selectedLanguage = settings?.language ?? 'es';
@@ -55,13 +59,12 @@ class _SettingsPageState extends State<SettingsPage> {
     _nameController.dispose();
     _sloganController.dispose();
     _logoController.dispose();
+    _adminPassController.dispose();
     super.dispose();
   }
 
   Future<void> _pickLogo() async {
-    FilePickerResult? result = await FilePicker.pickFiles(
-      type: FileType.image,
-    );
+    FilePickerResult? result = await FilePicker.pickFiles(type: FileType.image);
 
     if (result != null) {
       setState(() {
@@ -79,35 +82,43 @@ class _SettingsPageState extends State<SettingsPage> {
           name: _nameController.text,
           slogan: _sloganController.text,
           theme: _themeColor,
-          logo: _logoController.text, // Pass original path (absolute if picked, relative if existing)
+          logo: _logoController
+              .text, // Pass original path (absolute if picked, relative if existing)
           passRequired: _passRequired,
         );
-        
-        if (_selectedLanguage != context.read<SettingsProvider>().settings?.language) {
-             await context.read<SettingsProvider>().updateLanguage(_selectedLanguage);
+
+        if (_selectedLanguage !=
+            context.read<SettingsProvider>().settings?.language) {
+          await context.read<SettingsProvider>().updateLanguage(
+            _selectedLanguage,
+          );
         }
 
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.settingsSaved)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.settingsSaved)));
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${l10n.error}: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
         }
       }
     }
   }
 
   String _generateRandomCode() {
-    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#%&*';
+    const chars =
+        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#%&*';
     final rnd = math.Random();
     final length = 5 + rnd.nextInt(4); // 5 to 8
     return String.fromCharCodes(
-      Iterable.generate(length, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))),
+      Iterable.generate(
+        length,
+        (_) => chars.codeUnitAt(rnd.nextInt(chars.length)),
+      ),
     );
   }
 
@@ -122,80 +133,159 @@ class _SettingsPageState extends State<SettingsPage> {
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) {
-            return AlertDialog(
-              title: const Row(
-                children: [
-                  Icon(Icons.warning_amber_rounded, color: Colors.red),
-                  SizedBox(width: 8),
-                  Text('Borrar Votos'),
-                ],
+            return Dialog(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                   const Text(
-                    'Esta acción eliminará todos los votos registrados y restablecerá el estado de los votantes.',
-                    style: TextStyle(fontWeight: FontWeight.w500),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text('Para confirmar, ingrese el siguiente código:'),
-                  Container(
-                    margin: const EdgeInsets.symmetric(vertical: 12),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.grey[400]!),
-                    ),
-                    child: Text(
-                      code,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 2,
-                        fontFamily: 'Courier',
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  width: 450,
+                  constraints: const BoxConstraints(maxWidth: 500),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        height: 56,
+                        width: double.infinity,
+                        color: Colors.red,
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        alignment: Alignment.centerLeft,
+                        child: const Row(
+                          children: [
+                            Icon(
+                              Icons.warning_amber_rounded,
+                              color: Colors.white,
+                            ),
+                            SizedBox(width: 12),
+                            Text(
+                              'BORRAR VOTOS',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
+                      Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Esta acción eliminará todos los votos registrados y restablecerá el estado de los votantes.',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            const Text(
+                              'Para confirmar, ingrese el siguiente código:',
+                            ),
+                            Container(
+                              margin: const EdgeInsets.symmetric(vertical: 16),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[100],
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: Colors.grey[300]!),
+                              ),
+                              child: Text(
+                                code,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 4,
+                                  fontFamily: 'Courier',
+                                ),
+                              ),
+                            ),
+                            TextField(
+                              controller: controller,
+                              textAlign: TextAlign.center,
+                              decoration: const InputDecoration(
+                                hintText: 'Ingrese el código aquí',
+                                border: OutlineInputBorder(),
+                                labelText: 'Código de Confirmación',
+                              ),
+                              onChanged: (value) {
+                                setState(() {
+                                  isCodeCorrect = value == code;
+                                });
+                              },
+                            ),
+                            const SizedBox(height: 24),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: OutlinedButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    style: OutlinedButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 16,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
+                                    child: Text(l10n.cancel.toUpperCase()),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: ElevatedButton(
+                                    onPressed: isCodeCorrect
+                                        ? () async {
+                                            await context
+                                                .read<SettingsProvider>()
+                                                .deleteAllVotes();
+                                            if (context.mounted) {
+                                              Navigator.pop(context);
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                const SnackBar(
+                                                  content: Text(
+                                                    'Todos los votos han sido eliminados',
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          }
+                                        : null,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.red,
+                                      foregroundColor: Colors.white,
+                                      elevation: 0,
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 16,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
+                                    child: const Text('BORRAR TODO'),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                  TextField(
-                    controller: controller,
-                    decoration: const InputDecoration(
-                      hintText: 'Ingrese el código aquí',
-                      border: OutlineInputBorder(),
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        isCodeCorrect = value == code;
-                      });
-                    },
-                  ),
-                ],
+                ),
               ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(l10n.cancel),
-                ),
-                ElevatedButton(
-                  onPressed: isCodeCorrect
-                      ? () async {
-                          await context.read<SettingsProvider>().deleteAllVotes();
-                          if (context.mounted) {
-                            Navigator.pop(context);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Todos los votos han sido eliminados')),
-                            );
-                          }
-                        }
-                      : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
-                  ),
-                  child: const Text('BORRAR TODO'),
-                ),
-              ],
             );
           },
         );
@@ -250,7 +340,8 @@ class _SettingsPageState extends State<SettingsPage> {
               itemCount: _availableColors.length,
               itemBuilder: (context, index) {
                 final color = _availableColors[index];
-                final colorString = '0x${color.value.toRadixString(16).toUpperCase()}';
+                final colorString =
+                    '0x${color.value.toRadixString(16).toUpperCase()}';
                 final isSelected = _themeColor == colorString;
 
                 return GestureDetector(
@@ -273,7 +364,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             color: color.withOpacity(0.4),
                             blurRadius: 8,
                             spreadRadius: 2,
-                          )
+                          ),
                       ],
                     ),
                     width: 44,
@@ -307,7 +398,11 @@ class _SettingsPageState extends State<SettingsPage> {
                     : Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.add_photo_alternate, size: 40, color: Colors.grey[600]),
+                          Icon(
+                            Icons.add_photo_alternate,
+                            size: 40,
+                            color: Colors.grey[600],
+                          ),
                           const SizedBox(height: 8),
                           Text(
                             l10n.selectLogo,
@@ -329,8 +424,13 @@ class _SettingsPageState extends State<SettingsPage> {
         icon: Icons.security,
         children: [
           SwitchListTile(
-            title: Text(l10n.passRequired, style: const TextStyle(fontWeight: FontWeight.w500)),
-            subtitle: const Text('Increase security by requiring password for voters'),
+            title: Text(
+              l10n.passRequired,
+              style: const TextStyle(fontWeight: FontWeight.w500),
+            ),
+            subtitle: const Text(
+              'Increase security by requiring password for voters',
+            ),
             value: _passRequired,
             activeThumbColor: primaryColor,
             onChanged: (bool value) {
@@ -369,6 +469,70 @@ class _SettingsPageState extends State<SettingsPage> {
         ],
       ),
       _buildSectionCard(
+        title: 'Contraseña Administrador',
+        icon: Icons.lock,
+        children: [
+          TextFormField(
+            controller: _adminPassController,
+            obscureText: true,
+            decoration: const InputDecoration(
+              labelText: 'Nueva Contraseña',
+              border: OutlineInputBorder(),
+              prefixIcon: Icon(Icons.password),
+            ),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () async {
+                if (_adminPassController.text.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Por favor ingrese una nueva contraseña'),
+                    ),
+                  );
+                  return;
+                }
+
+                final authProvider = context.read<AuthProvider>();
+                final user = authProvider.currentUser;
+                if (user is domain_user.User) {
+                  try {
+                    await authProvider.updatePassword(
+                      user.id,
+                      _adminPassController.text,
+                    );
+                    _adminPassController.clear();
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Contraseña actualizada con éxito'),
+                        ),
+                      );
+                    }
+                  } catch (e) {
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Error actualizando contraseña: $e'),
+                        ),
+                      );
+                    }
+                  }
+                }
+              },
+              icon: const Icon(Icons.update),
+              label: const Text('ACTUALIZAR CONTRASEÑA'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.amber[800],
+                foregroundColor: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
+      _buildSectionCard(
         title: 'Mantenimiento',
         icon: Icons.build,
         children: [
@@ -387,7 +551,9 @@ class _SettingsPageState extends State<SettingsPage> {
                     await context.read<BackupProvider>().exportData();
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Datos exportados con éxito')),
+                        const SnackBar(
+                          content: Text('Datos exportados con éxito'),
+                        ),
                       );
                     }
                   } catch (e) {
@@ -406,20 +572,120 @@ class _SettingsPageState extends State<SettingsPage> {
                   final l10n = AppLocalizations.of(context)!;
                   final confirm = await showDialog<bool>(
                     context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Importar Datos'),
-                      content: const Text(
-                          'Esta acción reemplazará todos los datos actuales por los del archivo seleccionado. La aplicación se cerrará después de la importación para cargar los nuevos datos. ¿Continuar?'),
-                      actions: [
-                        TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancel)),
-                        ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text('IMPORTAR')),
-                      ],
+                    builder: (context) => Dialog(
+                      backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Container(
+                          width: 450,
+                          constraints: const BoxConstraints(maxWidth: 500),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                height: 56,
+                                width: double.infinity,
+                                color: Theme.of(context).primaryColor,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                ),
+                                alignment: Alignment.centerLeft,
+                                child: const Row(
+                                  children: [
+                                    Icon(
+                                      Icons.download_for_offline,
+                                      color: Colors.white,
+                                    ),
+                                    SizedBox(width: 12),
+                                    Text(
+                                      'IMPORTAR DATOS',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 1.2,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(24.0),
+                                child: Column(
+                                  children: [
+                                    const Text(
+                                      'Esta acción reemplazará todos los datos actuales por los del archivo seleccionado. La aplicación se cerrará después de la importación para cargar los nuevos datos. ¿Continuar?',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 24),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: OutlinedButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context, false),
+                                            style: OutlinedButton.styleFrom(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    vertical: 16,
+                                                  ),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                            ),
+                                            child: Text(
+                                              l10n.cancel.toUpperCase(),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: ElevatedButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context, true),
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Theme.of(
+                                                context,
+                                              ).primaryColor,
+                                              foregroundColor: Colors.white,
+                                              elevation: 0,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    vertical: 16,
+                                                  ),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                            ),
+                                            child: const Text('IMPORTAR'),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
                   );
 
                   if (confirm == true) {
                     try {
-                      final success = await context.read<BackupProvider>().importData();
+                      final success = await context
+                          .read<BackupProvider>()
+                          .importData();
                       if (success && context.mounted) {
                         await showDialog(
                           context: context,
@@ -427,7 +693,8 @@ class _SettingsPageState extends State<SettingsPage> {
                           builder: (context) => AlertDialog(
                             title: const Text('Importación Exitosa'),
                             content: const Text(
-                                'Los datos han sido importados correctamente. Por favor, reinicie la aplicación manualmente para ver los cambios.'),
+                              'Los datos han sido importados correctamente. Por favor, reinicie la aplicación manualmente para ver los cambios.',
+                            ),
                             actions: [
                               ElevatedButton(
                                 onPressed: () => exit(0),
@@ -455,7 +722,10 @@ class _SettingsPageState extends State<SettingsPage> {
           OutlinedButton.icon(
             onPressed: _showDeleteVotesDialog,
             icon: const Icon(Icons.delete_forever, color: Colors.red),
-            label: const Text('BORRAR TODOS LOS VOTOS', style: TextStyle(color: Colors.red)),
+            label: const Text(
+              'BORRAR TODOS LOS VOTOS',
+              style: TextStyle(color: Colors.red),
+            ),
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 12),
               side: const BorderSide(color: Colors.red),
@@ -490,7 +760,9 @@ class _SettingsPageState extends State<SettingsPage> {
                         physics: const NeverScrollableScrollPhysics(),
                         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                           maxCrossAxisExtent: 600,
-                          mainAxisExtent: isWide ? 420 : 360, // Increased height to prevent overflow
+                          mainAxisExtent: isWide
+                              ? 420
+                              : 360, // Increased height to prevent overflow
                           crossAxisSpacing: 24,
                           mainAxisSpacing: 24,
                         ),
@@ -504,8 +776,13 @@ class _SettingsPageState extends State<SettingsPage> {
                         child: ElevatedButton.icon(
                           onPressed: _saveSettings,
                           icon: const Icon(Icons.save_rounded),
-                          label: Text(l10n.saveSettings,
-                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                          label: Text(
+                            l10n.saveSettings,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: primaryColor,
                             foregroundColor: Colors.white,
@@ -527,7 +804,11 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildSectionCard({required String title, required IconData icon, required List<Widget> children}) {
+  Widget _buildSectionCard({
+    required String title,
+    required IconData icon,
+    required List<Widget> children,
+  }) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -557,7 +838,6 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-
   Widget _buildSectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
@@ -576,24 +856,36 @@ class _SettingsPageState extends State<SettingsPage> {
     if (path.isEmpty) return const SizedBox.shrink();
 
     if (path.startsWith('assets/')) {
-      return Image.asset(path, fit: BoxFit.contain, errorBuilder: (_,__,___) => const Icon(Icons.broken_image));
+      return Image.asset(
+        path,
+        fit: BoxFit.contain,
+        errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+      );
     }
 
     if (p.isAbsolute(path)) {
-      return Image.file(File(path), fit: BoxFit.contain, errorBuilder: (_,__,___) => const Icon(Icons.broken_image));
+      return Image.file(
+        File(path),
+        fit: BoxFit.contain,
+        errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+      );
     }
 
     // Use SettingsProvider to resolve relative path
     final resolvedPath = context.read<SettingsProvider>().resolvePath(path);
     if (resolvedPath != null) {
-        return Image.file(File(resolvedPath), fit: BoxFit.contain, errorBuilder: (_,__,___) => const Icon(Icons.broken_image));
+      return Image.file(
+        File(resolvedPath),
+        fit: BoxFit.contain,
+        errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+      );
     }
-    
+
     // Fallback if not resolved (e.g. appDocDir not loaded yet, though simpler to use FutureBuilder if we really want to be safe, but initState loads settings)
     return const SizedBox(
-           width: 24, 
-           height: 24, 
-           child: Center(child: CircularProgressIndicator(strokeWidth: 2))
+      width: 24,
+      height: 24,
+      child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
     );
   }
 }

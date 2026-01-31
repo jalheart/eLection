@@ -50,6 +50,7 @@ import 'infrastructure/ui/pages/voter_landing_page.dart';
 import 'application/use_cases/login_voter_use_case.dart';
 import 'application/use_cases/identify_user_use_case.dart';
 import 'application/use_cases/update_settings_use_case.dart';
+import 'application/use_cases/update_password_use_case.dart';
 import 'application/use_cases/get_results_use_case.dart';
 import 'application/use_cases/delete_all_votes_use_case.dart';
 import 'application/use_cases/export_data_use_case.dart';
@@ -69,12 +70,8 @@ void main() {
           create: (context) => AppDatabase(),
           dispose: (context, db) => db.close(),
         ),
-        Provider<BackupService>(
-          create: (context) => BackupService(),
-        ),
-        Provider<PDFReportService>(
-          create: (context) => PDFReportService(),
-        ),
+        Provider<BackupService>(create: (context) => BackupService()),
+        Provider<PDFReportService>(create: (context) => PDFReportService()),
         // Repositories
         ProxyProvider<AppDatabase, DriftUserRepository>(
           update: (context, db, _) => DriftUserRepository(db),
@@ -108,8 +105,16 @@ void main() {
         ProxyProvider<DriftVoterRepository, LoginVoterUseCase>(
           update: (context, repo, _) => LoginVoterUseCase(repo),
         ),
-        ProxyProvider2<DriftUserRepository, DriftVoterRepository, IdentifyUserUseCase>(
-          update: (context, userRepo, voterRepo, _) => IdentifyUserUseCase(userRepo, voterRepo),
+        ProxyProvider2<
+          DriftUserRepository,
+          DriftVoterRepository,
+          IdentifyUserUseCase
+        >(
+          update: (context, userRepo, voterRepo, _) =>
+              IdentifyUserUseCase(userRepo, voterRepo),
+        ),
+        ProxyProvider<DriftUserRepository, UpdatePasswordUseCase>(
+          update: (context, repo, _) => UpdatePasswordUseCase(repo),
         ),
         ProxyProvider<DriftUserRepository, CheckUsernameUseCase>(
           update: (context, repo, _) => CheckUsernameUseCase(repo),
@@ -189,15 +194,25 @@ void main() {
         ProxyProvider<DriftVoterRepository, GetVoterByDocumentIdUseCase>(
           update: (context, repo, _) => GetVoterByDocumentIdUseCase(repo),
         ),
-        ProxyProvider2<DriftVoteRepository, DriftVoterRepository, CastVotesUseCase>(
-          update: (context, voteRepo, voterRepo, _) => CastVotesUseCase(voteRepo, voterRepo),
+        ProxyProvider2<
+          DriftVoteRepository,
+          DriftVoterRepository,
+          CastVotesUseCase
+        >(
+          update: (context, voteRepo, voterRepo, _) =>
+              CastVotesUseCase(voteRepo, voterRepo),
         ),
         ProxyProvider<DriftVoteRepository, GetResultsUseCase>(
           update: (context, repo, _) => GetResultsUseCase(repo),
         ),
 
-        ProxyProvider2<DriftVoteRepository, DriftVoterRepository, DeleteAllVotesUseCase>(
-          update: (context, voteRepo, voterRepo, _) => DeleteAllVotesUseCase(voteRepo, voterRepo),
+        ProxyProvider2<
+          DriftVoteRepository,
+          DriftVoterRepository,
+          DeleteAllVotesUseCase
+        >(
+          update: (context, voteRepo, voterRepo, _) =>
+              DeleteAllVotesUseCase(voteRepo, voterRepo),
         ),
         ProxyProvider<BackupService, ExportDataUseCase>(
           update: (context, service, _) => ExportDataUseCase(service),
@@ -206,23 +221,35 @@ void main() {
           update: (context, service, _) => ImportDataUseCase(service),
         ),
         // Providers
-        ChangeNotifierProxyProvider3<
+        ChangeNotifierProxyProvider4<
           LoginUseCase,
           LoginVoterUseCase,
           IdentifyUserUseCase,
+          UpdatePasswordUseCase,
           AuthProvider
         >(
           create: (context) => AuthProvider(
             loginUseCase: context.read<LoginUseCase>(),
             loginVoterUseCase: context.read<LoginVoterUseCase>(),
             identifyUserUseCase: context.read<IdentifyUserUseCase>(),
+            updatePasswordUseCase: context.read<UpdatePasswordUseCase>(),
           ),
-          update: (context, loginUC, loginVoterUC, identifyUC, previous) =>
-              previous ?? AuthProvider(
-                loginUseCase: loginUC,
-                loginVoterUseCase: loginVoterUC,
-                identifyUserUseCase: identifyUC,
-              ),
+          update:
+              (
+                context,
+                loginUC,
+                loginVoterUC,
+                identifyUC,
+                updatePwdUC,
+                previous,
+              ) =>
+                  previous ??
+                  AuthProvider(
+                    loginUseCase: loginUC,
+                    loginVoterUseCase: loginVoterUC,
+                    identifyUserUseCase: identifyUC,
+                    updatePasswordUseCase: updatePwdUC,
+                  ),
         ),
         ChangeNotifierProxyProvider3<
           GetSettingsUseCase,
@@ -355,8 +382,10 @@ void main() {
             context.read<GetResultsUseCase>(),
             context.read<PDFReportService>(),
           ),
-          update: (context, getCatUC, getCandUC, getResUC, pdfService, previous) =>
-              previous ?? ResultsProvider(getCatUC, getCandUC, getResUC, pdfService),
+          update:
+              (context, getCatUC, getCandUC, getResUC, pdfService, previous) =>
+                  previous ??
+                  ResultsProvider(getCatUC, getCandUC, getResUC, pdfService),
         ),
         ChangeNotifierProxyProvider3<
           ExportDataUseCase,
@@ -370,7 +399,8 @@ void main() {
             db: context.read<AppDatabase>(),
           ),
           update: (context, exportUC, importUC, db, previous) =>
-              previous ?? BackupProvider(exportUC: exportUC, importUC: importUC, db: db),
+              previous ??
+              BackupProvider(exportUC: exportUC, importUC: importUC, db: db),
         ),
       ],
       child: const MyApp(),
