@@ -1,567 +1,1083 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>eLection - Sistema de Votación Digital</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap"
-      rel="stylesheet"
-    />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Usuario - eLection Manual</title>
     <style>
-      :root {
-        --primary: #2563eb;
-        --primary-dark: #1e40af;
-        --secondary: #64748b;
-        --accent: #f59e0b;
-        --success: #10b981;
-        --bg: #f8fafc;
-        --card-bg: #ffffff;
-        --text: #1e293b;
-        --text-light: #64748b;
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: "Outfit", sans-serif;
-        background-color: var(--bg);
-        color: var(--text);
-        line-height: 1.6;
-        overflow-x: hidden;
-      }
-
-      .container {
-        max-width: 1100px;
-        margin: 0 auto;
-        padding: 0 24px;
-      }
-
-      /* Navbar */
-      nav {
-        height: 80px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        position: sticky;
-        top: 0;
-        background: rgba(248, 250, 252, 0.8);
-        backdrop-filter: blur(10px);
-        z-index: 1000;
-      }
-
-      .logo {
-        font-size: 24px;
-        font-weight: 700;
-        color: var(--primary);
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .nav-links {
-        display: flex;
-        gap: 32px;
-      }
-
-      .nav-links a {
-        text-decoration: none;
-        color: var(--text-light);
-        font-weight: 500;
-        transition: color 0.3s;
-      }
-
-      .nav-links a:hover {
-        color: var(--primary);
-      }
-
-      /* Hero */
-      .hero {
-        padding: 100px 0;
-        text-align: center;
-        background: radial-gradient(circle at top right, #dbeafe, transparent);
-      }
-
-      .hero h1 {
-        font-size: 56px;
-        font-weight: 700;
-        line-height: 1.1;
-        margin-bottom: 24px;
-        background: linear-gradient(
-          to right,
-          var(--primary-dark),
-          var(--primary)
-        );
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
-
-      .hero p {
-        font-size: 20px;
-        color: var(--text-light);
-        max-width: 700px;
-        margin: 0 auto 40px;
-      }
-
-      .btn {
-        display: inline-block;
-        padding: 14px 32px;
-        background: var(--primary);
-        color: white;
-        border-radius: 12px;
-        text-decoration: none;
-        font-weight: 600;
-        transition:
-          transform 0.3s,
-          box-shadow 0.3s;
-        box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
-      }
-
-      .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 20px 25px -5px rgba(37, 99, 235, 0.4);
-      }
-
-      /* Sections */
-      section {
-        padding: 100px 0;
-      }
-
-      .section-title {
-        text-align: center;
-        margin-bottom: 60px;
-      }
-
-      .section-title h2 {
-        font-size: 36px;
-        margin-bottom: 16px;
-      }
-
-      .section-title p {
-        color: var(--text-light);
-      }
-
-      /* Features Grid */
-      .features-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 32px;
-      }
-
-      .feature-card {
-        background: var(--card-bg);
-        padding: 40px;
-        border-radius: 24px;
-        border: 1px solid #e2e8f0;
-        transition: transform 0.3s;
-      }
-
-      .feature-card:hover {
-        transform: translateY(-5px);
-      }
-
-      .feature-icon {
-        width: 48px;
-        height: 48px;
-        background: #eff6ff;
-        color: var(--primary);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 24px;
-        font-size: 24px;
-      }
-
-      /* Guide Section */
-      .guide-step {
-        display: flex;
-        align-items: center;
-        gap: 60px;
-        margin-bottom: 100px;
-      }
-
-      .guide-step:nth-child(even) {
-        flex-direction: row-reverse;
-      }
-
-      .guide-content {
-        flex: 1;
-      }
-
-      .guide-image {
-        flex: 1.2;
-        background: white;
-        border-radius: 20px;
-        overflow: hidden;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
-        border: 1px solid #e2e8f0;
-      }
-
-      .guide-image img {
-        width: 100%;
-        height: auto;
-        display: block;
-      }
-
-      .step-number {
-        font-size: 14px;
-        font-weight: 700;
-        color: var(--primary);
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        margin-bottom: 12px;
-        display: block;
-      }
-
-      .guide-content h3 {
-        font-size: 28px;
-        margin-bottom: 20px;
-      }
-
-      .guide-content ul {
-        list-style: none;
-      }
-
-      .guide-content li {
-        position: relative;
-        padding-left: 28px;
-        margin-bottom: 12px;
-        color: var(--text-light);
-      }
-
-      .guide-content li::before {
-        content: "✓";
-        position: absolute;
-        left: 0;
-        color: var(--success);
-        font-weight: 700;
-      }
-
-      /* Footer */
-      footer {
-        background: #0f172a;
-        color: white;
-        padding: 80px 0 40px;
-      }
-
-      .footer-grid {
-        display: grid;
-        grid-template-columns: 2fr 1fr 1fr;
-        gap: 60px;
-        margin-bottom: 60px;
-      }
-
-      .footer-logo {
-        font-size: 24px;
-        font-weight: 700;
-        margin-bottom: 20px;
-      }
-
-      .footer-desc {
-        color: #94a3b8;
-        max-width: 300px;
-      }
-
-      .footer-title {
-        font-weight: 600;
-        margin-bottom: 24px;
-      }
-
-      .footer-links a {
-        display: block;
-        color: #94a3b8;
-        text-decoration: none;
-        margin-bottom: 12px;
-        transition: color 0.3s;
-      }
-
-      .footer-links a:hover {
-        color: white;
-      }
-
-      .copyright {
-        text-align: center;
-        padding-top: 40px;
-        border-top: 1px solid #1e293b;
-        color: #475569;
-        font-size: 14px;
-      }
-
-      @media (max-width: 768px) {
-        .hero h1 {
-          font-size: 40px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .nav-links {
-          display: none;
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
         }
-        .guide-step,
-        .guide-step:nth-child(even) {
-          flex-direction: column;
-          gap: 40px;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        .footer-grid {
-          grid-template-columns: 1fr;
-          gap: 40px;
+        header {
+            background: linear-gradient(135deg, #1a73e8, #4285f4);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            border-radius: 0 0 20px 20px;
+            margin-bottom: 30px;
         }
-      }
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #1a73e8;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 20px;
+            transition: background 0.3s;
+        }
+        .back-btn:hover {
+            background: #1557b0;
+            text-decoration: none;
+        }
+        .section {
+            background: white;
+            padding: 30px;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section h2 {
+            color: #1a73e8;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e8f0fe;
+        }
+        .section h3 {
+            color: #5f6368;
+            font-size: 1.3em;
+            margin: 20px 0 10px;
+        }
+        .section p, .section li {
+            color: #444;
+            margin-bottom: 10px;
+        }
+        .section ul {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+        .section li {
+            margin-bottom: 8px;
+        }
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #1a73e8;
+        }
+        .card h4 {
+            color: #1a73e8;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        .card p {
+            font-size: 0.95em;
+            color: #5f6368;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e8f0fe;
+        }
+        th {
+            background: #e8f0fe;
+            color: #1a73e8;
+            font-weight: 600;
+        }
+        tr:hover {
+            background: #f8f9fa;
+        }
+        .step {
+            display: flex;
+            align-items: flex-start;
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .step-number {
+            background: #1a73e8;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        .step-content h4 {
+            color: #202124;
+            margin-bottom: 5px;
+        }
+        .warning {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #5f6368;
+            margin-top: 30px;
+        }
+        .toc {
+            background: #e8f0fe;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+        .toc h3 {
+            margin-top: 0;
+            color: #1a73e8;
+        }
+        .toc ul {
+            list-style: none;
+            margin-left: 0;
+        }
+        .toc li {
+            margin: 8px 0;
+        }
+        .toc a {
+            color: #1a73e8;
+            text-decoration: none;
+        }
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        .screenshot {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .screenshot img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border: 1px solid #ddd;
+        }
+        .screenshot figcaption {
+            margin-top: 10px;
+            color: #5f6368;
+            font-style: italic;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .section-header h2 {
+            margin-bottom: 0;
+        }
+        @media print {
+            body {
+                background: white;
+            }
+            .section {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+            .back-btn {
+                display: none;
+            }
+        }
     </style>
-  </head>
-  <body>
-    <div class="container">
-      <nav>
-        <div class="logo">🗳️ eLection</div>
-        <div class="nav-links">
-          <a href="#features">Características</a>
-          <a href="#admin-guide">Guía Admin</a>
-          <a href="#voter-guide">Guía Votante</a>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>eLection Manual</h1>
+            <p>Manual de Usuario - Sistema de Gestión Electoral</p>
         </div>
-        <a href="#" class="btn" style="padding: 10px 20px; font-size: 14px"
-          >Descargar</a
-        >
-      </nav>
-    </div>
-
-    <header class="hero">
-      <div class="container">
-        <h1>Democracia Escolar,<br />Simplificada y Segura.</h1>
-        <p>
-          La plataforma definitiva para la gestión de elecciones
-          institucionales. Moderna, transparente y fácil de usar por estudiantes
-          y administrativos.
-        </p>
-        <div class="hero-btns">
-          <a href="#admin-guide" class="btn">Empezar Guía</a>
-        </div>
-      </div>
     </header>
 
-    <section id="features">
-      <div class="container">
-        <div class="section-title">
-          <h2>Potencia tu Jornada Electoral</h2>
-          <p>
-            Herramientas diseñadas para la integridad y eficiencia del proceso.
-          </p>
-        </div>
-        <div class="features-grid">
-          <div class="feature-card">
-            <div class="feature-icon">🛡️</div>
-            <h3>Seguridad Robusta</h3>
-            <p>
-              Autenticación por documento y contraseña opcional. Cierre de
-              sesión automático tras votar.
-            </p>
-          </div>
-          <div class="feature-card">
-            <div class="feature-icon">📊</div>
-            <h3>Resultados en Vivo</h3>
-            <p>
-              Visualiza el progreso del escrutinio en tiempo real con gráficas
-              dinámicas y precisas.
-            </p>
-          </div>
-          <div class="feature-card">
-            <div class="feature-icon">📁</div>
-            <h3>Importación Fácil</h3>
-            <p>
-              Carga cientos de estudiantes en segundos mediante archivos de
-              Excel estándar.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="admin-guide">
-      <div class="container">
-        <div class="section-title">
-          <h2>Guía para el Administrador</h2>
-          <p>Configura y supervisa todo el proceso desde un panel intuitivo.</p>
-        </div>
-
-        <div class="guide-step">
-          <div class="guide-content">
-            <span class="step-number">Paso 01</span>
-            <h3>Acceso y Dashboard</h3>
-            <p>
-              Ingresa con tus credenciales de administrador para acceder al
-              centro de control. Desde aquí puedes navegar a todas las áreas de
-              gestión:
-            </p>
+    <div class="container">
+        <div class="toc">
+            <h3>Índice de Contenidos</h3>
             <ul>
-              <li>Gestión de estudiantes y grados.</li>
-              <li>Configuración de cargos (Categorías).</li>
-              <li>Registro de candidatos con fotografías.</li>
-              <li>Ajustes de identidad institucional.</li>
+                <li><a href="#introduccion">1. Introducción</a></li>
+                <li><a href="#acceso">2. Acceso al Sistema</a></li>
+                <li><a href="#admin">3. Panel de Administración</a></li>
+                <li><a href="#votantes">4. Gestión de Votantes</a></li>
+                <li><a href="#candidatos">5. Gestión de Candidatos</a></li>
+                <li><a href="#categorias">6. Categorías</a></li>
+                <li><a href="#grades">7. Grados</a></li>
+                <li><a href="#configuracion">8. Configuración del Sistema</a></li>
+                <li><a href="#resultados">9. Resultados Electorales</a></li>
+                <li><a href="#votacion">10. Interfaz de Votación</a></li>
             </ul>
-          </div>
-          <div class="guide-image">
-            <img
-              src="assets/images/dashboard.png"
-              alt="Admin Dashboard Mockup"
-            />
-          </div>
         </div>
 
-        <div class="guide-step">
-          <div class="guide-content">
-            <span class="step-number">Paso 02</span>
-            <h3>Configuración de Candidatos</h3>
-            <p>
-              Registra a los aspirantes de forma sencilla. El sistema asocia
-              cada candidato a una categoría específica (Personería,
-              Contraloría, etc.):
-            </p>
+        <section id="introduccion" class="section">
+            <div class="section-header">
+                <h2>1. Introducción</h2>
+                <a href="#" class="back-btn">↑ Volver al Índice</a>
+            </div>
+            <p>eLection Manual es un sistema de gestión de elecciones manuales diseñado para facilitar la organización y realización de procesos electorales. La plataforma permite a los administradores configurar elecciones, gestionar candidatos y votantes, mientras que los votantes pueden emitir su voto de manera sencilla a través de una interfaz intuitiva.</p>
+            
+            <div class="card-grid">
+                <div class="card">
+                    <h4>Panel de Administración</h4>
+                    <p>Configura elecciones, gestiona candidatos, categorías, grados y votantes desde un panel centralizado.</p>
+                </div>
+                <div class="card">
+                    <h4>Interfaz de Votación</h4>
+                    <p>Interfaz simplificada para que los votantes emitan su elección de forma rápida y segura.</p>
+                </div>
+                <div class="card">
+                    <h4>Multidioma</h4>
+                    <p>Soporte para múltiples idiomas incluyendo español e inglés.</p>
+                </div>
+                <div class="card">
+                    <h4>Diseño Responsivo</h4>
+                    <p>Accede desde cualquier dispositivo: computadora, tablet o móvil.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="acceso" class="section">
+            <div class="section-header">
+                <h2>2. Acceso al Sistema</h2>
+                <a href="#" class="back-btn">↑ Volver al Índice</a>
+            </div>
+            <p>Para acceder al sistema, los usuarios deben autenticarse mediante la pantalla de inicio de sesión.</p>
+            
+            <h3>2.1 Pantalla de Inicio de Sesión</h3>
+            <p>La pantalla de inicio de sesión contiene los siguientes campos:</p>
             <ul>
-              <li>Carga de fotos de perfil directamente desde el equipo.</li>
-              <li>Asignación de número de tarjetón.</li>
-              <li>
-                Vinculación automática de categorías a grados específicos.
-              </li>
+                <li><strong>Usuario:</strong> Nombre de usuario del administrador</li>
+                <li><strong>Contraseña:</strong> Contraseña de acceso</li>
             </ul>
-          </div>
-          <div class="guide-image">
-            <img
-              src="assets/images/login.png"
-              alt="Configuración de Candidatos"
-            />
-          </div>
-        </div>
 
-        <div class="guide-step">
-          <div class="guide-content">
-            <span class="step-number">Paso 03</span>
-            <h3>Escrutinio y Reportes</h3>
-            <p>
-              Al finalizar la jornada, o durante la misma, puedes consultar el
-              estado de la votación:
-            </p>
+            <div class="screenshot">
+                <img src="login.png" alt="Pantalla de inicio de sesión">
+                <figcaption>Pantalla de inicio de sesión del sistema</figcaption>
+            </div>
+            
+            <div class="warning">
+                <strong>Nota:</strong> Solo los usuarios con rol de administrador pueden acceder al panel de configuración. Los votantes acceden a una interfaz de votación separada.
+            </div>
+
+            <h3>2.2 Proceso de Inicio de Sesión</h3>
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>Ingrese sus credenciales</h4>
+                    <p>Introduzca su nombre de usuario y contraseña en los campos correspondientes.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>Click en "Iniciar Sesión"</h4>
+                    <p>Presione el botón para autenticarse en el sistema.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>Acceda al Panel</h4>
+                    <p>Si las credenciales son correctas, será redirigido al panel de administración.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="admin" class="section">
+            <div class="section-header">
+                <h2>3. Panel de Administración</h2>
+                <a href="#" class="back-btn">↑ Volver al Índice</a>
+            </div>
+            <p>El panel de administración es el centro de control del sistema. Desde aquí puede acceder a todas las funciones de gestión.</p>
+            
+            <h3>3.1 Estructura del Panel</h3>
+            <p>El panel incluye:</p>
             <ul>
-              <li>Gráficas de barras con porcentajes de participación.</li>
-              <li>Contador de votos totales y votos en blanco.</li>
-              <li>
-                Generación de Acta de Escrutinio oficial en PDF para impresión.
-              </li>
+                <li>Barra de navegación superior con acceso rápido</li>
+                <li>Menú lateral con todas las opciones de configuración</li>
+                <li>Área principal de trabajo</li>
+                <li>Botón de cierre de sesión</li>
             </ul>
-          </div>
-          <div class="guide-image">
-            <img
-              src="assets/images/results.png"
-              alt="Resultados en Tiempo Real"
-            />
-          </div>
-        </div>
 
-        <div class="guide-step">
-          <div class="guide-content">
-            <span class="step-number">Paso 04</span>
-            <h3>Mantenimiento y Respaldo</h3>
-            <p>
-              La seguridad de los datos es primordial. eLection incluye
-              herramientas para asegurar tu información:
-            </p>
+            <div class="screenshot">
+                <img src="admin dashboard.png" alt="Panel de Administración">
+                <figcaption>Panel de administración principal</figcaption>
+            </div>
+
+            <h3>3.2 Opciones del Menú</h3>
+            <table>
+                <tr>
+                    <th>Módulo</th>
+                    <th>Descripción</th>
+                </tr>
+                <tr>
+                    <td><strong>Panel</strong></td>
+                    <td>Vista general del sistema</td>
+                </tr>
+                <tr>
+                    <td><strong>Votantes</strong></td>
+                    <td>Gestión de votantes registrados</td>
+                </tr>
+                <tr>
+                    <td><strong>Candidatos</strong></td>
+                    <td>Administración de candidatos</td>
+                </tr>
+                <tr>
+                    <td><strong>Categorías</strong></td>
+                    <td>Clasificación de elecciones (Presidente, Vice, etc.)</td>
+                </tr>
+                <tr>
+                    <td><strong>Grados</strong></td>
+                    <td>Niveles electorales (Grado 1, Grado 2, etc.)</td>
+                </tr>
+                <tr>
+                    <td><strong>Candidatos Relacionados</strong></td>
+                    <td>Asociar candidatos a elecciones</td>
+                </tr>
+                <tr>
+                    <td><strong>Grados Relacionados</strong></td>
+                    <td>Configurar grados por elección</td>
+                </tr>
+                <tr>
+                    <td><strong>Categorías Relacionadas</strong></td>
+                    <td>Asociar categorías a elecciones</td>
+                </tr>
+                <tr>
+                    <td><strong>Configuración</strong></td>
+                    <td>Configuración del sistema</td>
+                </tr>
+            </table>
+
+            <div class="screenshot">
+                <img src="logout.png" alt="Botón de cierre de sesión">
+                <figcaption>Opción de cierre de sesión en el panel</figcaption>
+            </div>
+        </section>
+
+        <section id="votantes" class="section">
+            <div class="section-header">
+                <h2>4. Gestión de Votantes</h2>
+                <a href="#" class="back-btn">↑ Volver al Índice</a>
+            </div>
+            <p>El módulo de Votantes permite administrar a todas las personas autorizadas para votar en las elecciones.</p>
+            
+            <div class="screenshot">
+                <img src="voters.png" alt="Lista de Votantes">
+                <figcaption>Vista principal del módulo de Votantes</figcaption>
+            </div>
+
+            <h3>4.1 Agregar Nuevo Votante</h3>
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>Acceda al módulo Votantes</h4>
+                    <p>Desde el menú lateral, haga clic en "Votantes".</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>Click en "Agregar Votante"</h4>
+                    <p>Se abrirá el formulario de registro de nuevo votante.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>Complete los datos requeridos</h4>
+                    <ul>
+                        <li><strong>Nombre:</strong> Nombre completo del votante</li>
+                        <li><strong>Documento:</strong> Número de identificación</li>
+                        <li><strong>Contraseña:</strong> Contraseña para acceder al sistema</li>
+                        <li><strong>Grado:</strong> Grado o nivel electoral del votante</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h4>Guarde el registro</h4>
+                    <p>Click en "Guardar" para registrar al nuevo votante.</p>
+                </div>
+            </div>
+
+            <div class="screenshot">
+                <img src="add voter.png" alt="Formulario para agregar votante">
+                <figcaption>Formulario de registro de nuevo votante</figcaption>
+            </div>
+
+            <h3>4.1.1 Importar Votantes desde Excel</h3>
+            <p>También puede importar múltiples votantes de forma masiva utilizando un archivo Excel (.xlsx). El archivo debe tener la siguiente estructura:</p>
+
+            <div class="screenshot">
+                <img src="xlsx.png" alt="Estructura del archivo Excel">
+                <figcaption>Estructura requerida para el archivo Excel de importación</figcaption>
+            </div>
+
+            <p><strong>Columnas requeridas:</strong></p>
             <ul>
-              <li>
-                <strong>Exportación:</strong> Descarga una copia de seguridad
-                completa del sistema.
-              </li>
-              <li>
-                <strong>Importación:</strong> Restaura datos desde un respaldo
-                previo en segundos.
-              </li>
-              <li>
-                <strong>Limpieza:</strong> Opción para borrar todos los votos
-                registrados y reiniciar el proceso electoral (requiere código de
-                confirmación).
-              </li>
+                <li><strong>NAME:</strong> Nombre completo del votante</li>
+                <li><strong>DOCUMENT:</strong> Número de identificación único</li>
+                <li><strong>PASSWORD:</strong> Contraseña para acceder al sistema</li>
+                <li><strong>GRADE:</strong> Grado o nivel electoral (debe existir previamente en el sistema)</li>
             </ul>
-          </div>
-          <div class="guide-image">
-            <img
-              src="assets/images/maintenance.png"
-              alt="Mantenimiento y Respaldo"
-            />
-          </div>
-        </div>
-      </div>
-    </section>
 
-    <section id="voter-guide" style="background-color: white">
-      <div class="container">
-        <div class="section-title">
-          <h2>Guía para el Estudiante</h2>
-          <p>Un proceso de votación rápido, justo y privado.</p>
-        </div>
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>Prepare el archivo Excel</h4>
+                    <p>Cree un archivo .xlsx con los datos de los votantes siguiendo la estructura mostrada.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>Seleccione el archivo</h4>
+                    <p>En el formulario de agregar votante, haga clic en el botón para seleccionar el archivo Excel.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>Importe los datos</h4>
+                    <p>Los votantes serán importados automáticamente al sistema.</p>
+                </div>
+            </div>
 
-        <div class="guide-step">
-          <div class="guide-image">
-            <img src="assets/images/voting.png" alt="Interfaz de Votación" />
-          </div>
-          <div class="guide-content">
-            <span class="step-number">Experiencia del Votante</span>
-            <h3>¿Cómo votar?</h3>
-            <p>
-              Los estudiantes siguen un flujo diseñado para evitar confusiones:
-            </p>
+            <div class="warning">
+                <strong>Importante:</strong> Asegúrese de que los grados en el archivo Excel ya existan previamente en el sistema. Los documentos deben ser únicos.
+            </div>
+
+            <div class="success">
+                <strong>Nota:</strong> Cada votante debe tener un número de documento único en el sistema.
+            </div>
+
+            <h3>4.2 Lista de Votantes</h3>
+            <p>La vista principal de Votantes muestra una tabla con todos los votantes registrados, incluyendo:</p>
             <ul>
-              <li>
-                <strong>Identificación:</strong> Ingreso con número de
-                documento.
-              </li>
-              <li>
-                <strong>Selección:</strong> Navegación por categorías de
-                votación.
-              </li>
-              <li>
-                <strong>Confirmación:</strong> Visualización clara del candidato
-                seleccionado.
-              </li>
-              <li>
-                <strong>Seguridad:</strong> El sistema cierra sesión
-                automáticamente tras confirmar el voto.
-              </li>
+                <li>Nombre</li>
+                <li>Documento</li>
+                <li>Grado</li>
+                <li>Acciones (editar, eliminar)</li>
             </ul>
-          </div>
-        </div>
-      </div>
-    </section>
+        </section>
+
+        <section id="candidatos" class="section">
+            <div class="section-header">
+                <h2>5. Gestión de Candidatos</h2>
+                <a href="#" class="back-btn">↑ Volver al Índice</a>
+            </div>
+            <p>El módulo de Candidatos permite administrar los candidatos que participarán en las elecciones.</p>
+
+            <div class="screenshot">
+                <img src="candidates.png" alt="Lista de Candidatos">
+                <figcaption>Vista principal del módulo de Candidatos</figcaption>
+            </div>
+            
+            <h3>5.1 Agregar Nuevo Candidato</h3>
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>Acceda al módulo Candidatos</h4>
+                    <p>Desde el menú lateral, haga clic en "Candidatos".</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>Click en "Agregar Candidato"</h4>
+                    <p>Se abrirá el formulario de registro.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>Complete la información del candidato</h4>
+                    <ul>
+                        <li><strong>Nombre:</strong> Nombre completo del candidato</li>
+                        <li><strong>Imagen:</strong> Fotografía del candidato</li>
+                        <li><strong>Información adicional:</strong> Datos relevantes</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h4>Guarde el candidato</h4>
+                    <p>Click en "Guardar" para registrar al candidato.</p>
+                </div>
+            </div>
+
+            <div class="warning">
+                <strong>Nota:</strong> El candidato se agregará a la categoría en la que se encuentre ubicado el usuario en ese momento.
+            </div>
+
+            <h3>5.2 Lista de Candidatos</h3>
+            <p>La vista muestra los candidatos con su fotografía, nombre e información relevante. Cada candidato puede ser:</p>
+            <ul>
+                <li>Editado para modificar sus datos</li>
+                <li>Eliminado del sistema</li>
+                <li>Asociado a elecciones específicas</li>
+            </ul>
+        </section>
+
+        <section id="categorias" class="section">
+            <div class="section-header">
+                <h2>6. Categorías</h2>
+                <a href="#" class="back-btn">↑ Volver al Índice</a>
+            </div>
+            <p>Las categorías permiten clasificar los diferentes tipos de cargos o posiciones electorales (ej: Presidente, Vicepresidente, Secretario, Tesorero).</p>
+
+            <div class="screenshot">
+                <img src="catgories.png" alt="Lista de Categorías">
+                <figcaption>Vista principal del módulo de Categorías</figcaption>
+            </div>
+            
+            <h3>6.1 Crear Nueva Categoría</h3>
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>Acceda al módulo Categorías</h4>
+                    <p>Desde el menú lateral, haga clic en "Categorías".</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>Click en "Nueva Categoría"</h4>
+                    <p>Se abrirá el formulario de nueva categoría.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>Ingrese el nombre de la categoría</h4>
+                    <p>Ejemplos: Presidente, Vicepresidente, Secretario, Vocal</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h4>Guarde la categoría</h4>
+                    <p>Click en "Guardar" para crear la categoría.</p>
+                </div>
+            </div>
+
+            <div class="screenshot">
+                <img src="new category.png" alt="Formulario de nueva categoría">
+                <figcaption>Formulario para crear nueva categoría</figcaption>
+            </div>
+
+            <h3>6.2 Grados Relacionados con Categoría</h3>
+            <p>Desde el listado de Categorías, puede asociar grados directamente a una categoría específica. Esto permite definir qué grados podrán votar por los candidatos de esa categoría.</p>
+
+            <div class="screenshot">
+                <img src="related grades.png" alt="Grados Relacionados">
+                <figcaption>Asociación de grados a categorías</figcaption>
+            </div>
+
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>Acceda al módulo Categorías</h4>
+                    <p>Desde el menú lateral, haga clic en "Categorías".</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>Seleccione una categoría</h4>
+                    <p>Haga clic en el botón de acciones de la categoría a la que desea asociar grados.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>Agregue los grados</h4>
+                    <p>Seleccione los grados que podrán votar por candidatos de esa categoría.</p>
+                </div>
+            </div>
+
+            <div class="warning">
+                <strong>Nota:</strong> Los grados deben estar creados previamente en el sistema para poder asociarlos a una categoría.
+            </div>
+
+            <h3>6.3 Candidatos Relacionados con Categoría</h3>
+            <p>Desde el listado de Categorías, puede crear y visualizar los candidatos que se presentan por cada categoría, sin necesidad de acceder al módulo de Candidatos. Esto permite gestionar fácilmente los candidatos asociados a cada categoría electoral.</p>
+
+            <div class="screenshot">
+                <img src="related candidates.png" alt="Candidatos Relacionados">
+                <figcaption>Lista de candidatos por categoría</figcaption>
+            </div>
+
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>Acceda al módulo Categorías</h4>
+                    <p>Desde el menú lateral, haga clic en "Categorías".</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>Seleccione una categoría</h4>
+                    <p>Haga clic en el botón de acciones de la categoría para ver sus candidatos.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>Agregue o gestione candidatos</h4>
+                    <p>Desde aquí puede agregar nuevos candidatos o gestionar los existentes para esa categoría.</p>
+                </div>
+            </div>
+
+            <div class="screenshot">
+                <img src="add related candidate.png" alt="Agregar Candidato">
+                <figcaption>Formulario para agregar candidato a la categoría</figcaption>
+            </div>
+
+            <div class="warning">
+                <strong>Nota:</strong> Los candidatos deben estar creados previamente en el sistema para poder asociarlos a una categoría.
+            </div>
+        </section>
+
+        <section id="grades" class="section">
+            <div class="section-header">
+                <h2>7. Grados</h2>
+                <a href="#" class="back-btn">↑ Volver al Índice</a>
+            </div>
+            <p>Los grados permiten definir niveles electorales. Por ejemplo, en una elección escolar: Grado 1, Grado 2, Grado 3, etc.</p>
+
+            <div class="screenshot">
+                <img src="grades.png" alt="Lista de Grados">
+                <figcaption>Vista principal del módulo de Grados</figcaption>
+            </div>
+            
+            <h3>7.1 Crear Nuevo Grado</h3>
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>Acceda al módulo Grados</h4>
+                    <p>Desde el menú lateral, haga clic en "Grados".</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>Click en "Nuevo Grado"</h4>
+                    <p>Se abrirá el formulario de nuevo grado.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>Ingrese el nombre del grado</h4>
+                    <p>Ejemplos: Grado 1, Grado 2, Primero, Segundo</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h4>Guarde el grado</h4>
+                    <p>Click en "Guardar" para crear el grado.</p>
+                </div>
+            </div>
+
+            <div class="screenshot">
+                <img src="nre grade.png" alt="Formulario de nuevo grado">
+                <figcaption>Formulario para crear nuevo grado</figcaption>
+            </div>
+
+            <h3>7.2 Categorías Relacionadas con el Grado</h3>
+            <p>Desde el listado de Grados, puede asociar categorías directamente a un grado específico. Esto permite definir qué categorías estarán disponibles para cada nivel electoral.</p>
+
+            <div class="screenshot">
+                <img src="related categories.png" alt="Categorías Relacionadas">
+                <figcaption>Asociación de categorías a grados</figcaption>
+            </div>
+
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>Acceda al módulo Grados</h4>
+                    <p>Desde el menú lateral, haga clic en "Grados".</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>Seleccione un grado</h4>
+                    <p>Haga clic en el botón de acciones del grado al que desea asociar categorías.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>Agregue las categorías</h4>
+                    <p>Seleccione las categorías que estarán disponibles para ese grado.</p>
+                </div>
+            </div>
+
+            <div class="warning">
+                <strong>Nota:</strong> Las categorías deben estar creadas previamente en el sistema para poder asociarlas a un grado.
+            </div>
+        </section>
+
+        <section id="configuracion" class="section">
+            <div class="section-header">
+                <h2>8. Configuración del Sistema</h2>
+                <a href="#" class="back-btn">↑ Volver al Índice</a>
+            </div>
+            <p>El módulo de Configuración permite personalizar la apariencia y configuración regional del sistema.</p>
+
+            <div class="screenshot">
+                <img src="admin settings 1.png" alt="Configuración del sistema">
+                <figcaption>Panel de configuración general</figcaption>
+            </div>
+            
+            <h3>8.1 Configuración General</h3>
+            <ul>
+                <li><strong>Imagen de la organización:</strong> Logotipo o imagen de la organización</li>
+                <li><strong>Colores:</strong> Personalización de la paleta de colores</li>
+                <li><strong>Configuración Regional:</strong> Zona horaria y formato de fecha</li>
+            </ul>
+
+            <div class="screenshot">
+                <img src="admin settings 2.png" alt="Configuración avanzada">
+                <figcaption>Configuración de colores y apariencia</figcaption>
+            </div>
+
+            <h3>8.1.1 Mantenimiento del Sistema</h3>
+            <p>En la sección de Mantenimiento puede realizar las siguientes acciones:</p>
+
+            <h4>Exportar/Importar Base de Datos</h4>
+            <p>El sistema permite exportar la base de datos completa para su portabilidad en dispositivos sin conexión a internet. Esta función es útil cuando se necesita:</p>
+            <ul>
+                <li>Trabajar en equipos sin conexión a internet</li>
+                <li>Respaldar los datos de las elecciones</li>
+                <li>Transferir datos entre diferentes dispositivos</li>
+            </ul>
+
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>Exporte la base de datos</h4>
+                    <p>Genere un archivo de respaldo con todos los datos del sistema.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>Transfiera el archivo</h4>
+                    <p>Copie el archivo exportado al dispositivo donde necesite trabajar.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>Importe la base de datos</h4>
+                    <p>Cargue el archivo en el nuevo dispositivo para restaurar los datos.</p>
+                </div>
+            </div>
+
+            <h4>Borrar Votos Actuales</h4>
+            <p>Esta función permite eliminar todos los votos registrados actualmente. Es útil cuando se necesita usar el mismo PC para otra sesión de votaciones, por ejemplo:</p>
+            <ul>
+                <li>Mañana: Primera jornada de votación</li>
+                <li>Tarde: Segunda jornada de votación</li>
+                <li>Otro día: Nueva elección</li>
+            </ul>
+
+            <div class="warning">
+                <strong>Advertencia:</strong> Al borrar los votos, toda la información de los votos registrados se eliminará permanentemente. Asegúrese de exportar los datos si necesita conservarlos antes de realizar esta acción.
+            </div>
+
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>Exporte los datos (opcional)</h4>
+                    <p>Si necesita guardar un registro de los votos, exporte la base de datos antes de borrarlos.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>Acceda a Mantenimiento</h4>
+                    <p>En la sección de configuración, ingrese a Mantenimiento.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>Borre los votos</h4>
+                    <p>Seleccione la opción para borrar todos los votos actuales y confirme la acción.</p>
+                </div>
+            </div>
+
+            <div class="success">
+                <strong>Nota:</strong> Al borrar los votos, los candidatos, categorías, grados y votantes no se eliminan, solo los votos registrados.
+            </div>
+
+            <h3>8.3 Configuración de Idioma</h3>
+            <p>El sistema soporta múltiples idiomas. Para cambiar el idioma:</p>
+
+            <div class="screenshot">
+                <img src="lang pick.png" alt="Selector de idioma">
+                <figcaption>Selector de idioma del sistema</figcaption>
+            </div>
+
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>Acceda a Configuración</h4>
+                    <p>Desde el menú lateral, haga clic en "Configuración".</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>Seleccione el idioma</h4>
+                    <p>Elija entre los idiomas disponibles (Español, Inglés, etc.).</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="resultados" class="section">
+            <div class="section-header">
+                <h2>9. Resultados Electorales</h2>
+                <a href="#" class="back-btn">↑ Volver al Índice</a>
+            </div>
+            <p>El módulo de Resultados permite visualizar y exportar los datos de las votaciones de forma clara y exportable.</p>
+
+            <h3>9.1 Visualización de Resultados</h3>
+            <p>Desde esta sección puede ver en tiempo real los resultados de las elecciones:</p>
+            <ul>
+                <li>Total de votos por candidato</li>
+                <li>Distribución de votos por categoría</li>
+                <li>Participación por grado</li>
+                <li>Porcentajes de votación</li>
+            </ul>
+
+            <div class="screenshot">
+                <img src="Resultados.png" alt="Resultados electorales">
+                <figcaption>Panel de visualización de resultados electorales</figcaption>
+            </div>
+
+            <div class="screenshot">
+                <img src="Exportar resultados.png" alt="Exportar resultados">
+                <figcaption>Opción para exportar los resultados</figcaption>
+            </div>
+
+            <h3>9.2 Exportar Resultados</h3>
+            <p>El sistema permite exportar los resultados en diferentes formatos para su análisis y guardado:</p>
+
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>Acceda a Resultados</h4>
+                    <p>Desde el menú lateral, haga clic en "Resultados".</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>Seleccione el formato de exportación</h4>
+                    <p>Elija el formato deseado (Excel, PDF, etc.).</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>Descargue el archivo</h4>
+                    <p>El archivo con los resultados se descargará automáticamente.</p>
+                </div>
+            </div>
+
+            <div class="success">
+                <strong>Nota:</strong> Los resultados se pueden exportar en cualquier momento durante o después de las votaciones.
+            </div>
+        </section>
+
+        <section id="votacion" class="section">
+            <div class="section-header">
+                <h2>10. Interfaz de Votación</h2>
+                <a href="#" class="back-btn">↑ Volver al Índice</a>
+            </div>
+            <p>La interfaz de votación está diseñada para que los votantes puedan emitir su voto de forma sencilla e intuitiva.</p>
+            
+            <h3>10.1 Proceso de Votación</h3>
+            
+            <h4>Pantalla de Bienvenida</h4>
+            <p>Pantalla inicial con el mensaje de bienvenida y botón para comenzar a votar.</p>
+
+            <div class="screenshot">
+                <img src="voter wellcome.png" alt="Pantalla de bienvenida">
+                <figcaption>Pantalla de bienvenida del votante</figcaption>
+            </div>
+
+            <h4>Selección de Grado</h4>
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>Elija su grado</h4>
+                    <p>El votante selecciona el grado al que pertenece de la lista de opciones disponibles.</p>
+                </div>
+            </div>
+
+            <div class="screenshot">
+                <img src="voter selection.png" alt="Selección de grado">
+                <figcaption>Selección de grado del votante</figcaption>
+            </div>
+
+            <h4>Selección de Categoría</h4>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>Elija la categoría de votación</h4>
+                    <p>Seleccione el cargo o posición por la cual desea votar (Presidente, Vicepresidente, etc.).</p>
+                </div>
+            </div>
+
+            <h4>Elección del Candidato</h4>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>Seleccione su candidato</h4>
+                    <p>Visualice los candidatos disponibles y seleccione el de su preferencia.</p>
+                </div>
+            </div>
+
+            <div class="screenshot">
+                <img src="voter vote.png" alt="Selección de candidato">
+                <figcaption>Vista de candidatos para votar</figcaption>
+            </div>
+
+            <h4>Confirmación del Voto</h4>
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h4>Confirme su elección</h4>
+                    <p>Revise su selección y confirme para registrar el voto.</p>
+                </div>
+            </div>
+
+            <div class="screenshot">
+                <img src="voter voted.png" alt="Confirmación de voto">
+                <figcaption>Mensaje de confirmación del voto</figcaption>
+            </div>
+
+            <div class="success">
+                <strong>Mensaje de Confirmación:</strong> Después de votar, se mostrará un mensaje confirmando que su voto ha sido registrado exitosamente.
+            </div>
+
+            <h3>10.2 Flujo del Votante</h3>
+            <table>
+                <tr>
+                    <th>Paso</th>
+                    <th>Acción</th>
+                    <th>Descripción</th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Bienvenida</td>
+                    <td>Pantalla inicial</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Selección de Grado</td>
+                    <td>Elige su nivel/grado</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>Selección de Categoría</td>
+                    <td>Elige el cargo</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>Selección de Candidato</td>
+                    <td>Elige al candidato</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>Confirmación</td>
+                    <td>Voto registrado</td>
+                </tr>
+            </table>
+        </section>
+
+        <section class="section">
+            <div class="section-header">
+                <h2>Información Adicional</h2>
+                <a href="#" class="back-btn">↑ Volver al Índice</a>
+            </div>
+            <div class="card-grid">
+                <div class="card">
+                    <h4>Soporte Técnico</h4>
+                    <p>Para consultas técnicas, contacte al administrador del sistema.</p>
+                </div>
+                <div class="card">
+                    <h4>Seguridad</h4>
+                    <p>Mantenga sus credenciales seguras y cierre sesión al terminar.</p>
+                </div>
+                <div class="card">
+                    <h4>Recomendaciones</h4>
+                    <p>Verifique toda la información antes de confirmar operaciones irreversibles.</p>
+                </div>
+            </div>
+        </section>
+    </div>
 
     <footer>
-      <div class="container">
-        <div class="footer-grid">
-          <div>
-            <div class="footer-logo">🗳️ eLection</div>
-            <p class="footer-desc">
-              Software de vanguardia para la transformación digital de los
-              procesos democráticos escolares.
-            </p>
-          </div>
-          <div class="footer-links">
-            <div class="footer-title">Enlaces</div>
-            <a href="#features">Características</a>
-            <a href="#admin-guide">Guía Admin</a>
-            <a href="#voter-guide">Guía Votante</a>
-          </div>
-          <div class="footer-links">
-            <div class="footer-title">Soporte</div>
-            <a href="#">Documentación Técnica</a>
-            <a href="#">Reportar un Error</a>
-            <a href="#">Contacto</a>
-          </div>
-        </div>
-        <div class="copyright">
-          &copy; 2026 eLection. Desarrollado por Jaime Hernández con
-          Antigravity.
-        </div>
-      </div>
+        <p>eLection Manual - Manual de Usuario v1.0</p>
     </footer>
-  </body>
+</body>
 </html>
