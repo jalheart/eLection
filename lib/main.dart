@@ -1,122 +1,477 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'application/providers/auth_provider.dart';
+import 'application/providers/settings_provider.dart';
+import 'application/use_cases/check_username_use_case.dart';
+import 'application/use_cases/login_use_case.dart';
+import 'application/use_cases/get_settings_use_case.dart';
+import 'application/use_cases/get_grados_use_case.dart';
+import 'application/use_cases/save_grado_use_case.dart';
+import 'application/use_cases/delete_grado_use_case.dart';
+import 'application/providers/grados_provider.dart';
+import 'application/providers/categories_provider.dart';
+import 'application/use_cases/get_categories_use_case.dart';
+import 'application/use_cases/save_category_use_case.dart';
+import 'application/use_cases/delete_category_use_case.dart';
+import 'infrastructure/database/adapters/drift_user_repository.dart';
+import 'infrastructure/database/adapters/drift_settings_repository.dart';
+import 'infrastructure/database/adapters/drift_grado_repository.dart';
+import 'infrastructure/database/adapters/drift_category_repository.dart';
+import 'infrastructure/database/adapters/drift_grade_category_repository.dart';
+import 'application/use_cases/get_categories_by_grade_use_case.dart';
+import 'application/use_cases/get_grades_by_category_use_case.dart';
+import 'application/use_cases/assign_category_to_grade_use_case.dart';
+import 'application/use_cases/unassign_category_from_grade_use_case.dart';
+import 'application/use_cases/get_all_assignments_use_case.dart';
+import 'application/use_cases/get_candidates_use_case.dart';
+import 'application/use_cases/get_candidates_by_category_use_case.dart';
+import 'application/use_cases/save_candidate_use_case.dart';
+import 'application/use_cases/delete_candidate_use_case.dart';
+import 'application/providers/candidates_provider.dart';
+import 'application/providers/grade_category_provider.dart';
+import 'application/providers/voting_provider.dart';
+import 'application/providers/voters_provider.dart';
+import 'application/use_cases/get_voters_use_case.dart';
+import 'application/use_cases/get_voters_by_grade_use_case.dart';
+import 'application/use_cases/save_voter_use_case.dart';
+import 'application/use_cases/delete_voter_use_case.dart';
+import 'application/use_cases/save_voters_use_case.dart';
+import 'application/use_cases/delete_all_voters_use_case.dart';
+import 'infrastructure/database/adapters/drift_candidate_repository.dart';
+import 'infrastructure/database/adapters/drift_voter_repository.dart';
+import 'infrastructure/database/adapters/drift_vote_repository.dart';
+import 'application/use_cases/get_voter_by_document_id_use_case.dart';
+import 'application/use_cases/cast_votes_use_case.dart';
+import 'infrastructure/database/database.dart';
+import 'infrastructure/ui/pages/login_page.dart';
+import 'infrastructure/ui/pages/admin_landing_page.dart';
+import 'infrastructure/ui/pages/voter_landing_page.dart';
+import 'application/use_cases/login_voter_use_case.dart';
+import 'application/use_cases/identify_user_use_case.dart';
+import 'application/use_cases/update_settings_use_case.dart';
+import 'application/use_cases/update_password_use_case.dart';
+import 'application/use_cases/get_results_use_case.dart';
+import 'application/use_cases/delete_all_votes_use_case.dart';
+import 'application/use_cases/export_data_use_case.dart';
+import 'application/use_cases/import_data_use_case.dart';
+import 'application/providers/results_provider.dart';
+import 'application/providers/backup_provider.dart';
+import 'infrastructure/services/backup_service.dart';
+import 'infrastructure/services/pdf_report_service.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:election/l10n/app_localizations.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        Provider<AppDatabase>(
+          create: (context) => AppDatabase(),
+          dispose: (context, db) => db.close(),
+        ),
+        Provider<BackupService>(create: (context) => BackupService()),
+        Provider<PDFReportService>(create: (context) => PDFReportService()),
+        // Repositories
+        ProxyProvider<AppDatabase, DriftUserRepository>(
+          update: (context, db, _) => DriftUserRepository(db),
+        ),
+        ProxyProvider<AppDatabase, DriftSettingsRepository>(
+          update: (context, db, _) => DriftSettingsRepository(db),
+        ),
+        ProxyProvider<AppDatabase, DriftGradoRepository>(
+          update: (context, db, _) => DriftGradoRepository(db),
+        ),
+        ProxyProvider<AppDatabase, DriftCategoryRepository>(
+          update: (context, db, _) => DriftCategoryRepository(db),
+        ),
+        ProxyProvider<AppDatabase, DriftGradeCategoryRepository>(
+          update: (context, db, _) => DriftGradeCategoryRepository(db),
+        ),
+        ProxyProvider<AppDatabase, DriftCandidateRepository>(
+          update: (context, db, _) => DriftCandidateRepository(db),
+        ),
+        ProxyProvider<AppDatabase, DriftVoterRepository>(
+          update: (context, db, _) => DriftVoterRepository(db),
+        ),
+        ProxyProvider<AppDatabase, DriftVoteRepository>(
+          update: (context, db, _) => DriftVoteRepository(db),
+        ),
+        // Use Cases
+        // Use Cases
+        ProxyProvider<DriftUserRepository, LoginUseCase>(
+          update: (context, repo, _) => LoginUseCase(repo),
+        ),
+        ProxyProvider<DriftVoterRepository, LoginVoterUseCase>(
+          update: (context, repo, _) => LoginVoterUseCase(repo),
+        ),
+        ProxyProvider2<
+          DriftUserRepository,
+          DriftVoterRepository,
+          IdentifyUserUseCase
+        >(
+          update: (context, userRepo, voterRepo, _) =>
+              IdentifyUserUseCase(userRepo, voterRepo),
+        ),
+        ProxyProvider<DriftUserRepository, UpdatePasswordUseCase>(
+          update: (context, repo, _) => UpdatePasswordUseCase(repo),
+        ),
+        ProxyProvider<DriftUserRepository, CheckUsernameUseCase>(
+          update: (context, repo, _) => CheckUsernameUseCase(repo),
+        ),
+        ProxyProvider<DriftSettingsRepository, GetSettingsUseCase>(
+          update: (context, repo, _) => GetSettingsUseCase(repo),
+        ),
+        ProxyProvider<DriftSettingsRepository, UpdateSettingsUseCase>(
+          update: (context, repo, _) => UpdateSettingsUseCase(repo),
+        ),
+        ProxyProvider<DriftGradoRepository, GetGradosUseCase>(
+          update: (context, repo, _) => GetGradosUseCase(repo),
+        ),
+        ProxyProvider<DriftGradoRepository, SaveGradoUseCase>(
+          update: (context, repo, _) => SaveGradoUseCase(repo),
+        ),
+        ProxyProvider<DriftGradoRepository, DeleteGradoUseCase>(
+          update: (context, repo, _) => DeleteGradoUseCase(repo),
+        ),
+        ProxyProvider<DriftCategoryRepository, GetCategoriesUseCase>(
+          update: (context, repo, _) => GetCategoriesUseCase(repo),
+        ),
+        ProxyProvider<DriftCategoryRepository, SaveCategoryUseCase>(
+          update: (context, repo, _) => SaveCategoryUseCase(repo),
+        ),
+        ProxyProvider<DriftCategoryRepository, DeleteCategoryUseCase>(
+          update: (context, repo, _) => DeleteCategoryUseCase(repo),
+        ),
+        ProxyProvider<
+          DriftGradeCategoryRepository,
+          GetCategoriesByGradeUseCase
+        >(update: (context, repo, _) => GetCategoriesByGradeUseCase(repo)),
+        ProxyProvider<DriftGradeCategoryRepository, GetGradesByCategoryUseCase>(
+          update: (context, repo, _) => GetGradesByCategoryUseCase(repo),
+        ),
+        ProxyProvider<
+          DriftGradeCategoryRepository,
+          AssignCategoryToGradeUseCase
+        >(update: (context, repo, _) => AssignCategoryToGradeUseCase(repo)),
+        ProxyProvider<
+          DriftGradeCategoryRepository,
+          UnassignCategoryFromGradeUseCase
+        >(update: (context, repo, _) => UnassignCategoryFromGradeUseCase(repo)),
+        ProxyProvider<DriftGradeCategoryRepository, GetAllAssignmentsUseCase>(
+          update: (context, repo, _) => GetAllAssignmentsUseCase(repo),
+        ),
+        ProxyProvider<DriftCandidateRepository, GetCandidatesUseCase>(
+          update: (context, repo, _) => GetCandidatesUseCase(repo),
+        ),
+        ProxyProvider<DriftCandidateRepository, GetCandidatesByCategoryUseCase>(
+          update: (context, repo, _) => GetCandidatesByCategoryUseCase(repo),
+        ),
+        ProxyProvider<DriftCandidateRepository, SaveCandidateUseCase>(
+          update: (context, repo, _) => SaveCandidateUseCase(repo),
+        ),
+        ProxyProvider<DriftCandidateRepository, DeleteCandidateUseCase>(
+          update: (context, repo, _) => DeleteCandidateUseCase(repo),
+        ),
+        ProxyProvider<DriftVoterRepository, GetVotersUseCase>(
+          update: (context, repo, _) => GetVotersUseCase(repo),
+        ),
+        ProxyProvider<DriftVoterRepository, GetVotersByGradeUseCase>(
+          update: (context, repo, _) => GetVotersByGradeUseCase(repo),
+        ),
+        ProxyProvider<DriftVoterRepository, SaveVoterUseCase>(
+          update: (context, repo, _) => SaveVoterUseCase(repo),
+        ),
+        ProxyProvider<DriftVoterRepository, DeleteVoterUseCase>(
+          update: (context, repo, _) => DeleteVoterUseCase(repo),
+        ),
+        ProxyProvider<DriftVoterRepository, SaveVotersUseCase>(
+          update: (context, repo, _) => SaveVotersUseCase(repo),
+        ),
+        ProxyProvider<DriftVoterRepository, DeleteAllVotersUseCase>(
+          update: (context, repo, _) => DeleteAllVotersUseCase(repo),
+        ),
+        ProxyProvider<DriftVoterRepository, GetVoterByDocumentIdUseCase>(
+          update: (context, repo, _) => GetVoterByDocumentIdUseCase(repo),
+        ),
+        ProxyProvider2<
+          DriftVoteRepository,
+          DriftVoterRepository,
+          CastVotesUseCase
+        >(
+          update: (context, voteRepo, voterRepo, _) =>
+              CastVotesUseCase(voteRepo, voterRepo),
+        ),
+        ProxyProvider<DriftVoteRepository, GetResultsUseCase>(
+          update: (context, repo, _) => GetResultsUseCase(repo),
+        ),
+
+        ProxyProvider2<
+          DriftVoteRepository,
+          DriftVoterRepository,
+          DeleteAllVotesUseCase
+        >(
+          update: (context, voteRepo, voterRepo, _) =>
+              DeleteAllVotesUseCase(voteRepo, voterRepo),
+        ),
+        ProxyProvider<BackupService, ExportDataUseCase>(
+          update: (context, service, _) => ExportDataUseCase(service),
+        ),
+        ProxyProvider<BackupService, ImportDataUseCase>(
+          update: (context, service, _) => ImportDataUseCase(service),
+        ),
+        // Providers
+        ChangeNotifierProxyProvider4<
+          LoginUseCase,
+          LoginVoterUseCase,
+          IdentifyUserUseCase,
+          UpdatePasswordUseCase,
+          AuthProvider
+        >(
+          create: (context) => AuthProvider(
+            loginUseCase: context.read<LoginUseCase>(),
+            loginVoterUseCase: context.read<LoginVoterUseCase>(),
+            identifyUserUseCase: context.read<IdentifyUserUseCase>(),
+            updatePasswordUseCase: context.read<UpdatePasswordUseCase>(),
+          ),
+          update:
+              (
+                context,
+                loginUC,
+                loginVoterUC,
+                identifyUC,
+                updatePwdUC,
+                previous,
+              ) =>
+                  previous ??
+                  AuthProvider(
+                    loginUseCase: loginUC,
+                    loginVoterUseCase: loginVoterUC,
+                    identifyUserUseCase: identifyUC,
+                    updatePasswordUseCase: updatePwdUC,
+                  ),
+        ),
+        ChangeNotifierProxyProvider3<
+          GetSettingsUseCase,
+          UpdateSettingsUseCase,
+          DeleteAllVotesUseCase,
+          SettingsProvider
+        >(
+          create: (context) => SettingsProvider(
+            context.read<GetSettingsUseCase>(),
+            context.read<UpdateSettingsUseCase>(),
+            context.read<DeleteAllVotesUseCase>(),
+          ),
+          update: (context, getUC, updateUC, deleteUC, previous) =>
+              previous ?? SettingsProvider(getUC, updateUC, deleteUC),
+        ),
+        ChangeNotifierProxyProvider3<
+          GetGradosUseCase,
+          SaveGradoUseCase,
+          DeleteGradoUseCase,
+          GradosProvider
+        >(
+          create: (context) => GradosProvider(
+            context.read<GetGradosUseCase>(),
+            context.read<SaveGradoUseCase>(),
+            context.read<DeleteGradoUseCase>(),
+          ),
+          update: (context, getUC, saveUC, deleteUC, previous) =>
+              previous ?? GradosProvider(getUC, saveUC, deleteUC),
+        ),
+        ChangeNotifierProxyProvider3<
+          GetCategoriesUseCase,
+          SaveCategoryUseCase,
+          DeleteCategoryUseCase,
+          CategoriesProvider
+        >(
+          create: (context) => CategoriesProvider(
+            context.read<GetCategoriesUseCase>(),
+            context.read<SaveCategoryUseCase>(),
+            context.read<DeleteCategoryUseCase>(),
+          ),
+          update: (context, getUC, saveUC, deleteUC, previous) =>
+              previous ?? CategoriesProvider(getUC, saveUC, deleteUC),
+        ),
+        ChangeNotifierProxyProvider5<
+          GetCategoriesByGradeUseCase,
+          GetGradesByCategoryUseCase,
+          AssignCategoryToGradeUseCase,
+          UnassignCategoryFromGradeUseCase,
+          GetAllAssignmentsUseCase,
+          GradeCategoryProvider
+        >(
+          create: (context) => GradeCategoryProvider(
+            context.read<GetCategoriesByGradeUseCase>(),
+            context.read<GetGradesByCategoryUseCase>(),
+            context.read<AssignCategoryToGradeUseCase>(),
+            context.read<UnassignCategoryFromGradeUseCase>(),
+            context.read<GetAllAssignmentsUseCase>(),
+          ),
+          update:
+              (
+                context,
+                getCatUC,
+                getGradoUC,
+                assignUC,
+                unassignUC,
+                getAllUC,
+                previous,
+              ) =>
+                  previous ??
+                  GradeCategoryProvider(
+                    getCatUC,
+                    getGradoUC,
+                    assignUC,
+                    unassignUC,
+                    getAllUC,
+                  ),
+        ),
+        ChangeNotifierProxyProvider4<
+          GetCandidatesUseCase,
+          GetCandidatesByCategoryUseCase,
+          SaveCandidateUseCase,
+          DeleteCandidateUseCase,
+          CandidatesProvider
+        >(
+          create: (context) => CandidatesProvider(
+            context.read<GetCandidatesUseCase>(),
+            context.read<GetCandidatesByCategoryUseCase>(),
+            context.read<SaveCandidateUseCase>(),
+            context.read<DeleteCandidateUseCase>(),
+          ),
+          update: (context, getUC, getByCatUC, saveUC, deleteUC, previous) =>
+              previous ??
+              CandidatesProvider(getUC, getByCatUC, saveUC, deleteUC),
+        ),
+        ChangeNotifierProxyProvider3<
+          GetCategoriesByGradeUseCase,
+          GetCandidatesByCategoryUseCase,
+          CastVotesUseCase,
+          VotingProvider
+        >(
+          create: (context) => VotingProvider(
+            context.read<GetCategoriesByGradeUseCase>(),
+            context.read<GetCandidatesByCategoryUseCase>(),
+            context.read<CastVotesUseCase>(),
+          ),
+          update: (context, catUC, candUC, castUC, previous) =>
+              previous ?? VotingProvider(catUC, candUC, castUC),
+        ),
+        ChangeNotifierProvider<VotersProvider>(
+          create: (context) => VotersProvider(
+            context.read<GetVotersUseCase>(),
+            context.read<GetVotersByGradeUseCase>(),
+            context.read<SaveVoterUseCase>(),
+            context.read<DeleteVoterUseCase>(),
+            context.read<SaveVotersUseCase>(),
+            context.read<DeleteAllVotersUseCase>(),
+            context.read<GetVoterByDocumentIdUseCase>(),
+          ),
+        ),
+        ChangeNotifierProxyProvider4<
+          GetCategoriesUseCase,
+          GetCandidatesByCategoryUseCase,
+          GetResultsUseCase,
+          PDFReportService,
+          ResultsProvider
+        >(
+          create: (context) => ResultsProvider(
+            context.read<GetCategoriesUseCase>(),
+            context.read<GetCandidatesByCategoryUseCase>(),
+            context.read<GetResultsUseCase>(),
+            context.read<PDFReportService>(),
+          ),
+          update:
+              (context, getCatUC, getCandUC, getResUC, pdfService, previous) =>
+                  previous ??
+                  ResultsProvider(getCatUC, getCandUC, getResUC, pdfService),
+        ),
+        ChangeNotifierProxyProvider3<
+          ExportDataUseCase,
+          ImportDataUseCase,
+          AppDatabase,
+          BackupProvider
+        >(
+          create: (context) => BackupProvider(
+            exportUC: context.read<ExportDataUseCase>(),
+            importUC: context.read<ImportDataUseCase>(),
+            db: context.read<AppDatabase>(),
+          ),
+          update: (context, exportUC, importUC, db, previous) =>
+              previous ??
+              BackupProvider(exportUC: exportUC, importUC: importUC, db: db),
+        ),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+    // Load settings once
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<SettingsProvider>().loadSettings();
     });
-  }
 
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+    return Consumer<SettingsProvider>(
+      builder: (context, settingsProvider, _) {
+        final settings = settingsProvider.settings;
+        Color seedColor = Colors.blue;
+
+        if (settings != null && settings.theme.isNotEmpty) {
+          try {
+            seedColor = Color(int.parse(settings.theme));
+          } catch (_) {
+            seedColor = Colors.blue;
+          }
+        }
+
+        return MaterialApp(
+          onGenerateTitle: (context) => AppLocalizations.of(context)!.appName,
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: seedColor,
+            ).copyWith(primary: seedColor),
+            useMaterial3: true,
+            scaffoldBackgroundColor: Colors.white,
+            appBarTheme: AppBarTheme(
+              backgroundColor: seedColor,
+              foregroundColor: Colors.white,
             ),
+          ),
+          locale: settingsProvider.locale,
+          localizationsDelegates: [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
           ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+          supportedLocales: const [
+            Locale('es'),
+            Locale('en'),
+            Locale('fr'),
+            Locale('pt'),
+          ],
+          home: Consumer<AuthProvider>(
+            builder: (context, auth, _) {
+              if (auth.isAuthenticated) {
+                if (auth.isAdmin) {
+                  return const AdminLandingPage();
+                } else if (auth.isVoter) {
+                  return const VoterLandingPage();
+                }
+              }
+              return const LoginPage();
+            },
+          ),
+        );
+      },
     );
   }
 }

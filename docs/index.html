@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>eLection - Sistema de Votación Digital</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1e40af;
+        --secondary: #64748b;
+        --accent: #f59e0b;
+        --success: #10b981;
+        --bg: #f8fafc;
+        --card-bg: #ffffff;
+        --text: #1e293b;
+        --text-light: #64748b;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Outfit", sans-serif;
+        background-color: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+
+      /* Navbar */
+      nav {
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        background: rgba(248, 250, 252, 0.8);
+        backdrop-filter: blur(10px);
+        z-index: 1000;
+      }
+
+      .logo {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 32px;
+      }
+
+      .nav-links a {
+        text-decoration: none;
+        color: var(--text-light);
+        font-weight: 500;
+        transition: color 0.3s;
+      }
+
+      .nav-links a:hover {
+        color: var(--primary);
+      }
+
+      /* Hero */
+      .hero {
+        padding: 100px 0;
+        text-align: center;
+        background: radial-gradient(circle at top right, #dbeafe, transparent);
+      }
+
+      .hero h1 {
+        font-size: 56px;
+        font-weight: 700;
+        line-height: 1.1;
+        margin-bottom: 24px;
+        background: linear-gradient(
+          to right,
+          var(--primary-dark),
+          var(--primary)
+        );
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .hero p {
+        font-size: 20px;
+        color: var(--text-light);
+        max-width: 700px;
+        margin: 0 auto 40px;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 14px 32px;
+        background: var(--primary);
+        color: white;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 600;
+        transition:
+          transform 0.3s,
+          box-shadow 0.3s;
+        box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 20px 25px -5px rgba(37, 99, 235, 0.4);
+      }
+
+      /* Sections */
+      section {
+        padding: 100px 0;
+      }
+
+      .section-title {
+        text-align: center;
+        margin-bottom: 60px;
+      }
+
+      .section-title h2 {
+        font-size: 36px;
+        margin-bottom: 16px;
+      }
+
+      .section-title p {
+        color: var(--text-light);
+      }
+
+      /* Features Grid */
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 32px;
+      }
+
+      .feature-card {
+        background: var(--card-bg);
+        padding: 40px;
+        border-radius: 24px;
+        border: 1px solid #e2e8f0;
+        transition: transform 0.3s;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .feature-icon {
+        width: 48px;
+        height: 48px;
+        background: #eff6ff;
+        color: var(--primary);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 24px;
+        font-size: 24px;
+      }
+
+      /* Guide Section */
+      .guide-step {
+        display: flex;
+        align-items: center;
+        gap: 60px;
+        margin-bottom: 100px;
+      }
+
+      .guide-step:nth-child(even) {
+        flex-direction: row-reverse;
+      }
+
+      .guide-content {
+        flex: 1;
+      }
+
+      .guide-image {
+        flex: 1.2;
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e2e8f0;
+      }
+
+      .guide-image img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      .step-number {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--primary);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 12px;
+        display: block;
+      }
+
+      .guide-content h3 {
+        font-size: 28px;
+        margin-bottom: 20px;
+      }
+
+      .guide-content ul {
+        list-style: none;
+      }
+
+      .guide-content li {
+        position: relative;
+        padding-left: 28px;
+        margin-bottom: 12px;
+        color: var(--text-light);
+      }
+
+      .guide-content li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--success);
+        font-weight: 700;
+      }
+
+      /* Footer */
+      footer {
+        background: #0f172a;
+        color: white;
+        padding: 80px 0 40px;
+      }
+
+      .footer-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr;
+        gap: 60px;
+        margin-bottom: 60px;
+      }
+
+      .footer-logo {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 20px;
+      }
+
+      .footer-desc {
+        color: #94a3b8;
+        max-width: 300px;
+      }
+
+      .footer-title {
+        font-weight: 600;
+        margin-bottom: 24px;
+      }
+
+      .footer-links a {
+        display: block;
+        color: #94a3b8;
+        text-decoration: none;
+        margin-bottom: 12px;
+        transition: color 0.3s;
+      }
+
+      .footer-links a:hover {
+        color: white;
+      }
+
+      .copyright {
+        text-align: center;
+        padding-top: 40px;
+        border-top: 1px solid #1e293b;
+        color: #475569;
+        font-size: 14px;
+      }
+
+      @media (max-width: 768px) {
+        .hero h1 {
+          font-size: 40px;
+        }
+        .nav-links {
+          display: none;
+        }
+        .guide-step,
+        .guide-step:nth-child(even) {
+          flex-direction: column;
+          gap: 40px;
+        }
+        .footer-grid {
+          grid-template-columns: 1fr;
+          gap: 40px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <nav>
+        <div class="logo">🗳️ eLection</div>
+        <div class="nav-links">
+          <a href="#features">Características</a>
+          <a href="#admin-guide">Guía Admin</a>
+          <a href="#voter-guide">Guía Votante</a>
+        </div>
+        <a href="#" class="btn" style="padding: 10px 20px; font-size: 14px"
+          >Descargar</a
+        >
+      </nav>
+    </div>
+
+    <header class="hero">
+      <div class="container">
+        <h1>Democracia Escolar,<br />Simplificada y Segura.</h1>
+        <p>
+          La plataforma definitiva para la gestión de elecciones
+          institucionales. Moderna, transparente y fácil de usar por estudiantes
+          y administrativos.
+        </p>
+        <div class="hero-btns">
+          <a href="#admin-guide" class="btn">Empezar Guía</a>
+        </div>
+      </div>
+    </header>
+
+    <section id="features">
+      <div class="container">
+        <div class="section-title">
+          <h2>Potencia tu Jornada Electoral</h2>
+          <p>
+            Herramientas diseñadas para la integridad y eficiencia del proceso.
+          </p>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">🛡️</div>
+            <h3>Seguridad Robusta</h3>
+            <p>
+              Autenticación por documento y contraseña opcional. Cierre de
+              sesión automático tras votar.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Resultados en Vivo</h3>
+            <p>
+              Visualiza el progreso del escrutinio en tiempo real con gráficas
+              dinámicas y precisas.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📁</div>
+            <h3>Importación Fácil</h3>
+            <p>
+              Carga cientos de estudiantes en segundos mediante archivos de
+              Excel estándar.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="admin-guide">
+      <div class="container">
+        <div class="section-title">
+          <h2>Guía para el Administrador</h2>
+          <p>Configura y supervisa todo el proceso desde un panel intuitivo.</p>
+        </div>
+
+        <div class="guide-step">
+          <div class="guide-content">
+            <span class="step-number">Paso 01</span>
+            <h3>Acceso y Dashboard</h3>
+            <p>
+              Ingresa con tus credenciales de administrador para acceder al
+              centro de control. Desde aquí puedes navegar a todas las áreas de
+              gestión:
+            </p>
+            <ul>
+              <li>Gestión de estudiantes y grados.</li>
+              <li>Configuración de cargos (Categorías).</li>
+              <li>Registro de candidatos con fotografías.</li>
+              <li>Ajustes de identidad institucional.</li>
+            </ul>
+          </div>
+          <div class="guide-image">
+            <img
+              src="assets/images/dashboard.png"
+              alt="Admin Dashboard Mockup"
+            />
+          </div>
+        </div>
+
+        <div class="guide-step">
+          <div class="guide-content">
+            <span class="step-number">Paso 02</span>
+            <h3>Configuración de Candidatos</h3>
+            <p>
+              Registra a los aspirantes de forma sencilla. El sistema asocia
+              cada candidato a una categoría específica (Personería,
+              Contraloría, etc.):
+            </p>
+            <ul>
+              <li>Carga de fotos de perfil directamente desde el equipo.</li>
+              <li>Asignación de número de tarjetón.</li>
+              <li>
+                Vinculación automática de categorías a grados específicos.
+              </li>
+            </ul>
+          </div>
+          <div class="guide-image">
+            <img
+              src="assets/images/login.png"
+              alt="Configuración de Candidatos"
+            />
+          </div>
+        </div>
+
+        <div class="guide-step">
+          <div class="guide-content">
+            <span class="step-number">Paso 03</span>
+            <h3>Escrutinio y Reportes</h3>
+            <p>
+              Al finalizar la jornada, o durante la misma, puedes consultar el
+              estado de la votación:
+            </p>
+            <ul>
+              <li>Gráficas de barras con porcentajes de participación.</li>
+              <li>Contador de votos totales y votos en blanco.</li>
+              <li>
+                Generación de Acta de Escrutinio oficial en PDF para impresión.
+              </li>
+            </ul>
+          </div>
+          <div class="guide-image">
+            <img
+              src="assets/images/results.png"
+              alt="Resultados en Tiempo Real"
+            />
+          </div>
+        </div>
+
+        <div class="guide-step">
+          <div class="guide-content">
+            <span class="step-number">Paso 04</span>
+            <h3>Mantenimiento y Respaldo</h3>
+            <p>
+              La seguridad de los datos es primordial. eLection incluye
+              herramientas para asegurar tu información:
+            </p>
+            <ul>
+              <li>
+                <strong>Exportación:</strong> Descarga una copia de seguridad
+                completa del sistema.
+              </li>
+              <li>
+                <strong>Importación:</strong> Restaura datos desde un respaldo
+                previo en segundos.
+              </li>
+              <li>
+                <strong>Limpieza:</strong> Opción para borrar todos los votos
+                registrados y reiniciar el proceso electoral (requiere código de
+                confirmación).
+              </li>
+            </ul>
+          </div>
+          <div class="guide-image">
+            <img
+              src="assets/images/maintenance.png"
+              alt="Mantenimiento y Respaldo"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="voter-guide" style="background-color: white">
+      <div class="container">
+        <div class="section-title">
+          <h2>Guía para el Estudiante</h2>
+          <p>Un proceso de votación rápido, justo y privado.</p>
+        </div>
+
+        <div class="guide-step">
+          <div class="guide-image">
+            <img src="assets/images/voting.png" alt="Interfaz de Votación" />
+          </div>
+          <div class="guide-content">
+            <span class="step-number">Experiencia del Votante</span>
+            <h3>¿Cómo votar?</h3>
+            <p>
+              Los estudiantes siguen un flujo diseñado para evitar confusiones:
+            </p>
+            <ul>
+              <li>
+                <strong>Identificación:</strong> Ingreso con número de
+                documento.
+              </li>
+              <li>
+                <strong>Selección:</strong> Navegación por categorías de
+                votación.
+              </li>
+              <li>
+                <strong>Confirmación:</strong> Visualización clara del candidato
+                seleccionado.
+              </li>
+              <li>
+                <strong>Seguridad:</strong> El sistema cierra sesión
+                automáticamente tras confirmar el voto.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container">
+        <div class="footer-grid">
+          <div>
+            <div class="footer-logo">🗳️ eLection</div>
+            <p class="footer-desc">
+              Software de vanguardia para la transformación digital de los
+              procesos democráticos escolares.
+            </p>
+          </div>
+          <div class="footer-links">
+            <div class="footer-title">Enlaces</div>
+            <a href="#features">Características</a>
+            <a href="#admin-guide">Guía Admin</a>
+            <a href="#voter-guide">Guía Votante</a>
+          </div>
+          <div class="footer-links">
+            <div class="footer-title">Soporte</div>
+            <a href="#">Documentación Técnica</a>
+            <a href="#">Reportar un Error</a>
+            <a href="#">Contacto</a>
+          </div>
+        </div>
+        <div class="copyright">
+          &copy; 2026 eLection. Desarrollado por Jaime Hernández con
+          Antigravity.
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
