@@ -62,8 +62,8 @@ class ResultsProvider with ChangeNotifier {
               );
             }).toList();
 
-            // Sort by votes descending
-            candidateResults.sort((a, b) => b.votes.compareTo(a.votes));
+              // Sort by name alphabetically
+            candidateResults.sort((a, b) => a.candidate.name.compareTo(b.candidate.name));
 
             final totalVotes = candidateResults.fold<int>(0, (sum, item) => sum + item.votes);
 

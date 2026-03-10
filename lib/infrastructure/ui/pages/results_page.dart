@@ -370,21 +370,29 @@ class _CandidateResultCard extends StatelessWidget {
                         const SizedBox(height: 8),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text(
                               '${(percentage * 100).toStringAsFixed(1)}%',
                               style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: theme.primaryColor,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black54,
                               ),
                             ),
-                            Text(
-                              '${candidateResult.votes} votos',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.black54,
-                                fontWeight: FontWeight.w500,
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: theme.primaryColor.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                '${candidateResult.votes} VOTOS',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: theme.primaryColor,
+                                  fontWeight: FontWeight.w900,
+                                ),
                               ),
                             ),
                           ],
