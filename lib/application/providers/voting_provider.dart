@@ -33,16 +33,19 @@ class VotingProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
-      _categories = await _getCategoriesUC.execute(voter.gradeId);
+      final allCategories = await _getCategoriesUC.execute(voter.gradeId);
+      _categories = [];
       _candidatesByCategory.clear();
       _selectedCandidates.clear();
 
-      for (var category in _categories) {
+      for (var category in allCategories) {
         if (category.id != null) {
           final candidates = await _getCandidatesUC.execute(category.id!);
-          
-          _candidatesByCategory[category.id!] = candidates;
-          _selectedCandidates[category.id!] = null;
+          if (candidates.isNotEmpty) {
+            _categories.add(category);
+            _candidatesByCategory[category.id!] = candidates;
+            _selectedCandidates[category.id!] = null;
+          }
         }
       }
     } finally {
