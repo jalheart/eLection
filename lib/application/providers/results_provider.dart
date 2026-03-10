@@ -51,22 +51,29 @@ class ResultsProvider with ChangeNotifier {
       for (var category in categories) {
         if (category.id != null) {
           final candidates = await _getCandidatesUC.execute(category.id!);
-          final voteCounts = await _getResultsUC.execute(category.id!);
+          
+          if (candidates.isNotEmpty) {
+            final voteCounts = await _getResultsUC.execute(category.id!);
 
-          List<CandidateResult> candidateResults = candidates.map((c) {
-            return CandidateResult(
-              candidate: c,
-              votes: voteCounts[c.id] ?? 0,
-            );
-          }).toList();
+            List<CandidateResult> candidateResults = candidates.map((c) {
+              return CandidateResult(
+                candidate: c,
+                votes: voteCounts[c.id] ?? 0,
+              );
+            }).toList();
 
-          // Sort by votes descending
-          candidateResults.sort((a, b) => b.votes.compareTo(a.votes));
+            // Sort by votes descending
+            candidateResults.sort((a, b) => b.votes.compareTo(a.votes));
 
-          loadedResults.add(ResultData(
-            category: category,
-            candidates: candidateResults,
-          ));
+            final totalVotes = candidateResults.fold<int>(0, (sum, item) => sum + item.votes);
+
+            if (totalVotes > 0) {
+              loadedResults.add(ResultData(
+                category: category,
+                candidates: candidateResults,
+              ));
+            }
+          }
         }
       }
       _results = loadedResults;
