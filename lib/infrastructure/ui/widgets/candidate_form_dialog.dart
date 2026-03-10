@@ -55,6 +55,22 @@ class _CandidateFormDialogState extends State<CandidateFormDialog> {
     }
   }
 
+  void _submit() {
+    if (_formKey.currentState!.validate()) {
+      // Small check to ensure image is present if that's what's intended
+      // Although currently the entity allows null, the user's request prioritizes saving when image is there.
+      widget.onSave(
+        Candidate(
+          id: widget.candidate?.id,
+          name: _nameController.text,
+          categoryId: widget.categoryId,
+          picture: _imagePath,
+        ),
+      );
+      Navigator.pop(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -130,6 +146,8 @@ class _CandidateFormDialogState extends State<CandidateFormDialog> {
                       children: [
                         TextFormField(
                           controller: _nameController,
+                          textInputAction: TextInputAction.done,
+                          onFieldSubmitted: (_) => _submit(),
                           decoration: InputDecoration(
                             labelText: l10n.candidateName,
                             isDense: true,
@@ -236,19 +254,7 @@ class _CandidateFormDialogState extends State<CandidateFormDialog> {
                           children: [
                             Expanded(
                               child: ElevatedButton(
-                                onPressed: () {
-                                  if (_formKey.currentState!.validate()) {
-                                    widget.onSave(
-                                      Candidate(
-                                        id: widget.candidate?.id,
-                                        name: _nameController.text,
-                                        categoryId: widget.categoryId,
-                                        picture: _imagePath,
-                                      ),
-                                    );
-                                    Navigator.pop(context);
-                                  }
-                                },
+                                onPressed: _submit,
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Theme.of(context).primaryColor,
                                   foregroundColor: Colors.white,
