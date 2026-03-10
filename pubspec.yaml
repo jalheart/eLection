@@ -50,6 +50,7 @@ dependencies:
   archive: ^3.6.1
   pdf: ^3.11.3
   printing: ^5.14.2
+  desktop_drop: ^0.7.0
 
 dev_dependencies:
   flutter_test:
